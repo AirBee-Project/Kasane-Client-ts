@@ -1,14 +1,11 @@
 import { SpatialIdError } from "./error";
-import { TIME_MAX_ZOOM } from "./timeZoomLevel";
-
-/** {@link Interval.create} と {@link Interval} 自身のどちらでも渡せる時間間隔の入力。 */
-export type IntervalInput = Interval | number;
+import { TIME_MAX_ZOOM } from "./utils";
 
 /**
- * 時間 ID の時間間隔 `{i}`（秒数）を表現する型。よく使う値は定数として用意している。
+ * 時間間隔 `{i}`を表現する型。よく使う値は定数として用意している。
  */
 export class Interval {
-  /** このライブラリが扱える最大の時間間隔＝全時間の秒数（`2^35` 秒、約1089年）。 */
+  /** このライブラリが扱える最大の時間間隔 */
   public static readonly MAX_SECONDS = 2 ** TIME_MAX_ZOOM;
 
   private readonly value: number;
@@ -44,18 +41,17 @@ export class Interval {
   }
 
   /** {@link Interval} 自身、または秒数の整数のどちらからでも {@link Interval} を得る。 */
-  public static from(input: IntervalInput): Interval {
+  public static from(input: Interval | number): Interval {
     return input instanceof Interval ? input : Interval.create(input);
   }
 
-  /** この {@link Interval} の秒数。 */
+  /**  {@link Interval} の秒数。 */
   public seconds(): number {
     return this.value;
   }
 
   /**
-   * `{i}` と `{t}` の範囲（両端含む）が占める絶対秒区間の終端が {@link Interval.MAX_SECONDS} を
-   * 超えないかを検証する。超える場合はエラーを投げる。
+   * `{i}` と `{t}` の範囲（両端含む）が占める絶対秒区間の終端が {@link Interval.MAX_SECONDS} を超えないかを検証する。超える場合はエラーを投げる。
    */
   public validatedSpan(tMin: number, tMax: number): void {
     const start = tMin * this.value;

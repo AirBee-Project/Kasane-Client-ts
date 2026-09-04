@@ -1,7 +1,14 @@
 {
-  "name": "kasane-client",
+  "name": "@airbee-project/kasane-client",
   "version": "0.0.1",
   "description": "kasane-client",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AirBee-Project/Kasane-TypeScript.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -15,9 +22,7 @@
   "files": [
     "dist",
     "src",
-    "README.md",
-    "README_JA.md",
-    "TUTORIAL_JA.md"
+    "README.md"
   ],
   "scripts": {
     "build": "tsup",
@@ -26,6 +31,7 @@
     "lint": "biome lint --write .",
     "fmt": "biome format --write .",
     "check": "tsc --noEmit && biome check .",
+    "ci": "tsc --noEmit && biome check . && bun test",
     "test": "bun test",
     "test:watch": "bun test --watch",
     "codegen": "protoc --plugin=protoc-gen-es=./node_modules/.bin/protoc-gen-es.exe --es_out=src/client/gen --es_opt=target=ts --proto_path=proto proto/auth.proto proto/common.proto proto/data.proto proto/database.proto proto/query.proto proto/system.proto proto/table.proto proto/users.proto"

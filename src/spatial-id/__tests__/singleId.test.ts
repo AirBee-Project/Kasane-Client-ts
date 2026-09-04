@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { SpatialIdError } from "./error";
-import { FlexId } from "./flexId";
-import { Interval } from "./interval";
-import { SingleId } from "./singleId";
+import { SpatialIdError } from "../error";
+import { FlexId } from "../flexId";
+import { Interval } from "../interval";
+import { SingleId } from "../singleId";
 
 describe("SingleId.create（生成と検証）", () => {
   it("z/f/x/yを指定して作成し、時間は全時間から始まる", () => {

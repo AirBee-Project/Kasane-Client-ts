@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { SpatialIdError } from "./error";
-import { FlexId } from "./flexId";
+import { SpatialIdError } from "../error";
+import { FlexId } from "../flexId";
 
 describe("FlexId.create（生成と検証）", () => {
   it("各軸が独立したズームレベルを持て、時間は全時間から始まる", () => {

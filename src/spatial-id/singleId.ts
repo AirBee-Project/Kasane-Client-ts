@@ -1,9 +1,8 @@
 import { SpatialIdError } from "./error";
 import type { FlexId } from "./flexId";
-import { parseInteger } from "./helpers";
-import { Interval, type IntervalInput } from "./interval";
+import { Interval } from "./interval";
 import { RangeId } from "./rangeId";
-import { checkF, checkX, checkY, checkZoom } from "./zoomLevel";
+import { checkF, checkX, checkY, checkZoom, parseInteger } from "./utils";
 
 export class SingleId {
   public readonly z: number;
@@ -32,7 +31,7 @@ export class SingleId {
   /**
    * 指定された値から {@link SingleId} を作成する。
    * `z`, `f`, `x`, `y` が各ズームレベルにおける範囲内にあるかを検証し、範囲外の場合はエラーを投げる。
-   * 時間は指定しておらず、全時間（{@link Interval.WHOLE}）から始まる。
+   * 時間は指定しておらず、全時間（{@link Interval.WHOLE}）となる。。
    */
   public static create(z: number, f: number, x: number, y: number): SingleId {
     checkZoom(z);
@@ -45,12 +44,7 @@ export class SingleId {
 
   /**
    * 検証を行わずに {@link SingleId} を作成する。
-   *
-   * {@link SingleId.create} と異なり、`z`, `f`, `x`, `y` に対して一切の範囲チェックを行わない。
-   * 高速に作成できるが、**不正な値を渡した場合の以降の挙動は未定義**になる。
-   *
-   * 呼び出し側は、`z` が有効なズームレベル（`0..=30`）であり、
-   * `f`, `x`, `y` がそのズームレベルの範囲内にあることを保証しなければならない。
+   * 高速に作成できるが、**不正な値を渡した場合の挙動は未定義**になる。
    */
   public static createUnchecked(
     z: number,
@@ -62,16 +56,15 @@ export class SingleId {
   }
 
   /**
-   * 時間を設定した自身を返す。`interval` は {@link Interval} または秒数のどちらでも渡せる。
-   * `SingleId` は空間が1Segmentなのと揃えて時間も1Segmentしか持たない。
+   * 時間を設定する。`interval` は {@link Interval} または秒数のどちらでも渡せる。
    */
-  public withTime(interval: IntervalInput, t: number): SingleId {
+  public withTime(interval: Interval | number, t: number): SingleId {
     const resolved = Interval.from(interval);
     resolved.validatedSpan(t, t);
     return new SingleId(this.z, this.f, this.x, this.y, resolved, t);
   }
 
-  /** この {@link SingleId} を、同じ点を指す退化した範囲として {@link RangeId} へ変換する。 */
+  /** {@link SingleId} を {@link RangeId} へ変換する。 */
   public toRangeId(): RangeId {
     return RangeId.create(this.z, this.f, this.x, this.y).withTime(
       this.interval,
@@ -79,7 +72,7 @@ export class SingleId {
     );
   }
 
-  /** 全時間（時間を指定していない状態）であるかを返す。 */
+  /** 全時間を指しているか。 */
   public isWholeTime(): boolean {
     return this.interval.seconds() === Interval.MAX_SECONDS && this.t === 0;
   }
@@ -201,10 +194,7 @@ export class SingleId {
     return id;
   }
 
-  /**
-   * この {@link SingleId} を {@link FlexId} の列へ展開する。空間部分は常にちょうど1Segmentだが、
-   * 時間間隔は任意の秒数を取れるため、2の冪秒のSegmentへ分解すると複数個になりうる。
-   */
+  /** {@link SingleId} を {@link FlexId} へ変換する。 */
   public [Symbol.iterator](): Generator<FlexId> {
     return this.toRangeId()[Symbol.iterator]();
   }

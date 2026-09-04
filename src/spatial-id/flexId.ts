@@ -1,10 +1,17 @@
 import { SpatialIdError } from "./error";
-import { parseInteger } from "./helpers";
 import { Interval } from "./interval";
 import { RangeId } from "./rangeId";
 import type { SingleId } from "./singleId";
-import { checkTIndex, checkTZoom, segmentSeconds } from "./timeZoomLevel";
-import { checkF, checkX, checkY, checkZoom } from "./zoomLevel";
+import {
+  checkF,
+  checkTIndex,
+  checkTZoom,
+  checkX,
+  checkY,
+  checkZoom,
+  parseInteger,
+  segmentSeconds,
+} from "./utils";
 
 export class FlexId {
   public readonly fZoomLevel: number;
@@ -71,13 +78,7 @@ export class FlexId {
 
   /**
    * 検証を行わずに {@link FlexId} を作成する。
-   *
-   * {@link FlexId.create} と異なり、各ズームレベル・インデックスに対して一切の範囲チェックを
-   * 行わない。高速に作成できるが、**不正な値を渡した場合の以降の挙動は未定義**になる。
-   *
-   * 呼び出し側は、`fZoomLevel`/`xZoomLevel`/`yZoomLevel` が有効なズームレベル（`0..=30`）であり、
-   * `fIndex`/`xIndex`/`yIndex` がそれぞれ対応するズームレベルの範囲内にあることを保証しなければ
-   * ならない。
+   * 高速に作成できるが、**不正な値を渡した場合の挙動は未定義**になる。
    */
   public static createUnchecked(
     fZoomLevel: number,
@@ -100,9 +101,7 @@ export class FlexId {
   }
 
   /**
-   * 時間Segment（4軸目）を設定した自身を返す。引数は空間3軸と同じく「ズームレベル＋インデックス」で、
-   * 1Segmentは `2^(35 - tZoomLevel)` 秒。{@link FlexId} は木のノードアドレスであり2分岐Segment1個
-   * しか持てないため、秒数の`interval`ではなくズームで指定する。
+   * 時間を設定する。引数は空間と同じくズームレベルとインデックス値である。
    */
   public withTime(tZoomLevel: number, tIndex: number): FlexId {
     checkTZoom(tZoomLevel);
@@ -120,16 +119,13 @@ export class FlexId {
     );
   }
 
-  /** 全時間（時間を指定していない状態）であるかを返す。 */
+  /** 全時間を指しているか。 */
   public isWholeTime(): boolean {
     return this.tZoomLevel === 0 && this.tIndex === 0;
   }
 
   /**
-   * この {@link FlexId} を文字列形式で出力する。
-   *
-   * 形式は `"{fz}/{fi}|{xz}/{xi}|{yz}/{yi}"`。時間を持つ場合は同じ `|` 区切りで
-   * 4軸目 `"|{tz}/{ti}"` が続く（`_` は使用しない）。
+   * {@link FlexId} を文字列形式で出力する。
    */
   public toString(): string {
     const base = `${this.fZoomLevel}/${this.fIndex}|${this.xZoomLevel}/${this.xIndex}|${this.yZoomLevel}/${this.yIndex}`;
@@ -209,9 +205,7 @@ export class FlexId {
   }
 
   /**
-   * この {@link FlexId} を、F/X/Y それぞれの最大ズームに揃えて拡大した {@link RangeId} へ変換する。
-   * 時間Segmentは、同じ単位（`2^(35 - tZoomLevel)` 秒）・単一インデックスの {@link RangeId} の時間へ
-   * そのまま対応する。
+   * {@link FlexId} を {@link RangeId} へ変換する。
    */
   public toRangeId(): RangeId {
     const maxZoom = Math.max(this.fZoomLevel, this.xZoomLevel, this.yZoomLevel);
@@ -229,12 +223,11 @@ export class FlexId {
     ).withTime(Interval.create(segmentSeconds(this.tZoomLevel)), this.tIndex);
   }
 
-  /** この {@link FlexId} が占める領域をちょうど覆う {@link SingleId} の列へ展開する。 */
+  /** {@link FlexId} を複数の {@link SingleId} へ展開する。 */
   public toSingleIds(): Generator<SingleId> {
     return this.toRangeId().toSingleIds();
   }
 
-  /** {@link FlexId} は既にFlexTreeのノードアドレスそのものなので、自身1個だけを列挙する。 */
   public *[Symbol.iterator](): Generator<FlexId> {
     yield this;
   }

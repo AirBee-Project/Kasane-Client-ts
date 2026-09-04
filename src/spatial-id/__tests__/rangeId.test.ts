@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { SpatialIdError } from "./error";
-import { FlexId } from "./flexId";
-import { RangeId } from "./rangeId";
+import { SpatialIdError } from "../error";
+import { FlexId } from "../flexId";
+import { RangeId } from "../rangeId";
 
 describe("RangeId.create（生成と検証）", () => {
   it("各軸に単一の値を渡すと[v, v]に退化した範囲になる", () => {

@@ -2,7 +2,7 @@ import { create } from "@bufbuild/protobuf";
 import { FlexId } from "../spatial-id/flexId";
 import { RangeId } from "../spatial-id/rangeId";
 import { SingleId } from "../spatial-id/singleId";
-import { fMax, fMin, xyMax } from "../spatial-id/zoomLevel";
+import { fMax, fMin, xyMax } from "../spatial-id/utils";
 import {
   FlexIdSchema,
   NullValue,

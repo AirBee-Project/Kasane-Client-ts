@@ -1,0 +1,124 @@
+name: Manual Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump_level:
+        description: 'Version bump level'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  version:
+    name: Bump version and tag
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: main
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Bump Version
+        id: version
+        run: |
+          npm version ${{ github.event.inputs.bump_level }} --no-git-tag-version
+          bun install
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "Bumped version to $NEW_VERSION"
+
+      - name: Commit and Push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          git add package.json bun.lock
+          git commit -m "chore: bump version to ${{ steps.version.outputs.version }}"
+
+          git push origin HEAD:main
+          git tag -a "v${{ steps.version.outputs.version }}" -m "Release v${{ steps.version.outputs.version }}"
+          git push origin "v${{ steps.version.outputs.version }}"
+
+  build:
+    name: Build and package
+    needs: version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: v${{ needs.version.outputs.version }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run CI checks (typecheck, lint, format, test)
+        run: bun run ci
+
+      - name: Build package
+        run: bun run build
+
+      - name: Pack tarball
+        run: |
+          mkdir -p /tmp/package
+          npm pack --pack-destination /tmp/package
+
+      - name: Upload tarball artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-tarball
+          path: /tmp/package/*.tgz
+          if-no-files-found: error
+          retention-days: 1
+
+  release:
+    name: Create GitHub Release
+    needs: [version, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download tarball artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: package-tarball
+          path: /tmp/package
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.version.outputs.version }}
+          files: /tmp/package/*.tgz
+          generate_release_notes: true
+          body: |
+            ### Installation
+
+            Install directly from this release:
+            ```bash
+            bun add https://github.com/${{ github.repository }}/releases/download/v${{ needs.version.outputs.version }}/airbee-project-kasane-client-${{ needs.version.outputs.version }}.tgz
+            # or npm
+            npm install https://github.com/${{ github.repository }}/releases/download/v${{ needs.version.outputs.version }}/airbee-project-kasane-client-${{ needs.version.outputs.version }}.tgz
+            ```

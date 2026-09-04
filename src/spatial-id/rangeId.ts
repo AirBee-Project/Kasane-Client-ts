@@ -1,24 +1,22 @@
 import { SpatialIdError } from "./error";
 import { FlexId } from "./flexId";
-import {
-  formatDimension,
-  intoRange,
-  parseDimension,
-  parseInteger,
-  type RangeInput,
-} from "./helpers";
-import { Interval, type IntervalInput } from "./interval";
-import { decomposeRange } from "./segments";
+import { Interval } from "./interval";
 import { SingleId } from "./singleId";
-import { TIME_MAX_ZOOM } from "./timeZoomLevel";
 import {
   checkF,
   checkX,
   checkY,
   checkZoom,
   decomposeF,
+  decomposeRange,
+  formatDimension,
+  intoRange,
+  parseDimension,
+  parseInteger,
+  type RangeInput,
+  TIME_MAX_ZOOM,
   xyMax,
-} from "./zoomLevel";
+} from "./utils";
 
 export class RangeId {
   public readonly z: number;
@@ -49,7 +47,7 @@ export class RangeId {
    * `f`, `x`, `y` は `[min, max]` のペア、または両端が等しい単一の値で指定できる。
    * `f`, `y` は自動的に昇順へ並び替えられる。`x` は周期境界を持つため並び替えない。
    * 各値が対応するズームレベルの範囲内にあるかを検証し、範囲外の場合はエラーを投げる。
-   * 時間は指定しておらず、全時間（{@link Interval.WHOLE}）から始まる。
+   * 時間は指定しておらず、全時間（{@link Interval.WHOLE}）となる。
    */
   public static create(
     z: number,
@@ -79,13 +77,7 @@ export class RangeId {
 
   /**
    * 検証を行わずに {@link RangeId} を作成する。
-   *
-   * {@link RangeId.create} と異なり、範囲チェックも `[min, max]` への並び替えも行わない。
-   * 高速に作成できるが、**不正な値を渡した場合の以降の挙動は未定義**になる。
-   *
-   * 呼び出し側は、`z` が有効なズームレベル（`0..=30`）であり、`f`, `x`, `y` の各要素がそのズーム
-   * レベルの範囲内にあることを保証しなければならない。`f`, `y` は既に `[min, max]` の順であること
-   * （`x` は周期境界を持つため並び順に制約はない）。
+   * 高速に作成できるが、**不正な値を渡した場合の挙動は未定義**になる。
    */
   public static createUnchecked(
     z: number,
@@ -104,11 +96,10 @@ export class RangeId {
   }
 
   /**
-   * 時間を設定した自身を返す。`interval` は {@link Interval} または秒数のどちらでも渡せる。
+   * 時間を設定する。`interval` は {@link Interval} または秒数のどちらでも渡せる。
    * `t` は `[min, max]` のペア、または両端が等しい単一の値で指定できる。
-   * {@link SingleId.withTime} が単一Segmentしか受け取らないのに対し、こちらは範囲を受け取る。
    */
-  public withTime(interval: IntervalInput, t: RangeInput): RangeId {
+  public withTime(interval: Interval | number, t: RangeInput): RangeId {
     const resolved = Interval.from(interval);
     const tRange = intoRange(t);
     if (tRange[0] > tRange[1]) {
@@ -119,7 +110,7 @@ export class RangeId {
     return new RangeId(this.z, this.f, this.x, this.y, resolved, tRange);
   }
 
-  /** 全時間（時間を指定していない状態）であるかを返す。 */
+  /** 全時間を指しているか。 */
   public isWholeTime(): boolean {
     return (
       this.interval.seconds() === Interval.MAX_SECONDS &&
@@ -257,7 +248,7 @@ export class RangeId {
     for (let x = 0; x <= this.x[1]; x++) yield x;
   }
 
-  /** この {@link RangeId} を、占める領域をちょうど覆う {@link SingleId} の列へ展開する。 */
+  /** {@link RangeId} を複数の {@link SingleId} へ展開する。 */
   public *toSingleIds(): Generator<SingleId> {
     for (let f = this.f[0]; f <= this.f[1]; f++) {
       for (const x of this.xIndices()) {
@@ -270,10 +261,7 @@ export class RangeId {
     }
   }
 
-  /**
-   * この {@link RangeId} を {@link FlexId} の列へ展開する。F/X/Y/T の各軸を、それぞれを過不足なく
-   * 覆う最小個数の2の冪区間（`log`個程度）へ分解し、その直積を返す。
-   */
+  /** {@link RangeId} を複数の {@link FlexId} へ展開する。 */
   public *[Symbol.iterator](): Generator<FlexId> {
     const z = this.z;
     const fSegments = [...decomposeF(z, this.f[0], this.f[1])];
