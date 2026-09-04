@@ -137,7 +137,7 @@ export class KasaneClient {
    *
    * @param query 実行する空間クエリ
    * @param spatialIds 対象となる空間ID（単一または配列）
-   * @param options 追加オプション（出力値の型、フォーマット、件数制限）
+   * @param options 追加オプション（出力値の型、フォーマット）
    */
   public query<T = unknown>(
     query: QueryBuilder | QueryNode,
@@ -145,7 +145,6 @@ export class KasaneClient {
     options?: {
       valueType?: TableDataType;
       format?: OutputFormat;
-      limit?: number | bigint;
     },
   ): ResultStream<T> {
     const queryNode = query instanceof QueryBuilder ? query.toProto() : query;
@@ -157,7 +156,6 @@ export class KasaneClient {
           ? toProtoTableDataType(options.valueType)
           : undefined,
       format: toProtoOutputFormat(options?.format),
-      limit: options?.limit !== undefined ? BigInt(options.limit) : undefined,
     });
     return new ResultStream<T>(rawStream);
   }

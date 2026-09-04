@@ -1,4 +1,5 @@
 import { fromProtoSpatialId, fromTypedValue, type SpatialId } from "./convert";
+import type { TypedValue } from "./gen/common_pb";
 import type { SearchDataResponse } from "./gen/data_pb";
 
 /** 検索・クエリ結果の単一アイテム。空間IDと値のペア。 */
@@ -22,11 +23,17 @@ export class ResultStream<T = unknown> implements AsyncIterable<ResultItem<T>> {
    * `{ id, value }` のアイテムを順次 yield する非同期イテレータ。
    */
   public async *[Symbol.asyncIterator](): AsyncIterator<ResultItem<T>> {
+    // dictionary はストリーム全体で共有され、各チャンクはその追加分だけを運ぶ。
+    const dictionary: TypedValue[] = [];
     for await (const chunk of this.sourceStream) {
-      const dictionary = chunk.dictionary;
+      dictionary.push(...chunk.dictionary);
       for (const group of chunk.data) {
-        const valueRefIndex = Number(group.valueRef);
-        const rawTypedValue = dictionary[valueRefIndex];
+        const rawTypedValue =
+          group.value.case === "dictRef"
+            ? dictionary[Number(group.value.value)]
+            : group.value.case === "inlineValue"
+              ? group.value.value
+              : undefined;
         const unpackedValue = (
           rawTypedValue !== undefined ? fromTypedValue(rawTypedValue) : null
         ) as T;

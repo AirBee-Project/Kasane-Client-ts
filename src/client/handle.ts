@@ -79,7 +79,6 @@ export class TableHandle<T extends PrimitiveValue = PrimitiveValue> {
     options?: {
       policy?: ZoomLevelPolicy;
       format?: OutputFormat;
-      limit?: number | bigint;
     },
   ): ResultStream<T> {
     const rawStream = this.client.data.search({
@@ -88,7 +87,6 @@ export class TableHandle<T extends PrimitiveValue = PrimitiveValue> {
       spatialIds: normalizeSpatialIds(ids),
       zoomLevelPolicy: toProtoZoomLevelPolicy(options?.policy),
       format: toProtoOutputFormat(options?.format),
-      limit: options?.limit !== undefined ? BigInt(options.limit) : undefined,
     });
     return new ResultStream<T>(rawStream);
   }

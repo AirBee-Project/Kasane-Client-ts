@@ -12,21 +12,34 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file data.proto.
  */
 export const file_data: GenFile = /*@__PURE__*/
-  fileDesc("CgpkYXRhLnByb3RvEgZrYXNhbmUiRgoJRGF0YUdyb3VwEhEKCXZhbHVlX3JlZhgBIAEoBBImCgtzcGF0aWFsX2lkcxgCIAMoCzIRLmthc2FuZS5TcGF0aWFsSWQiXQoSU2VhcmNoRGF0YVJlc3BvbnNlEiYKCmRpY3Rpb25hcnkYASADKAsyEi5rYXNhbmUuVHlwZWRWYWx1ZRIfCgRkYXRhGAIgAygLMhEua2FzYW5lLkRhdGFHcm91cCLYAQoRU2VhcmNoRGF0YVJlcXVlc3QSDwoHZGJfbmFtZRgBIAEoCRISCgp0YWJsZV9uYW1lGAIgASgJEiYKC3NwYXRpYWxfaWRzGAMgAygLMhEua2FzYW5lLlNwYXRpYWxJZBIyChF6b29tX2xldmVsX3BvbGljeRgEIAEoDjIXLmthc2FuZS5ab29tTGV2ZWxQb2xpY3kSJAoGZm9ybWF0GAUgASgOMhQua2FzYW5lLk91dHB1dEZvcm1hdBISCgVsaW1pdBgGIAEoBEgAiAEBQggKBl9saW1pdCK3AQoRSW5zZXJ0RGF0YVJlcXVlc3QSDwoHZGJfbmFtZRgBIAEoCRISCgp0YWJsZV9uYW1lGAIgASgJEiEKBXZhbHVlGAMgASgLMhIua2FzYW5lLlR5cGVkVmFsdWUSJgoLc3BhdGlhbF9pZHMYBCADKAsyES5rYXNhbmUuU3BhdGlhbElkEjIKEXpvb21fbGV2ZWxfcG9saWN5GAUgASgOMhcua2FzYW5lLlpvb21MZXZlbFBvbGljeSIUChJJbnNlcnREYXRhUmVzcG9uc2UitwEKEVVwc2VydERhdGFSZXF1ZXN0Eg8KB2RiX25hbWUYASABKAkSEgoKdGFibGVfbmFtZRgCIAEoCRIhCgV2YWx1ZRgDIAEoCzISLmthc2FuZS5UeXBlZFZhbHVlEiYKC3NwYXRpYWxfaWRzGAQgAygLMhEua2FzYW5lLlNwYXRpYWxJZBIyChF6b29tX2xldmVsX3BvbGljeRgFIAEoDjIXLmthc2FuZS5ab29tTGV2ZWxQb2xpY3kiFAoSVXBzZXJ0RGF0YVJlc3BvbnNlIpQBChFSZW1vdmVEYXRhUmVxdWVzdBIPCgdkYl9uYW1lGAEgASgJEhIKCnRhYmxlX25hbWUYAiABKAkSJgoLc3BhdGlhbF9pZHMYAyADKAsyES5rYXNhbmUuU3BhdGlhbElkEjIKEXpvb21fbGV2ZWxfcG9saWN5GAQgASgOMhcua2FzYW5lLlpvb21MZXZlbFBvbGljeSIUChJSZW1vdmVEYXRhUmVzcG9uc2UqgQEKDE91dHB1dEZvcm1hdBIdChlPVVRQVVRfRk9STUFUX1VOU1BFQ0lGSUVEEAASGwoXT1VUUFVUX0ZPUk1BVF9TSU5HTEVfSUQQARIaChZPVVRQVVRfRk9STUFUX1JBTkdFX0lEEAISGQoVT1VUUFVUX0ZPUk1BVF9GTEVYX0lEEAMykwIKC0RhdGFTZXJ2aWNlEkEKBlNlYXJjaBIZLmthc2FuZS5TZWFyY2hEYXRhUmVxdWVzdBoaLmthc2FuZS5TZWFyY2hEYXRhUmVzcG9uc2UwARI/CgZJbnNlcnQSGS5rYXNhbmUuSW5zZXJ0RGF0YVJlcXVlc3QaGi5rYXNhbmUuSW5zZXJ0RGF0YVJlc3BvbnNlEj8KBlVwc2VydBIZLmthc2FuZS5VcHNlcnREYXRhUmVxdWVzdBoaLmthc2FuZS5VcHNlcnREYXRhUmVzcG9uc2USPwoGUmVtb3ZlEhkua2FzYW5lLlJlbW92ZURhdGFSZXF1ZXN0Ghoua2FzYW5lLlJlbW92ZURhdGFSZXNwb25zZWIGcHJvdG8z", [file_common]);
+  fileDesc("CgpkYXRhLnByb3RvEgZrYXNhbmUifAoJRGF0YUdyb3VwEhIKCGRpY3RfcmVmGAEgASgESAASKgoMaW5saW5lX3ZhbHVlGAIgASgLMhIua2FzYW5lLlR5cGVkVmFsdWVIABImCgtzcGF0aWFsX2lkcxgDIAMoCzIRLmthc2FuZS5TcGF0aWFsSWRCBwoFdmFsdWUiXQoSU2VhcmNoRGF0YVJlc3BvbnNlEiYKCmRpY3Rpb25hcnkYASADKAsyEi5rYXNhbmUuVHlwZWRWYWx1ZRIfCgRkYXRhGAIgAygLMhEua2FzYW5lLkRhdGFHcm91cCK6AQoRU2VhcmNoRGF0YVJlcXVlc3QSDwoHZGJfbmFtZRgBIAEoCRISCgp0YWJsZV9uYW1lGAIgASgJEiYKC3NwYXRpYWxfaWRzGAMgAygLMhEua2FzYW5lLlNwYXRpYWxJZBIyChF6b29tX2xldmVsX3BvbGljeRgEIAEoDjIXLmthc2FuZS5ab29tTGV2ZWxQb2xpY3kSJAoGZm9ybWF0GAUgASgOMhQua2FzYW5lLk91dHB1dEZvcm1hdCK3AQoRSW5zZXJ0RGF0YVJlcXVlc3QSDwoHZGJfbmFtZRgBIAEoCRISCgp0YWJsZV9uYW1lGAIgASgJEiEKBXZhbHVlGAMgASgLMhIua2FzYW5lLlR5cGVkVmFsdWUSJgoLc3BhdGlhbF9pZHMYBCADKAsyES5rYXNhbmUuU3BhdGlhbElkEjIKEXpvb21fbGV2ZWxfcG9saWN5GAUgASgOMhcua2FzYW5lLlpvb21MZXZlbFBvbGljeSIUChJJbnNlcnREYXRhUmVzcG9uc2UitwEKEVVwc2VydERhdGFSZXF1ZXN0Eg8KB2RiX25hbWUYASABKAkSEgoKdGFibGVfbmFtZRgCIAEoCRIhCgV2YWx1ZRgDIAEoCzISLmthc2FuZS5UeXBlZFZhbHVlEiYKC3NwYXRpYWxfaWRzGAQgAygLMhEua2FzYW5lLlNwYXRpYWxJZBIyChF6b29tX2xldmVsX3BvbGljeRgFIAEoDjIXLmthc2FuZS5ab29tTGV2ZWxQb2xpY3kiFAoSVXBzZXJ0RGF0YVJlc3BvbnNlIpQBChFSZW1vdmVEYXRhUmVxdWVzdBIPCgdkYl9uYW1lGAEgASgJEhIKCnRhYmxlX25hbWUYAiABKAkSJgoLc3BhdGlhbF9pZHMYAyADKAsyES5rYXNhbmUuU3BhdGlhbElkEjIKEXpvb21fbGV2ZWxfcG9saWN5GAQgASgOMhcua2FzYW5lLlpvb21MZXZlbFBvbGljeSIUChJSZW1vdmVEYXRhUmVzcG9uc2UqgQEKDE91dHB1dEZvcm1hdBIdChlPVVRQVVRfRk9STUFUX1VOU1BFQ0lGSUVEEAASGwoXT1VUUFVUX0ZPUk1BVF9TSU5HTEVfSUQQARIaChZPVVRQVVRfRk9STUFUX1JBTkdFX0lEEAISGQoVT1VUUFVUX0ZPUk1BVF9GTEVYX0lEEAMykwIKC0RhdGFTZXJ2aWNlEkEKBlNlYXJjaBIZLmthc2FuZS5TZWFyY2hEYXRhUmVxdWVzdBoaLmthc2FuZS5TZWFyY2hEYXRhUmVzcG9uc2UwARI/CgZJbnNlcnQSGS5rYXNhbmUuSW5zZXJ0RGF0YVJlcXVlc3QaGi5rYXNhbmUuSW5zZXJ0RGF0YVJlc3BvbnNlEj8KBlVwc2VydBIZLmthc2FuZS5VcHNlcnREYXRhUmVxdWVzdBoaLmthc2FuZS5VcHNlcnREYXRhUmVzcG9uc2USPwoGUmVtb3ZlEhkua2FzYW5lLlJlbW92ZURhdGFSZXF1ZXN0Ghoua2FzYW5lLlJlbW92ZURhdGFSZXNwb25zZWIGcHJvdG8z", [file_common]);
 
 /**
- * `dictionary[value_ref]` が対応する値。同じ値を持つ空間IDをまとめる。
+ * dict_ref はストリーム全体で共有する辞書（SearchDataResponse.dictionary を受信順に
+ * 連結したもの）への添字。辞書が上限に達した後の新規値は inline_value になる。
  *
  * @generated from message kasane.DataGroup
  */
 export type DataGroup = Message<"kasane.DataGroup"> & {
   /**
-   * @generated from field: uint64 value_ref = 1;
+   * @generated from oneof kasane.DataGroup.value
    */
-  valueRef: bigint;
+  value: {
+    /**
+     * @generated from field: uint64 dict_ref = 1;
+     */
+    value: bigint;
+    case: "dictRef";
+  } | {
+    /**
+     * @generated from field: kasane.TypedValue inline_value = 2;
+     */
+    value: TypedValue;
+    case: "inlineValue";
+  } | { case: undefined; value?: undefined };
 
   /**
-   * @generated from field: repeated kasane.SpatialId spatial_ids = 2;
+   * @generated from field: repeated kasane.SpatialId spatial_ids = 3;
    */
   spatialIds: SpatialId[];
 };
@@ -39,8 +52,7 @@ export const DataGroupSchema: GenMessage<DataGroup> = /*@__PURE__*/
   messageDesc(file_data, 0);
 
 /**
- * `Search`/`QueryService.Execute` の共通レスポンス形状。
- * `spatial_ids` の中身がどの `oneof kind` になるかは、要求した `OutputFormat` で揃う。
+ * dictionary はメッセージをまたいで累積する辞書への追加分のみを運ぶ。
  *
  * @generated from message kasane.SearchDataResponse
  */
@@ -93,11 +105,6 @@ export type SearchDataRequest = Message<"kasane.SearchDataRequest"> & {
    * @generated from field: kasane.OutputFormat format = 5;
    */
   format: OutputFormat;
-
-  /**
-   * @generated from field: optional uint64 limit = 6;
-   */
-  limit?: bigint | undefined;
 };
 
 /**
