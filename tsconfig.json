@@ -4,11 +4,25 @@
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],
     "moduleResolution": "bundler",
-    "outDir": "dist",
-    "declaration": true,
     "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+
     "strict": true,
-    "skipLibCheck": true
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+
+    "noEmit": true
   },
-  "include": ["src"]
+  "include": ["src", "playground"]
 }

@@ -1,28 +1,5 @@
-/**
- * TypeScript wrapper for Kasane 4D space-time database engine.
- */
-export * from "./kasane";
+// 時空間IDの基礎的な型定義
 
-// 型もまとめてエクスポート
-export type {
-  // Response types
-  Output,
-  GetValueOutput,
-  SelectOutput,
-  OutputOptions,
-  CommandResult,
-  // Input types
-  DimensionRange,
-  SpaceTimeId,
-  Range,
-  Filter,
-  // Value types
-  ValueEntry,
-  KeyType,
-  // Filter types
-  FilterBoolean,
-  FilterInt,
-  FilterText,
-  //Point
-  Point,
-} from "./types/index.js";
+// Kasaneとの接続機能
+export * from "./client/index";
+export * from "./spatial-id/index";

@@ -1,7 +1,7 @@
 {
   "name": "kasane-client",
-  "version": "0.0.3",
-  "description": "TypeScript wrapper for Kasane 4-dimensional space-time database engine",
+  "version": "0.0.1",
+  "description": "kasane-client",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -21,22 +21,26 @@
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "npx tsx ./demo/sample.ts"
+    "dev": "bun run playground/index.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome lint --write .",
+    "fmt": "biome format --write .",
+    "check": "tsc --noEmit && biome check .",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "codegen": "protoc --plugin=protoc-gen-es=./node_modules/.bin/protoc-gen-es.exe --es_out=src/client/gen --es_opt=target=ts --proto_path=proto proto/auth.proto proto/common.proto proto/data.proto proto/database.proto proto/query.proto proto/system.proto proto/table.proto proto/users.proto"
   },
-  "keywords": [
-    "spatial",
-    "temporal",
-    "database",
-    "4d",
-    "space-time",
-    "wasm",
-    "webassembly",
-    "gis",
-    "spatial-data",
-    "time-series"
-  ],
+  "keywords": [],
   "devDependencies": {
-    "tsup": "^7.2.0",
-    "typescript": "^5.3.3"
+    "@biomejs/biome": "^2.5.12",
+    "@bufbuild/protoc-gen-es": "^2.14.1",
+    "tsup": "^8.5.1",
+    "typescript": "~7.0.2",
+    "vitest": "^5.0.0"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "^2.14.1",
+    "@connectrpc/connect": "^2.1.2",
+    "@connectrpc/connect-web": "^2.1.2"
   }
 }
