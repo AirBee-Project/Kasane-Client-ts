@@ -271,6 +271,28 @@ export function toProtoTableDataType(type: TableDataType): ProtoTableDataType {
   }
 }
 
+/**
+ * proto の `TableDataType` を JS の型名へ戻す。
+ */
+export function fromProtoTableDataType(
+  type: ProtoTableDataType,
+): TableDataType {
+  switch (type) {
+    case ProtoTableDataType.TEXT:
+      return "text";
+    case ProtoTableDataType.INT:
+      return "int";
+    case ProtoTableDataType.BOOLEAN:
+      return "boolean";
+    case ProtoTableDataType.ENUM:
+      return "enum";
+    case ProtoTableDataType.PRESENCE:
+      return "presence";
+    default:
+      throw new Error(`Unknown TableDataType: ${type}`);
+  }
+}
+
 export type MergePolicy =
   | "overwrite"
   | "keepExisting"

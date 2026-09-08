@@ -171,6 +171,7 @@ export type {
   TableDataType,
   ZoomLevelPolicy,
 } from "./convert";
+export { fromProtoTableDataType } from "./convert";
 export {
   isAlreadyExistsError,
   isKasaneError,
