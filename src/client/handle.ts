@@ -14,7 +14,7 @@ import type { TableConstraints } from "./gen/common_pb";
 import type { DatabaseInfo } from "./gen/database_pb";
 import type { TableInfo, TableSummary } from "./gen/table_pb";
 import type { KasaneClient } from "./index";
-import { type RequestOptions, toCallOptions } from "./requestOptions";
+import { type RpcCallOptions, toCallOptions } from "./rpcCallOptions";
 import { ResultStream } from "./stream";
 
 /**
@@ -80,7 +80,8 @@ export class TableHandle<T extends PrimitiveValue = PrimitiveValue> {
     options?: {
       policy?: ZoomLevelPolicy;
       format?: OutputFormat;
-    } & RequestOptions,
+      rpcCallOptions?: RpcCallOptions;
+    },
   ): ResultStream<T> {
     const rawStream = this.client.data.search(
       {
@@ -90,7 +91,7 @@ export class TableHandle<T extends PrimitiveValue = PrimitiveValue> {
         zoomLevelPolicy: toProtoZoomLevelPolicy(options?.policy),
         format: toProtoOutputFormat(options?.format),
       },
-      toCallOptions(options),
+      toCallOptions(options?.rpcCallOptions),
     );
     return new ResultStream<T>(rawStream);
   }
@@ -184,7 +185,7 @@ export class DatabaseHandle {
   }
 
   /** テーブル一覧を取得する。 */
-  public async listTables(options?: RequestOptions): Promise<TableSummary[]> {
+  public async listTables(options?: RpcCallOptions): Promise<TableSummary[]> {
     const res = await this.client.tableClient.list(
       { dbName: this.name },
       toCallOptions(options),

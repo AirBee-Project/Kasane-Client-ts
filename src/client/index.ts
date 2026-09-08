@@ -19,7 +19,7 @@ import { QueryService } from "./gen/query_pb";
 import { TableService } from "./gen/table_pb";
 import { DatabaseHandle } from "./handle";
 import { QueryBuilder } from "./query";
-import { type RequestOptions, toCallOptions } from "./requestOptions";
+import { type RpcCallOptions, toCallOptions } from "./rpcCallOptions";
 import { ResultStream } from "./stream";
 
 /**
@@ -122,7 +122,7 @@ export class KasaneClient {
    * データベース一覧を取得する。
    */
   public async listDatabases(
-    options?: RequestOptions,
+    options?: RpcCallOptions,
   ): Promise<DatabaseInfo[]> {
     const res = await this.databaseClient.list({}, toCallOptions(options));
     return res.databases;
@@ -148,7 +148,8 @@ export class KasaneClient {
     options?: {
       valueType?: TableDataType;
       format?: OutputFormat;
-    } & RequestOptions,
+      rpcCallOptions?: RpcCallOptions;
+    },
   ): ResultStream<T> {
     const queryNode = query instanceof QueryBuilder ? query.toProto() : query;
     const rawStream = this.queryClient.execute(
@@ -161,7 +162,7 @@ export class KasaneClient {
             : undefined,
         format: toProtoOutputFormat(options?.format),
       },
-      toCallOptions(options),
+      toCallOptions(options?.rpcCallOptions),
     );
     return new ResultStream<T>(rawStream);
   }
@@ -195,5 +196,5 @@ export {
   QueryBuilder,
   query,
 } from "./query";
-export type { RequestOptions } from "./requestOptions";
+export type { RpcCallOptions } from "./rpcCallOptions";
 export { type ResultItem, ResultStream } from "./stream";

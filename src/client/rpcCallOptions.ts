@@ -3,10 +3,10 @@ import type { CallOptions } from "@connectrpc/connect";
 /**
  * 呼び出し1回ごとの通信オプション。
  *
- * すべてのメソッドがこれを受け取れるようにしてあるため、呼び出し側は
- * 「途中でやめる」「ヘッダを足す」を統一した形で指定できる。
+ * search / query / listTables / listDatabases がこれを受け取れるため、
+ * 呼び出し側は「途中でやめる」「ヘッダを足す」を統一した形で指定できる。
  */
-export interface RequestOptions {
+export interface RpcCallOptions {
   /**
    * 中断用のシグナル。abort すると進行中の通信そのものが打ち切られる。
    * ストリーミング（{@link KasaneClient.query} / {@link TableHandle.search}）では、
@@ -21,11 +21,11 @@ export interface RequestOptions {
 }
 
 /**
- * {@link RequestOptions} を Connect の {@link CallOptions} へ変換する。
+ * {@link RpcCallOptions} を Connect の {@link CallOptions} へ変換する。
  * 何も指定が無ければ `undefined` を返し、余分なオブジェクトを作らない。
  */
 export function toCallOptions(
-  options?: RequestOptions,
+  options?: RpcCallOptions,
 ): CallOptions | undefined {
   if (!options) {
     return undefined;
