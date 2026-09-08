@@ -19,6 +19,7 @@ import { QueryService } from "./gen/query_pb";
 import { TableService } from "./gen/table_pb";
 import { DatabaseHandle } from "./handle";
 import { QueryBuilder } from "./query";
+import { type RequestOptions, toCallOptions } from "./requestOptions";
 import { ResultStream } from "./stream";
 
 /**
@@ -120,8 +121,10 @@ export class KasaneClient {
   /**
    * データベース一覧を取得する。
    */
-  public async listDatabases(): Promise<DatabaseInfo[]> {
-    const res = await this.databaseClient.list({});
+  public async listDatabases(
+    options?: RequestOptions,
+  ): Promise<DatabaseInfo[]> {
+    const res = await this.databaseClient.list({}, toCallOptions(options));
     return res.databases;
   }
 
@@ -137,7 +140,7 @@ export class KasaneClient {
    *
    * @param query 実行する空間クエリ
    * @param spatialIds 対象となる空間ID（単一または配列）
-   * @param options 追加オプション（出力値の型、フォーマット）
+   * @param options 追加オプション（出力値の型、フォーマット、中断シグナル等）
    */
   public query<T = unknown>(
     query: QueryBuilder | QueryNode,
@@ -145,18 +148,21 @@ export class KasaneClient {
     options?: {
       valueType?: TableDataType;
       format?: OutputFormat;
-    },
+    } & RequestOptions,
   ): ResultStream<T> {
     const queryNode = query instanceof QueryBuilder ? query.toProto() : query;
-    const rawStream = this.queryClient.execute({
-      query: queryNode,
-      spatialIds: normalizeSpatialIds(spatialIds),
-      valueType:
-        options?.valueType !== undefined
-          ? toProtoTableDataType(options.valueType)
-          : undefined,
-      format: toProtoOutputFormat(options?.format),
-    });
+    const rawStream = this.queryClient.execute(
+      {
+        query: queryNode,
+        spatialIds: normalizeSpatialIds(spatialIds),
+        valueType:
+          options?.valueType !== undefined
+            ? toProtoTableDataType(options.valueType)
+            : undefined,
+        format: toProtoOutputFormat(options?.format),
+      },
+      toCallOptions(options),
+    );
     return new ResultStream<T>(rawStream);
   }
 }
@@ -189,4 +195,5 @@ export {
   QueryBuilder,
   query,
 } from "./query";
+export type { RequestOptions } from "./requestOptions";
 export { type ResultItem, ResultStream } from "./stream";

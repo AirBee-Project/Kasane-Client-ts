@@ -14,6 +14,7 @@ import type { TableConstraints } from "./gen/common_pb";
 import type { DatabaseInfo } from "./gen/database_pb";
 import type { TableInfo, TableSummary } from "./gen/table_pb";
 import type { KasaneClient } from "./index";
+import { type RequestOptions, toCallOptions } from "./requestOptions";
 import { ResultStream } from "./stream";
 
 /**
@@ -79,15 +80,18 @@ export class TableHandle<T extends PrimitiveValue = PrimitiveValue> {
     options?: {
       policy?: ZoomLevelPolicy;
       format?: OutputFormat;
-    },
+    } & RequestOptions,
   ): ResultStream<T> {
-    const rawStream = this.client.data.search({
-      dbName: this.dbName,
-      tableName: this.tableName,
-      spatialIds: normalizeSpatialIds(ids),
-      zoomLevelPolicy: toProtoZoomLevelPolicy(options?.policy),
-      format: toProtoOutputFormat(options?.format),
-    });
+    const rawStream = this.client.data.search(
+      {
+        dbName: this.dbName,
+        tableName: this.tableName,
+        spatialIds: normalizeSpatialIds(ids),
+        zoomLevelPolicy: toProtoZoomLevelPolicy(options?.policy),
+        format: toProtoOutputFormat(options?.format),
+      },
+      toCallOptions(options),
+    );
     return new ResultStream<T>(rawStream);
   }
 
@@ -180,8 +184,11 @@ export class DatabaseHandle {
   }
 
   /** テーブル一覧を取得する。 */
-  public async listTables(): Promise<TableSummary[]> {
-    const res = await this.client.tableClient.list({ dbName: this.name });
+  public async listTables(options?: RequestOptions): Promise<TableSummary[]> {
+    const res = await this.client.tableClient.list(
+      { dbName: this.name },
+      toCallOptions(options),
+    );
     return res.tables;
   }
 
