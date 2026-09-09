@@ -9,8 +9,7 @@ import type { CallOptions } from "@connectrpc/connect";
 export interface RpcCallOptions {
   /**
    * 中断用のシグナル。abort すると進行中の通信そのものが打ち切られる。
-   * ストリーミング（{@link KasaneClient.query} / {@link TableHandle.search}）では、
-   * 受信を途中でやめても通信は止まらないため、中断にはこのシグナルが必要になる。
+   * ストリーミングでは受信を途中でやめても通信は止まらないため、中断にはこのシグナルが必要になる。
    */
   signal?: AbortSignal | undefined;
   /**
