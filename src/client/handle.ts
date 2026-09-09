@@ -185,10 +185,12 @@ export class DatabaseHandle {
   }
 
   /** テーブル一覧を取得する。 */
-  public async listTables(options?: RpcCallOptions): Promise<TableSummary[]> {
+  public async listTables(options?: {
+    rpcCallOptions?: RpcCallOptions;
+  }): Promise<TableSummary[]> {
     const res = await this.client.tableClient.list(
       { dbName: this.name },
-      toCallOptions(options),
+      toCallOptions(options?.rpcCallOptions),
     );
     return res.tables;
   }

@@ -121,10 +121,13 @@ export class KasaneClient {
   /**
    * データベース一覧を取得する。
    */
-  public async listDatabases(
-    options?: RpcCallOptions,
-  ): Promise<DatabaseInfo[]> {
-    const res = await this.databaseClient.list({}, toCallOptions(options));
+  public async listDatabases(options?: {
+    rpcCallOptions?: RpcCallOptions;
+  }): Promise<DatabaseInfo[]> {
+    const res = await this.databaseClient.list(
+      {},
+      toCallOptions(options?.rpcCallOptions),
+    );
     return res.databases;
   }
 
