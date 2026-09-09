@@ -318,7 +318,7 @@ export function fromProtoTableSummary(pb: ProtoTableSummary): TableSummary {
     maxZoomLevel: pb.maxZoomLevel,
     isTemporal: pb.isTemporal,
     constraints: pb.constraints,
-    xd: pb.description,
+    description: pb.description,
   };
 }
 
