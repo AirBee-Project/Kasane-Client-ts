@@ -169,6 +169,8 @@ export type {
   PrimitiveValue,
   SpatialId,
   TableDataType,
+  TableInfo,
+  TableSummary,
   ZoomLevelPolicy,
 } from "./convert";
 export {
@@ -179,7 +181,6 @@ export {
   isUnauthenticatedError,
 } from "./errors";
 export type { DatabaseInfo } from "./gen/database_pb";
-export type { TableInfo, TableSummary } from "./gen/table_pb";
 export {
   DatabaseHandle,
   TableHandle,
