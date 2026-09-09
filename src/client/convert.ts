@@ -16,6 +16,7 @@ import {
   RangeIdSchema,
   SingleIdSchema,
   SpatialIdSchema,
+  type TableConstraints,
   TypedValueSchema,
 } from "./gen/common_pb";
 import { OutputFormat as ProtoOutputFormat } from "./gen/data_pb";
@@ -25,6 +26,10 @@ import {
   MathOperator as ProtoMathOperator,
   MergePolicyKind as ProtoMergePolicyKind,
 } from "./gen/query_pb";
+import type {
+  TableInfo as ProtoTableInfo,
+  TableSummary as ProtoTableSummary,
+} from "./gen/table_pb";
 
 export type SpatialId = SingleId | RangeId | FlexId;
 
@@ -291,6 +296,52 @@ export function fromProtoTableDataType(
     default:
       throw new Error(`Unknown TableDataType: ${type}`);
   }
+}
+
+/**
+ * `listTables()` が返すテーブルの要約。
+ */
+export type TableSummary = {
+  name: string;
+  dataType: TableDataType;
+  maxZoomLevel: number;
+  isTemporal: boolean;
+  constraints?: TableConstraints | undefined;
+};
+
+/** proto の `TableSummary` を JS 側の形へ直す。 */
+export function fromProtoTableSummary(pb: ProtoTableSummary): TableSummary {
+  return {
+    name: pb.name,
+    dataType: fromProtoTableDataType(pb.dataType),
+    maxZoomLevel: pb.maxZoomLevel,
+    isTemporal: pb.isTemporal,
+    constraints: pb.constraints,
+  };
+}
+
+/** `info()` が返すテーブルの詳細。{@link TableSummary} に件数と説明が加わる。 */
+export type TableInfo = {
+  name: string;
+  dataType: TableDataType;
+  maxZoomLevel: number;
+  isTemporal: boolean;
+  count: bigint;
+  constraints?: TableConstraints | undefined;
+  description?: string | undefined;
+};
+
+/** proto の `TableInfo` を JS 側の形へ直す。 */
+export function fromProtoTableInfo(pb: ProtoTableInfo): TableInfo {
+  return {
+    name: pb.name,
+    dataType: fromProtoTableDataType(pb.dataType),
+    maxZoomLevel: pb.maxZoomLevel,
+    isTemporal: pb.isTemporal,
+    count: pb.count,
+    constraints: pb.constraints,
+    description: pb.description,
+  };
 }
 
 export type MergePolicy =

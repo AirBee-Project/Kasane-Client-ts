@@ -169,9 +169,10 @@ export type {
   PrimitiveValue,
   SpatialId,
   TableDataType,
+  TableInfo,
+  TableSummary,
   ZoomLevelPolicy,
 } from "./convert";
-export { fromProtoTableDataType } from "./convert";
 export {
   isAlreadyExistsError,
   isKasaneError,
@@ -180,7 +181,6 @@ export {
   isUnauthenticatedError,
 } from "./errors";
 export type { DatabaseInfo } from "./gen/database_pb";
-export type { TableInfo, TableSummary } from "./gen/table_pb";
 export {
   DatabaseHandle,
   TableHandle,

@@ -8,6 +8,8 @@ import {
   fromProtoSingleId,
   fromProtoSpatialId,
   fromProtoTableDataType,
+  fromProtoTableInfo,
+  fromProtoTableSummary,
   fromTypedValue,
   normalizeSpatialIds,
   toProtoFlexId,
@@ -217,5 +219,54 @@ describe("TableDataType の相互変換", () => {
     expect(() => fromProtoTableDataType(999 as TableDataType)).toThrow(
       "Unknown TableDataType: 999",
     );
+  });
+});
+
+describe("TableSummary / TableInfo の変換", () => {
+  it("dataType が文字列になり、他のフィールドはそのまま渡る", () => {
+    const summary = fromProtoTableSummary({
+      $typeName: "kasane.TableSummary",
+      name: "tran_risk",
+      dataType: TableDataType.INT,
+      maxZoomLevel: 16,
+      isTemporal: false,
+    });
+    expect(summary).toEqual({
+      name: "tran_risk",
+      dataType: "int",
+      maxZoomLevel: 16,
+      isTemporal: false,
+    });
+  });
+
+  it("constraints が無いテーブルでも変換できる", () => {
+    const summary = fromProtoTableSummary({
+      $typeName: "kasane.TableSummary",
+      name: "t",
+      dataType: TableDataType.PRESENCE,
+      maxZoomLevel: 10,
+      isTemporal: false,
+    });
+    expect(summary.constraints).toBeUndefined();
+  });
+
+  it("TableInfo は件数と説明も持つ", () => {
+    const info = fromProtoTableInfo({
+      $typeName: "kasane.TableInfo",
+      name: "bldg_risk",
+      dataType: TableDataType.BOOLEAN,
+      maxZoomLevel: 18,
+      isTemporal: true,
+      count: 42n,
+      description: "説明",
+    });
+    expect(info).toEqual({
+      name: "bldg_risk",
+      dataType: "boolean",
+      maxZoomLevel: 18,
+      isTemporal: true,
+      count: 42n,
+      description: "説明",
+    });
   });
 });
