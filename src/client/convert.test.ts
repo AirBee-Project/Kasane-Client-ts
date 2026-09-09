@@ -239,6 +239,18 @@ describe("TableSummary / TableInfo の変換", () => {
     });
   });
 
+  it("description を落とさずに渡す", () => {
+    const summary = fromProtoTableSummary({
+      $typeName: "kasane.TableSummary",
+      name: "tran_risk",
+      dataType: TableDataType.INT,
+      maxZoomLevel: 16,
+      isTemporal: false,
+      description: "道路のリスク値",
+    });
+    expect(summary.description).toBe("道路のリスク値");
+  });
+
   it("constraints が無いテーブルでも変換できる", () => {
     const summary = fromProtoTableSummary({
       $typeName: "kasane.TableSummary",

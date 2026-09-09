@@ -307,6 +307,7 @@ export type TableSummary = {
   maxZoomLevel: number;
   isTemporal: boolean;
   constraints?: TableConstraints | undefined;
+  description?: string | undefined;
 };
 
 /** proto の `TableSummary` を JS 側の形へ直す。 */
@@ -317,6 +318,7 @@ export function fromProtoTableSummary(pb: ProtoTableSummary): TableSummary {
     maxZoomLevel: pb.maxZoomLevel,
     isTemporal: pb.isTemporal,
     constraints: pb.constraints,
+    xd: pb.description,
   };
 }
 
