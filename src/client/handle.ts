@@ -1,9 +1,13 @@
 import {
+  fromProtoTableInfo,
+  fromProtoTableSummary,
   normalizeSpatialIds,
   type OutputFormat,
   type PrimitiveValue,
   type SpatialId,
   type TableDataType,
+  type TableInfo,
+  type TableSummary,
   toProtoOutputFormat,
   toProtoTableDataType,
   toProtoZoomLevelPolicy,
@@ -12,7 +16,6 @@ import {
 } from "./convert";
 import type { TableConstraints } from "./gen/common_pb";
 import type { DatabaseInfo } from "./gen/database_pb";
-import type { TableInfo, TableSummary } from "./gen/table_pb";
 import type { KasaneClient } from "./index";
 import { type RpcCallOptions, toCallOptions } from "./rpcCallOptions";
 import { ResultStream } from "./stream";
@@ -98,10 +101,11 @@ export class TableHandle<T extends PrimitiveValue = PrimitiveValue> {
 
   /** テーブルの詳細情報を取得する。 */
   public async info(): Promise<TableInfo> {
-    return await this.client.tableClient.get({
+    const res = await this.client.tableClient.get({
       dbName: this.dbName,
       tableName: this.tableName,
     });
+    return fromProtoTableInfo(res);
   }
 
   /** テーブルを削除する。 */
@@ -117,12 +121,13 @@ export class TableHandle<T extends PrimitiveValue = PrimitiveValue> {
     copyTableName: string,
     copyDbName?: string,
   ): Promise<TableSummary> {
-    return await this.client.tableClient.copy({
+    const res = await this.client.tableClient.copy({
       dbName: this.dbName,
       tableName: this.tableName,
       copyDbName,
       copyTableName,
     });
+    return fromProtoTableSummary(res);
   }
 }
 
@@ -192,7 +197,7 @@ export class DatabaseHandle {
       { dbName: this.name },
       toCallOptions(options?.rpcCallOptions),
     );
-    return res.tables;
+    return res.tables.map(fromProtoTableSummary);
   }
 
   /** テーブルを新規作成する。 */
@@ -207,7 +212,7 @@ export class DatabaseHandle {
       isTemporal?: boolean;
     },
   ): Promise<TableSummary> {
-    return await this.client.tableClient.create({
+    const res = await this.client.tableClient.create({
       dbName: this.name,
       name,
       dataType: toProtoTableDataType(dataType),
@@ -217,5 +222,6 @@ export class DatabaseHandle {
       valueIndex: options?.valueIndex ?? false,
       isTemporal: options?.isTemporal ?? false,
     });
+    return fromProtoTableSummary(res);
   }
 }

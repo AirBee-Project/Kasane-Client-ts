@@ -7,16 +7,20 @@ import {
   fromProtoRangeId,
   fromProtoSingleId,
   fromProtoSpatialId,
+  fromProtoTableDataType,
+  fromProtoTableInfo,
+  fromProtoTableSummary,
   fromTypedValue,
   normalizeSpatialIds,
   toProtoFlexId,
   toProtoRangeId,
   toProtoSingleId,
   toProtoSpatialId,
+  toProtoTableDataType,
   toProtoZoomLevelPolicy,
   toTypedValue,
 } from "./convert";
-import { ZoomLevelPolicy } from "./gen/common_pb";
+import { TableDataType, ZoomLevelPolicy } from "./gen/common_pb";
 
 describe("SingleId と Protobuf SingleId の相互変換", () => {
   it("全時間（時間指定なし）のIDを相互変換できる", () => {
@@ -184,5 +188,97 @@ describe("toProtoZoomLevelPolicy（ズームレベルポリシーの変換）", 
     expect(toProtoZoomLevelPolicy("error")).toBe(ZoomLevelPolicy.ERROR);
     expect(toProtoZoomLevelPolicy("ignore")).toBe(ZoomLevelPolicy.IGNORE);
     expect(toProtoZoomLevelPolicy("normalize")).toBe(ZoomLevelPolicy.NORMALIZE);
+  });
+});
+
+describe("TableDataType の相互変換", () => {
+  it("Enum値を文字列リテラルへ戻せる", () => {
+    expect(fromProtoTableDataType(TableDataType.TEXT)).toBe("text");
+    expect(fromProtoTableDataType(TableDataType.INT)).toBe("int");
+    expect(fromProtoTableDataType(TableDataType.BOOLEAN)).toBe("boolean");
+    expect(fromProtoTableDataType(TableDataType.ENUM)).toBe("enum");
+    expect(fromProtoTableDataType(TableDataType.PRESENCE)).toBe("presence");
+  });
+
+  it("往復させても元に戻る", () => {
+    for (const type of [
+      "text",
+      "int",
+      "boolean",
+      "enum",
+      "presence",
+    ] as const) {
+      expect(fromProtoTableDataType(toProtoTableDataType(type))).toBe(type);
+    }
+  });
+
+  it("UNSPECIFIED や未知の値は throw する", () => {
+    expect(() => fromProtoTableDataType(TableDataType.UNSPECIFIED)).toThrow(
+      "Unknown TableDataType: 0",
+    );
+    expect(() => fromProtoTableDataType(999 as TableDataType)).toThrow(
+      "Unknown TableDataType: 999",
+    );
+  });
+});
+
+describe("TableSummary / TableInfo の変換", () => {
+  it("dataType が文字列になり、他のフィールドはそのまま渡る", () => {
+    const summary = fromProtoTableSummary({
+      $typeName: "kasane.TableSummary",
+      name: "tran_risk",
+      dataType: TableDataType.INT,
+      maxZoomLevel: 16,
+      isTemporal: false,
+    });
+    expect(summary).toEqual({
+      name: "tran_risk",
+      dataType: "int",
+      maxZoomLevel: 16,
+      isTemporal: false,
+    });
+  });
+
+  it("description を落とさずに渡す", () => {
+    const summary = fromProtoTableSummary({
+      $typeName: "kasane.TableSummary",
+      name: "tran_risk",
+      dataType: TableDataType.INT,
+      maxZoomLevel: 16,
+      isTemporal: false,
+      description: "道路のリスク値",
+    });
+    expect(summary.description).toBe("道路のリスク値");
+  });
+
+  it("constraints が無いテーブルでも変換できる", () => {
+    const summary = fromProtoTableSummary({
+      $typeName: "kasane.TableSummary",
+      name: "t",
+      dataType: TableDataType.PRESENCE,
+      maxZoomLevel: 10,
+      isTemporal: false,
+    });
+    expect(summary.constraints).toBeUndefined();
+  });
+
+  it("TableInfo は件数と説明も持つ", () => {
+    const info = fromProtoTableInfo({
+      $typeName: "kasane.TableInfo",
+      name: "bldg_risk",
+      dataType: TableDataType.BOOLEAN,
+      maxZoomLevel: 18,
+      isTemporal: true,
+      count: 42n,
+      description: "説明",
+    });
+    expect(info).toEqual({
+      name: "bldg_risk",
+      dataType: "boolean",
+      maxZoomLevel: 18,
+      isTemporal: true,
+      count: 42n,
+      description: "説明",
+    });
   });
 });
