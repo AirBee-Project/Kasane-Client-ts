@@ -1,6 +1,6 @@
 import { type Client, createClient } from "@connectrpc/connect";
 import { createGrpcWebTransport } from "@connectrpc/connect-web";
-import { createAuthInterceptor } from "./auth";
+import { createAuthInterceptor } from "./auth.js";
 import {
   normalizeSpatialIds,
   type OutputFormat,
@@ -8,19 +8,19 @@ import {
   type TableDataType,
   toProtoOutputFormat,
   toProtoTableDataType,
-} from "./convert";
-import { FailoverTransport } from "./failoverTransport";
-import { AuthService } from "./gen/auth_pb";
-import { DataService } from "./gen/data_pb";
-import type { DatabaseInfo } from "./gen/database_pb";
-import { DatabaseService } from "./gen/database_pb";
-import type { QueryNode } from "./gen/query_pb";
-import { QueryService } from "./gen/query_pb";
-import { TableService } from "./gen/table_pb";
-import { DatabaseHandle } from "./handle";
-import { QueryBuilder } from "./query";
-import { type RpcCallOptions, toCallOptions } from "./rpcCallOptions";
-import { ResultStream } from "./stream";
+} from "./convert.js";
+import { FailoverTransport } from "./failoverTransport.js";
+import { AuthService } from "./gen/auth_pb.js";
+import { DataService } from "./gen/data_pb.js";
+import type { DatabaseInfo } from "./gen/database_pb.js";
+import { DatabaseService } from "./gen/database_pb.js";
+import type { QueryNode } from "./gen/query_pb.js";
+import { QueryService } from "./gen/query_pb.js";
+import { TableService } from "./gen/table_pb.js";
+import { DatabaseHandle } from "./handle.js";
+import { QueryBuilder } from "./query.js";
+import { type RpcCallOptions, toCallOptions } from "./rpcCallOptions.js";
+import { ResultStream } from "./stream.js";
 
 /**
  * Kasaneに接続するクライアント。
@@ -182,23 +182,23 @@ export type {
   TableInfo,
   TableSummary,
   ZoomLevelPolicy,
-} from "./convert";
+} from "./convert.js";
 export {
   isAlreadyExistsError,
   isKasaneError,
   isNotFoundError,
   isPermissionDeniedError,
   isUnauthenticatedError,
-} from "./errors";
-export type { DatabaseInfo } from "./gen/database_pb";
+} from "./errors.js";
+export type { DatabaseInfo } from "./gen/database_pb.js";
 export {
   DatabaseHandle,
   TableHandle,
-} from "./handle";
+} from "./handle.js";
 export {
   type FilterConditionInput,
   QueryBuilder,
   query,
-} from "./query";
-export type { RpcCallOptions } from "./rpcCallOptions";
-export { type ResultItem, ResultStream } from "./stream";
+} from "./query.js";
+export type { RpcCallOptions } from "./rpcCallOptions.js";
+export { type ResultItem, ResultStream } from "./stream.js";

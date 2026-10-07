@@ -1,6 +1,6 @@
-export { SpatialIdError, type SpatialIdErrorInfo } from "./error";
-export { FlexId } from "./flexId";
-export { Interval } from "./interval";
-export { RangeId } from "./rangeId";
-export { SingleId } from "./singleId";
-export { MAX_ZOOM, TIME_MAX_ZOOM } from "./utils";
+export { SpatialIdError, type SpatialIdErrorInfo } from "./error.js";
+export { FlexId } from "./flexId.js";
+export { Interval } from "./interval.js";
+export { RangeId } from "./rangeId.js";
+export { SingleId } from "./singleId.js";
+export { MAX_ZOOM, TIME_MAX_ZOOM } from "./utils.js";
