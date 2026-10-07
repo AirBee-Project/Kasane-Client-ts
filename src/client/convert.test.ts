@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { FlexId } from "../spatial-id/flexId";
-import { RangeId } from "../spatial-id/rangeId";
-import { SingleId } from "../spatial-id/singleId";
+import { FlexId } from "../spatial-id/flexId.js";
+import { RangeId } from "../spatial-id/rangeId.js";
+import { SingleId } from "../spatial-id/singleId.js";
 import {
   fromProtoFlexId,
   fromProtoRangeId,
@@ -19,8 +19,8 @@ import {
   toProtoTableDataType,
   toProtoZoomLevelPolicy,
   toTypedValue,
-} from "./convert";
-import { TableDataType, ZoomLevelPolicy } from "./gen/common_pb";
+} from "./convert.js";
+import { TableDataType, ZoomLevelPolicy } from "./gen/common_pb.js";
 
 describe("SingleId と Protobuf SingleId の相互変換", () => {
   it("全時間（時間指定なし）のIDを相互変換できる", () => {

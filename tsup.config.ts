@@ -6,5 +6,6 @@ export default defineConfig({
   dts: false,
   sourcemap: true,
   clean: true,
-  onSuccess: "bun x tsc --project tsconfig.build.json",
+  onSuccess:
+    "bun x tsc --project tsconfig.build.json && bun scripts/postbuild.js",
 });

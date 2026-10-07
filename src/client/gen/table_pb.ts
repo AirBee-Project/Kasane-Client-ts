@@ -4,8 +4,8 @@
 
 import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
-import type { TableConstraints, TableDataType } from "./common_pb";
-import { file_common } from "./common_pb";
+import type { TableConstraints, TableDataType } from "./common_pb.js";
+import { file_common } from "./common_pb.js";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
