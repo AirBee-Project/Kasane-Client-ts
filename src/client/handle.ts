@@ -34,7 +34,7 @@ export class TableHandle<T extends PrimitiveValue = PrimitiveValue> {
     this.tableName = tableName;
   }
 
-  /** テーブルにデータを挿入する。既存データと重複がある場合はエラー。 */
+  /** テーブルにデータを挿入する。既存データと重複がある場合は上書き。 */
   public async insert(
     value: T,
     ids: SpatialId | SpatialId[],
