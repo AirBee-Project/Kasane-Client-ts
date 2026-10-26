@@ -1,4 +1,10 @@
-export { SpatialIdError, type SpatialIdErrorInfo } from "./error.js";
+export { Coordinate, type CoordinateRange } from "./coordinate.js";
+export {
+  GeometryError,
+  type GeometryErrorInfo,
+  SpatialIdError,
+  type SpatialIdErrorInfo,
+} from "./error.js";
 export { FlexId } from "./flexId.js";
 export { Interval } from "./interval.js";
 export { RangeId } from "./rangeId.js";

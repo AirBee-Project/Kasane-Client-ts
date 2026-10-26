@@ -39,3 +39,29 @@ export class SpatialIdError extends Error {
     }
   }
 }
+
+export type GeometryErrorInfo =
+  | { kind: "LatitudeOutOfRange"; latitude: number }
+  | { kind: "LongitudeOutOfRange"; longitude: number }
+  | { kind: "AltitudeOutOfRange"; altitude: number };
+
+export class GeometryError extends Error {
+  public readonly info: GeometryErrorInfo;
+
+  constructor(info: GeometryErrorInfo) {
+    super(GeometryError.formatMessage(info));
+    this.name = "GeometryError";
+    this.info = info;
+  }
+
+  private static formatMessage(info: GeometryErrorInfo): string {
+    switch (info.kind) {
+      case "LatitudeOutOfRange":
+        return `Latitude '${info.latitude}' is out of range`;
+      case "LongitudeOutOfRange":
+        return `Longitude '${info.longitude}' is out of range`;
+      case "AltitudeOutOfRange":
+        return `Altitude '${info.altitude}' is out of range`;
+    }
+  }
+}
