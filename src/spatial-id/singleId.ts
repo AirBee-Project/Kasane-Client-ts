@@ -1,8 +1,8 @@
-import { SpatialIdError } from "./error";
-import type { FlexId } from "./flexId";
-import { Interval } from "./interval";
-import { RangeId } from "./rangeId";
-import { checkF, checkX, checkY, checkZoom, parseInteger } from "./utils";
+import { SpatialIdError } from "./error.js";
+import type { FlexId } from "./flexId.js";
+import { Interval } from "./interval.js";
+import { RangeId } from "./rangeId.js";
+import { checkF, checkX, checkY, checkZoom, parseInteger } from "./utils.js";
 
 export class SingleId {
   public readonly z: number;

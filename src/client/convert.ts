@@ -1,8 +1,8 @@
 import { create } from "@bufbuild/protobuf";
-import { FlexId } from "../spatial-id/flexId";
-import { RangeId } from "../spatial-id/rangeId";
-import { SingleId } from "../spatial-id/singleId";
-import { fMax, fMin, xyMax } from "../spatial-id/utils";
+import { FlexId } from "../spatial-id/flexId.js";
+import { RangeId } from "../spatial-id/rangeId.js";
+import { SingleId } from "../spatial-id/singleId.js";
+import { fMax, fMin, xyMax } from "../spatial-id/utils.js";
 import {
   FlexIdSchema,
   NullValue,
@@ -18,18 +18,18 @@ import {
   SpatialIdSchema,
   type TableConstraints,
   TypedValueSchema,
-} from "./gen/common_pb";
-import { OutputFormat as ProtoOutputFormat } from "./gen/data_pb";
+} from "./gen/common_pb.js";
+import { OutputFormat as ProtoOutputFormat } from "./gen/data_pb.js";
 import {
   Direction as ProtoDirection,
   FalloffPattern as ProtoFalloffPattern,
   MathOperator as ProtoMathOperator,
   MergePolicyKind as ProtoMergePolicyKind,
-} from "./gen/query_pb";
+} from "./gen/query_pb.js";
 import type {
   TableInfo as ProtoTableInfo,
   TableSummary as ProtoTableSummary,
-} from "./gen/table_pb";
+} from "./gen/table_pb.js";
 
 export type SpatialId = SingleId | RangeId | FlexId;
 

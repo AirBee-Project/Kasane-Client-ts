@@ -1,4 +1,4 @@
-import { FlexId, RangeId, SingleId } from "../src/index";
+import { FlexId, RangeId, SingleId } from "../src/index.js";
 
 // --- SingleId ---
 const single = SingleId.create(12, 0, 3638, 1614).withTime(1800, 809712);

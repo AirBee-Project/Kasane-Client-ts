@@ -1,5 +1,5 @@
-import { SpatialIdError } from "./error";
-import { TIME_MAX_ZOOM } from "./utils";
+import { SpatialIdError } from "./error.js";
+import { TIME_MAX_ZOOM } from "./utils.js";
 
 /**
  * 時間間隔 `{i}`を表現する型。よく使う値は定数として用意している。

@@ -13,12 +13,12 @@ import {
   toProtoZoomLevelPolicy,
   toTypedValue,
   type ZoomLevelPolicy,
-} from "./convert";
-import type { TableConstraints } from "./gen/common_pb";
-import type { DatabaseInfo } from "./gen/database_pb";
-import type { KasaneClient } from "./index";
-import { type RpcCallOptions, toCallOptions } from "./rpcCallOptions";
-import { ResultStream } from "./stream";
+} from "./convert.js";
+import type { TableConstraints } from "./gen/common_pb.js";
+import type { DatabaseInfo } from "./gen/database_pb.js";
+import type { KasaneClient } from "./index.js";
+import { type RpcCallOptions, toCallOptions } from "./rpcCallOptions.js";
+import { ResultStream } from "./stream.js";
 
 /**
  * 特定のテーブルに対する操作を行うスコープ付きハンドル。
