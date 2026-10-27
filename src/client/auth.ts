@@ -1,5 +1,5 @@
 import { Code, ConnectError, type Interceptor } from "@connectrpc/connect";
-import { AuthService } from "./gen/auth_pb";
+import { AuthService } from "./gen/auth_pb.js";
 
 export interface AuthInterceptorOptions {
   /** 現在保持しているトークンを返す関数。 */

@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { RangeId } from "../spatial-id/rangeId";
-import { SingleId } from "../spatial-id/singleId";
+import { RangeId } from "../spatial-id/rangeId.js";
+import { SingleId } from "../spatial-id/singleId.js";
 import {
   isAlreadyExistsError,
   isNotFoundError,
   isUnauthenticatedError,
-} from "./errors";
-import { KasaneClient } from "./index";
-import { type QueryBuilder, query } from "./query";
+} from "./errors.js";
+import { KasaneClient } from "./index.js";
+import { type QueryBuilder, query } from "./query.js";
 
 // LMDB 版の Kasane サーバー（root / password）を立てて、KASANE_URL に grpc-web の URL を渡したときだけ動く。
 const url = (globalThis as { process?: { env: { KASANE_URL?: string } } })

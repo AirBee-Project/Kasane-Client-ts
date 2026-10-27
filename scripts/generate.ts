@@ -75,7 +75,7 @@ run([
 const response = protocGenEs.run(
   create(CodeGeneratorRequestSchema, {
     fileToGenerate: protoFiles,
-    parameter: "target=ts",
+    parameter: "target=ts,import_extension=js",
     protoFile: fromBinary(FileDescriptorSetSchema, readFileSync(descriptorPath))
       .file,
   }),
@@ -127,8 +127,10 @@ if (has("wasm-opt")) {
   console.warn("wasm-opt is not found; skipped size optimization");
 }
 // Workers は .wasm の import を WebAssembly.Module として渡すので、型もそれに合わせる。
+// NodeNext は `.wasm` の型を `.d.wasm.ts` から読む（allowArbitraryExtensions）。
+rmSync(join(wasmDir, "kasane_bg.wasm.d.ts"));
 writeFileSync(
-  join(wasmDir, "kasane_bg.wasm.d.ts"),
+  join(wasmDir, "kasane_bg.d.wasm.ts"),
   "declare const module: WebAssembly.Module;\nexport default module;\n",
 );
 writeFileSync(

@@ -12,13 +12,13 @@ import {
   toProtoMergePolicy,
   toProtoTableDataType,
   toTypedValue,
-} from "./convert";
+} from "./convert.js";
 import {
   FilterConditionSchema,
   MathOperandSchema,
   type QueryNode,
   QueryNodeSchema,
-} from "./gen/query_pb";
+} from "./gen/query_pb.js";
 
 export type FilterConditionInput =
   | { equals: PrimitiveValue }

@@ -1,2 +1,2 @@
-export * from "./client/index";
-export * from "./spatial-id/index";
+export * from "./client/index.js";
+export * from "./spatial-id/index.js";

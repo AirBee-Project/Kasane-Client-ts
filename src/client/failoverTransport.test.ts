@@ -6,8 +6,8 @@ import {
 } from "@connectrpc/connect";
 import { createGrpcWebTransport } from "@connectrpc/connect-web";
 import { describe, expect, it } from "vitest";
-import { FailoverTransport } from "./failoverTransport";
-import { DatabaseService } from "./gen/database_pb";
+import { FailoverTransport } from "./failoverTransport.js";
+import { DatabaseService } from "./gen/database_pb.js";
 
 const healthy = createRouterTransport(({ service }) => {
   service(DatabaseService, { list: () => ({ databases: [] }) });

@@ -1,5 +1,5 @@
 import init, { Kasane } from "./gen/kasane.js";
-import wasm from "./gen/kasane_bg.base64";
+import wasm from "./gen/kasane_bg.base64.js";
 
 let loading: Promise<unknown> | undefined;
 

@@ -5,9 +5,9 @@ import {
   createRouterTransport,
 } from "@connectrpc/connect";
 import { describe, expect, it } from "vitest";
-import { createAuthInterceptor } from "./auth";
-import { AuthService } from "./gen/auth_pb";
-import { DatabaseService } from "./gen/database_pb";
+import { createAuthInterceptor } from "./auth.js";
+import { AuthService } from "./gen/auth_pb.js";
+import { DatabaseService } from "./gen/database_pb.js";
 
 describe("createAuthInterceptor", () => {
   it("ログインが Unauthenticated のときは再認証せずに失敗する", async () => {

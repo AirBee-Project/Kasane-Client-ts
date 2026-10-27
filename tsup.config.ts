@@ -22,5 +22,6 @@ export default defineConfig({
       "dist/wasm/gen/kasane_bg.wasm",
     );
     execSync("bun x tsc --project tsconfig.build.json", { stdio: "inherit" });
+    execSync("bun scripts/postbuild.js", { stdio: "inherit" });
   },
 });

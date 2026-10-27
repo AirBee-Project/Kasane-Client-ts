@@ -1,7 +1,7 @@
-import { SpatialIdError } from "./error";
-import { FlexId } from "./flexId";
-import { Interval } from "./interval";
-import { SingleId } from "./singleId";
+import { SpatialIdError } from "./error.js";
+import { FlexId } from "./flexId.js";
+import { Interval } from "./interval.js";
+import { SingleId } from "./singleId.js";
 import {
   checkF,
   checkX,
@@ -16,7 +16,7 @@ import {
   type RangeInput,
   TIME_MAX_ZOOM,
   xyMax,
-} from "./utils";
+} from "./utils.js";
 
 export class RangeId {
   public readonly z: number;
