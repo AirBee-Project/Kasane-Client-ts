@@ -1,4 +1,5 @@
 import { Code, ConnectError, type Interceptor } from "@connectrpc/connect";
+import { AuthService } from "./gen/auth_pb";
 
 export interface AuthInterceptorOptions {
   /** 現在保持しているトークンを返す関数。 */
@@ -31,9 +32,11 @@ export function createAuthInterceptor(
     try {
       return await next(req);
     } catch (err) {
+      // 再認証そのものが Unauthenticated になると、再認証を呼び続けて返らなくなる。
       if (
         err instanceof ConnectError &&
         err.code === Code.Unauthenticated &&
+        req.service.typeName !== AuthService.typeName &&
         opts.refreshToken
       ) {
         const newToken = await opts.refreshToken();
