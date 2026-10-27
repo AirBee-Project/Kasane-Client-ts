@@ -4,6 +4,8 @@
     "module": "NodeNext",
     "lib": ["ESNext", "DOM"],
     "moduleResolution": "NodeNext",
+    "customConditions": ["kasane-source"],
+    "allowArbitraryExtensions": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,

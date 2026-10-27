@@ -6,61 +6,17 @@ import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegen
 import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
 import type { TableConstraints, TableDataType } from "./common_pb.js";
 import { file_common } from "./common_pb.js";
+import type { EmptySchema } from "@bufbuild/protobuf/wkt";
+import { file_google_protobuf_empty } from "@bufbuild/protobuf/wkt";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file table.proto.
  */
 export const file_table: GenFile = /*@__PURE__*/
-  fileDesc("Cgt0YWJsZS5wcm90bxIGa2FzYW5lIuEBCgxUYWJsZVN1bW1hcnkSDAoEbmFtZRgBIAEoCRIoCglkYXRhX3R5cGUYAiABKA4yFS5rYXNhbmUuVGFibGVEYXRhVHlwZRIWCg5tYXhfem9vbV9sZXZlbBgDIAEoDRIyCgtjb25zdHJhaW50cxgEIAEoCzIYLmthc2FuZS5UYWJsZUNvbnN0cmFpbnRzSACIAQESGAoLZGVzY3JpcHRpb24YBSABKAlIAYgBARITCgtpc190ZW1wb3JhbBgGIAEoCEIOCgxfY29uc3RyYWludHNCDgoMX2Rlc2NyaXB0aW9uIu0BCglUYWJsZUluZm8SDAoEbmFtZRgBIAEoCRIoCglkYXRhX3R5cGUYAiABKA4yFS5rYXNhbmUuVGFibGVEYXRhVHlwZRIWCg5tYXhfem9vbV9sZXZlbBgDIAEoDRINCgVjb3VudBgEIAEoBBIyCgtjb25zdHJhaW50cxgFIAEoCzIYLmthc2FuZS5UYWJsZUNvbnN0cmFpbnRzSACIAQESGAoLZGVzY3JpcHRpb24YBiABKAlIAYgBARITCgtpc190ZW1wb3JhbBgHIAEoCEIOCgxfY29uc3RyYWludHNCDgoMX2Rlc2NyaXB0aW9uIo0CChJDcmVhdGVUYWJsZVJlcXVlc3QSDwoHZGJfbmFtZRgBIAEoCRIMCgRuYW1lGAIgASgJEigKCWRhdGFfdHlwZRgDIAEoDjIVLmthc2FuZS5UYWJsZURhdGFUeXBlEhYKDm1heF96b29tX2xldmVsGAQgASgNEjIKC2NvbnN0cmFpbnRzGAUgASgLMhgua2FzYW5lLlRhYmxlQ29uc3RyYWludHNIAIgBARIYCgtkZXNjcmlwdGlvbhgGIAEoCUgBiAEBEhMKC3ZhbHVlX2luZGV4GAcgASgIEhMKC2lzX3RlbXBvcmFsGAggASgIQg4KDF9jb25zdHJhaW50c0IOCgxfZGVzY3JpcHRpb24iNgoPR2V0VGFibGVSZXF1ZXN0Eg8KB2RiX25hbWUYASABKAkSEgoKdGFibGVfbmFtZRgCIAEoCSIkChFMaXN0VGFibGVzUmVxdWVzdBIPCgdkYl9uYW1lGAEgASgJIjoKEkxpc3RUYWJsZXNSZXNwb25zZRIkCgZ0YWJsZXMYASADKAsyFC5rYXNhbmUuVGFibGVTdW1tYXJ5IsAEChZVcGRhdGVUYWJsZUNvbnN0cmFpbnRzEjkKBHRleHQYASABKAsyKS5rYXNhbmUuVXBkYXRlVGFibGVDb25zdHJhaW50cy5UZXh0VXBkYXRlSAASNwoDaW50GAIgASgLMigua2FzYW5lLlVwZGF0ZVRhYmxlQ29uc3RyYWludHMuSW50VXBkYXRlSAASQAoLZW51bV91cGRhdGUYAyABKAsyKS5rYXNhbmUuVXBkYXRlVGFibGVDb25zdHJhaW50cy5FbnVtVXBkYXRlSAAaogEKClRleHRVcGRhdGUSGgoQY2xlYXJfbWluX2xlbmd0aBgBIAEoCEgAEhgKDnNldF9taW5fbGVuZ3RoGAIgASgESAASGgoQY2xlYXJfbWF4X2xlbmd0aBgDIAEoCEgBEhgKDnNldF9tYXhfbGVuZ3RoGAQgASgESAFCEwoRbWluX2xlbmd0aF91cGRhdGVCEwoRbWF4X2xlbmd0aF91cGRhdGUadwoJSW50VXBkYXRlEhMKCWNsZWFyX21pbhgBIAEoCEgAEhEKB3NldF9taW4YAiABKANIABITCgljbGVhcl9tYXgYAyABKAhIARIRCgdzZXRfbWF4GAQgASgDSAFCDAoKbWluX3VwZGF0ZUIMCgptYXhfdXBkYXRlGkoKCkVudW1VcGRhdGUSDwoHY2hvaWNlcxgBIAMoCRITCgthZGRfY2hvaWNlcxgCIAMoCRIWCg5yZW1vdmVfY2hvaWNlcxgDIAMoCUIGCgRraW5kIsMCChJVcGRhdGVUYWJsZVJlcXVlc3QSDwoHZGJfbmFtZRgBIAEoCRISCgp0YWJsZV9uYW1lGAIgASgJEhUKCG5ld19uYW1lGAMgASgJSAKIAQESGAoLaXNfdGVtcG9yYWwYBCABKAhIA4gBARIbChFjbGVhcl9kZXNjcmlwdGlvbhgFIAEoCEgAEhkKD3NldF9kZXNjcmlwdGlvbhgGIAEoCUgAEhsKEWNsZWFyX2NvbnN0cmFpbnRzGAcgASgISAESOQoPc2V0X2NvbnN0cmFpbnRzGAggASgLMh4ua2FzYW5lLlVwZGF0ZVRhYmxlQ29uc3RyYWludHNIAUIUChJkZXNjcmlwdGlvbl91cGRhdGVCFAoSY29uc3RyYWludHNfdXBkYXRlQgsKCV9uZXdfbmFtZUIOCgxfaXNfdGVtcG9yYWwiFQoTVXBkYXRlVGFibGVSZXNwb25zZSI5ChJEZWxldGVUYWJsZVJlcXVlc3QSDwoHZGJfbmFtZRgBIAEoCRISCgp0YWJsZV9uYW1lGAIgASgJIhUKE0RlbGV0ZVRhYmxlUmVzcG9uc2UifAoQQ29weVRhYmxlUmVxdWVzdBIPCgdkYl9uYW1lGAEgASgJEhIKCnRhYmxlX25hbWUYAiABKAkSGQoMY29weV9kYl9uYW1lGAMgASgJSACIAQESFwoPY29weV90YWJsZV9uYW1lGAQgASgJQg8KDV9jb3B5X2RiX25hbWUy+gIKDFRhYmxlU2VydmljZRI6CgZDcmVhdGUSGi5rYXNhbmUuQ3JlYXRlVGFibGVSZXF1ZXN0GhQua2FzYW5lLlRhYmxlU3VtbWFyeRIxCgNHZXQSFy5rYXNhbmUuR2V0VGFibGVSZXF1ZXN0GhEua2FzYW5lLlRhYmxlSW5mbxI9CgRMaXN0Ehkua2FzYW5lLkxpc3RUYWJsZXNSZXF1ZXN0Ghoua2FzYW5lLkxpc3RUYWJsZXNSZXNwb25zZRJBCgZVcGRhdGUSGi5rYXNhbmUuVXBkYXRlVGFibGVSZXF1ZXN0Ghsua2FzYW5lLlVwZGF0ZVRhYmxlUmVzcG9uc2USQQoGRGVsZXRlEhoua2FzYW5lLkRlbGV0ZVRhYmxlUmVxdWVzdBobLmthc2FuZS5EZWxldGVUYWJsZVJlc3BvbnNlEjYKBENvcHkSGC5rYXNhbmUuQ29weVRhYmxlUmVxdWVzdBoULmthc2FuZS5UYWJsZVN1bW1hcnliBnByb3RvMw", [file_common]);
+  fileDesc("Cgt0YWJsZS5wcm90bxIGa2FzYW5lIu0BCglUYWJsZUluZm8SDAoEbmFtZRgBIAEoCRIoCglkYXRhX3R5cGUYAiABKA4yFS5rYXNhbmUuVGFibGVEYXRhVHlwZRIWCg5tYXhfem9vbV9sZXZlbBgDIAEoDRINCgVjb3VudBgEIAEoBBIyCgtjb25zdHJhaW50cxgFIAEoCzIYLmthc2FuZS5UYWJsZUNvbnN0cmFpbnRzSACIAQESGAoLZGVzY3JpcHRpb24YBiABKAlIAYgBARITCgtpc190ZW1wb3JhbBgHIAEoCEIOCgxfY29uc3RyYWludHNCDgoMX2Rlc2NyaXB0aW9uIvgBChJDcmVhdGVUYWJsZVJlcXVlc3QSDwoHZGJfbmFtZRgBIAEoCRIMCgRuYW1lGAIgASgJEigKCWRhdGFfdHlwZRgDIAEoDjIVLmthc2FuZS5UYWJsZURhdGFUeXBlEhYKDm1heF96b29tX2xldmVsGAQgASgNEjIKC2NvbnN0cmFpbnRzGAUgASgLMhgua2FzYW5lLlRhYmxlQ29uc3RyYWludHNIAIgBARIYCgtkZXNjcmlwdGlvbhgGIAEoCUgBiAEBEhMKC2lzX3RlbXBvcmFsGAggASgIQg4KDF9jb25zdHJhaW50c0IOCgxfZGVzY3JpcHRpb24iNgoPR2V0VGFibGVSZXF1ZXN0Eg8KB2RiX25hbWUYASABKAkSEgoKdGFibGVfbmFtZRgCIAEoCSIkChFMaXN0VGFibGVzUmVxdWVzdBIPCgdkYl9uYW1lGAEgASgJIjcKEkxpc3RUYWJsZXNSZXNwb25zZRIhCgZ0YWJsZXMYASADKAsyES5rYXNhbmUuVGFibGVJbmZvIr0CChJVcGRhdGVUYWJsZVJlcXVlc3QSDwoHZGJfbmFtZRgBIAEoCRISCgp0YWJsZV9uYW1lGAIgASgJEhUKCG5ld19uYW1lGAMgASgJSAKIAQESGAoLaXNfdGVtcG9yYWwYBCABKAhIA4gBARIbChFjbGVhcl9kZXNjcmlwdGlvbhgFIAEoCEgAEhkKD3NldF9kZXNjcmlwdGlvbhgGIAEoCUgAEhsKEWNsZWFyX2NvbnN0cmFpbnRzGAcgASgISAESMwoPc2V0X2NvbnN0cmFpbnRzGAggASgLMhgua2FzYW5lLlRhYmxlQ29uc3RyYWludHNIAUIUChJkZXNjcmlwdGlvbl91cGRhdGVCFAoSY29uc3RyYWludHNfdXBkYXRlQgsKCV9uZXdfbmFtZUIOCgxfaXNfdGVtcG9yYWwiOQoSRGVsZXRlVGFibGVSZXF1ZXN0Eg8KB2RiX25hbWUYASABKAkSEgoKdGFibGVfbmFtZRgCIAEoCTKwAgoMVGFibGVTZXJ2aWNlEjcKBkNyZWF0ZRIaLmthc2FuZS5DcmVhdGVUYWJsZVJlcXVlc3QaES5rYXNhbmUuVGFibGVJbmZvEjEKA0dldBIXLmthc2FuZS5HZXRUYWJsZVJlcXVlc3QaES5rYXNhbmUuVGFibGVJbmZvEj0KBExpc3QSGS5rYXNhbmUuTGlzdFRhYmxlc1JlcXVlc3QaGi5rYXNhbmUuTGlzdFRhYmxlc1Jlc3BvbnNlEjcKBlVwZGF0ZRIaLmthc2FuZS5VcGRhdGVUYWJsZVJlcXVlc3QaES5rYXNhbmUuVGFibGVJbmZvEjwKBkRlbGV0ZRIaLmthc2FuZS5EZWxldGVUYWJsZVJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHliBnByb3RvMw", [file_common, file_google_protobuf_empty]);
 
 /**
- * 一覧で返す軽量ビュー。件数は含まない。
- *
- * @generated from message kasane.TableSummary
- */
-export type TableSummary = Message<"kasane.TableSummary"> & {
-  /**
-   * @generated from field: string name = 1;
-   */
-  name: string;
-
-  /**
-   * @generated from field: kasane.TableDataType data_type = 2;
-   */
-  dataType: TableDataType;
-
-  /**
-   * @generated from field: uint32 max_zoom_level = 3;
-   */
-  maxZoomLevel: number;
-
-  /**
-   * @generated from field: optional kasane.TableConstraints constraints = 4;
-   */
-  constraints?: TableConstraints | undefined;
-
-  /**
-   * @generated from field: optional string description = 5;
-   */
-  description?: string | undefined;
-
-  /**
-   * @generated from field: bool is_temporal = 6;
-   */
-  isTemporal: boolean;
-};
-
-/**
- * Describes the message kasane.TableSummary.
- * Use `create(TableSummarySchema)` to create a new message.
- */
-export const TableSummarySchema: GenMessage<TableSummary> = /*@__PURE__*/
-  messageDesc(file_table, 0);
-
-/**
- * 単一テーブルの詳細情報。保持する空間ID(FlexId)の総数 `count` を含む。
- *
  * @generated from message kasane.TableInfo
  */
 export type TableInfo = Message<"kasane.TableInfo"> & {
@@ -80,6 +36,8 @@ export type TableInfo = Message<"kasane.TableInfo"> & {
   maxZoomLevel: number;
 
   /**
+   * 保持する空間ID(FlexId)の総数。
+   *
    * @generated from field: uint64 count = 4;
    */
   count: bigint;
@@ -105,7 +63,7 @@ export type TableInfo = Message<"kasane.TableInfo"> & {
  * Use `create(TableInfoSchema)` to create a new message.
  */
 export const TableInfoSchema: GenMessage<TableInfo> = /*@__PURE__*/
-  messageDesc(file_table, 1);
+  messageDesc(file_table, 0);
 
 /**
  * **必要な権限**: `database` / `manage`
@@ -146,13 +104,6 @@ export type CreateTableRequest = Message<"kasane.CreateTableRequest"> & {
   description?: string | undefined;
 
   /**
-   * 値インデックス（値による絞り込み用の二次索引）を維持するかどうか。作成後は変更不可。
-   *
-   * @generated from field: bool value_index = 7;
-   */
-  valueIndex: boolean;
-
-  /**
    * テーブルが時間IDを扱うかどうか。
    *
    * @generated from field: bool is_temporal = 8;
@@ -165,7 +116,7 @@ export type CreateTableRequest = Message<"kasane.CreateTableRequest"> & {
  * Use `create(CreateTableRequestSchema)` to create a new message.
  */
 export const CreateTableRequestSchema: GenMessage<CreateTableRequest> = /*@__PURE__*/
-  messageDesc(file_table, 2);
+  messageDesc(file_table, 1);
 
 /**
  * **必要な権限**: `table` / `read`（またはデータベーススコープの `read`）
@@ -189,7 +140,7 @@ export type GetTableRequest = Message<"kasane.GetTableRequest"> & {
  * Use `create(GetTableRequestSchema)` to create a new message.
  */
 export const GetTableRequestSchema: GenMessage<GetTableRequest> = /*@__PURE__*/
-  messageDesc(file_table, 3);
+  messageDesc(file_table, 2);
 
 /**
  * **必要な権限**: `database` / `read`
@@ -208,16 +159,16 @@ export type ListTablesRequest = Message<"kasane.ListTablesRequest"> & {
  * Use `create(ListTablesRequestSchema)` to create a new message.
  */
 export const ListTablesRequestSchema: GenMessage<ListTablesRequest> = /*@__PURE__*/
-  messageDesc(file_table, 4);
+  messageDesc(file_table, 3);
 
 /**
  * @generated from message kasane.ListTablesResponse
  */
 export type ListTablesResponse = Message<"kasane.ListTablesResponse"> & {
   /**
-   * @generated from field: repeated kasane.TableSummary tables = 1;
+   * @generated from field: repeated kasane.TableInfo tables = 1;
    */
-  tables: TableSummary[];
+  tables: TableInfo[];
 };
 
 /**
@@ -225,169 +176,7 @@ export type ListTablesResponse = Message<"kasane.ListTablesResponse"> & {
  * Use `create(ListTablesResponseSchema)` to create a new message.
  */
 export const ListTablesResponseSchema: GenMessage<ListTablesResponse> = /*@__PURE__*/
-  messageDesc(file_table, 5);
-
-/**
- * 制約の更新パッチ。
- *
- * @generated from message kasane.UpdateTableConstraints
- */
-export type UpdateTableConstraints = Message<"kasane.UpdateTableConstraints"> & {
-  /**
-   * @generated from oneof kasane.UpdateTableConstraints.kind
-   */
-  kind: {
-    /**
-     * @generated from field: kasane.UpdateTableConstraints.TextUpdate text = 1;
-     */
-    value: UpdateTableConstraints_TextUpdate;
-    case: "text";
-  } | {
-    /**
-     * @generated from field: kasane.UpdateTableConstraints.IntUpdate int = 2;
-     */
-    value: UpdateTableConstraints_IntUpdate;
-    case: "int";
-  } | {
-    /**
-     * @generated from field: kasane.UpdateTableConstraints.EnumUpdate enum_update = 3;
-     */
-    value: UpdateTableConstraints_EnumUpdate;
-    case: "enumUpdate";
-  } | { case: undefined; value?: undefined };
-};
-
-/**
- * Describes the message kasane.UpdateTableConstraints.
- * Use `create(UpdateTableConstraintsSchema)` to create a new message.
- */
-export const UpdateTableConstraintsSchema: GenMessage<UpdateTableConstraints> = /*@__PURE__*/
-  messageDesc(file_table, 6);
-
-/**
- * @generated from message kasane.UpdateTableConstraints.TextUpdate
- */
-export type UpdateTableConstraints_TextUpdate = Message<"kasane.UpdateTableConstraints.TextUpdate"> & {
-  /**
-   * @generated from oneof kasane.UpdateTableConstraints.TextUpdate.min_length_update
-   */
-  minLengthUpdate: {
-    /**
-     * @generated from field: bool clear_min_length = 1;
-     */
-    value: boolean;
-    case: "clearMinLength";
-  } | {
-    /**
-     * @generated from field: uint64 set_min_length = 2;
-     */
-    value: bigint;
-    case: "setMinLength";
-  } | { case: undefined; value?: undefined };
-
-  /**
-   * @generated from oneof kasane.UpdateTableConstraints.TextUpdate.max_length_update
-   */
-  maxLengthUpdate: {
-    /**
-     * @generated from field: bool clear_max_length = 3;
-     */
-    value: boolean;
-    case: "clearMaxLength";
-  } | {
-    /**
-     * @generated from field: uint64 set_max_length = 4;
-     */
-    value: bigint;
-    case: "setMaxLength";
-  } | { case: undefined; value?: undefined };
-};
-
-/**
- * Describes the message kasane.UpdateTableConstraints.TextUpdate.
- * Use `create(UpdateTableConstraints_TextUpdateSchema)` to create a new message.
- */
-export const UpdateTableConstraints_TextUpdateSchema: GenMessage<UpdateTableConstraints_TextUpdate> = /*@__PURE__*/
-  messageDesc(file_table, 6, 0);
-
-/**
- * @generated from message kasane.UpdateTableConstraints.IntUpdate
- */
-export type UpdateTableConstraints_IntUpdate = Message<"kasane.UpdateTableConstraints.IntUpdate"> & {
-  /**
-   * @generated from oneof kasane.UpdateTableConstraints.IntUpdate.min_update
-   */
-  minUpdate: {
-    /**
-     * @generated from field: bool clear_min = 1;
-     */
-    value: boolean;
-    case: "clearMin";
-  } | {
-    /**
-     * @generated from field: int64 set_min = 2;
-     */
-    value: bigint;
-    case: "setMin";
-  } | { case: undefined; value?: undefined };
-
-  /**
-   * @generated from oneof kasane.UpdateTableConstraints.IntUpdate.max_update
-   */
-  maxUpdate: {
-    /**
-     * @generated from field: bool clear_max = 3;
-     */
-    value: boolean;
-    case: "clearMax";
-  } | {
-    /**
-     * @generated from field: int64 set_max = 4;
-     */
-    value: bigint;
-    case: "setMax";
-  } | { case: undefined; value?: undefined };
-};
-
-/**
- * Describes the message kasane.UpdateTableConstraints.IntUpdate.
- * Use `create(UpdateTableConstraints_IntUpdateSchema)` to create a new message.
- */
-export const UpdateTableConstraints_IntUpdateSchema: GenMessage<UpdateTableConstraints_IntUpdate> = /*@__PURE__*/
-  messageDesc(file_table, 6, 1);
-
-/**
- * @generated from message kasane.UpdateTableConstraints.EnumUpdate
- */
-export type UpdateTableConstraints_EnumUpdate = Message<"kasane.UpdateTableConstraints.EnumUpdate"> & {
-  /**
-   * 選択肢を丸ごと置き換える。
-   *
-   * @generated from field: repeated string choices = 1;
-   */
-  choices: string[];
-
-  /**
-   * 既存の選択肢に追加する。
-   *
-   * @generated from field: repeated string add_choices = 2;
-   */
-  addChoices: string[];
-
-  /**
-   * 既存の選択肢から取り除く。
-   *
-   * @generated from field: repeated string remove_choices = 3;
-   */
-  removeChoices: string[];
-};
-
-/**
- * Describes the message kasane.UpdateTableConstraints.EnumUpdate.
- * Use `create(UpdateTableConstraints_EnumUpdateSchema)` to create a new message.
- */
-export const UpdateTableConstraints_EnumUpdateSchema: GenMessage<UpdateTableConstraints_EnumUpdate> = /*@__PURE__*/
-  messageDesc(file_table, 6, 2);
+  messageDesc(file_table, 4);
 
 /**
  * **必要な権限**: `table` / `manage`
@@ -445,9 +234,11 @@ export type UpdateTableRequest = Message<"kasane.UpdateTableRequest"> & {
     case: "clearConstraints";
   } | {
     /**
-     * @generated from field: kasane.UpdateTableConstraints set_constraints = 8;
+     * 制約を丸ごと置き換える。
+     *
+     * @generated from field: kasane.TableConstraints set_constraints = 8;
      */
-    value: UpdateTableConstraints;
+    value: TableConstraints;
     case: "setConstraints";
   } | { case: undefined; value?: undefined };
 };
@@ -457,20 +248,7 @@ export type UpdateTableRequest = Message<"kasane.UpdateTableRequest"> & {
  * Use `create(UpdateTableRequestSchema)` to create a new message.
  */
 export const UpdateTableRequestSchema: GenMessage<UpdateTableRequest> = /*@__PURE__*/
-  messageDesc(file_table, 7);
-
-/**
- * @generated from message kasane.UpdateTableResponse
- */
-export type UpdateTableResponse = Message<"kasane.UpdateTableResponse"> & {
-};
-
-/**
- * Describes the message kasane.UpdateTableResponse.
- * Use `create(UpdateTableResponseSchema)` to create a new message.
- */
-export const UpdateTableResponseSchema: GenMessage<UpdateTableResponse> = /*@__PURE__*/
-  messageDesc(file_table, 8);
+  messageDesc(file_table, 5);
 
 /**
  * **必要な権限**: `table` / `manage`
@@ -494,54 +272,7 @@ export type DeleteTableRequest = Message<"kasane.DeleteTableRequest"> & {
  * Use `create(DeleteTableRequestSchema)` to create a new message.
  */
 export const DeleteTableRequestSchema: GenMessage<DeleteTableRequest> = /*@__PURE__*/
-  messageDesc(file_table, 9);
-
-/**
- * @generated from message kasane.DeleteTableResponse
- */
-export type DeleteTableResponse = Message<"kasane.DeleteTableResponse"> & {
-};
-
-/**
- * Describes the message kasane.DeleteTableResponse.
- * Use `create(DeleteTableResponseSchema)` to create a new message.
- */
-export const DeleteTableResponseSchema: GenMessage<DeleteTableResponse> = /*@__PURE__*/
-  messageDesc(file_table, 10);
-
-/**
- * **必要な権限**: `database` / `manage`
- *
- * @generated from message kasane.CopyTableRequest
- */
-export type CopyTableRequest = Message<"kasane.CopyTableRequest"> & {
-  /**
-   * @generated from field: string db_name = 1;
-   */
-  dbName: string;
-
-  /**
-   * @generated from field: string table_name = 2;
-   */
-  tableName: string;
-
-  /**
-   * @generated from field: optional string copy_db_name = 3;
-   */
-  copyDbName?: string | undefined;
-
-  /**
-   * @generated from field: string copy_table_name = 4;
-   */
-  copyTableName: string;
-};
-
-/**
- * Describes the message kasane.CopyTableRequest.
- * Use `create(CopyTableRequestSchema)` to create a new message.
- */
-export const CopyTableRequestSchema: GenMessage<CopyTableRequest> = /*@__PURE__*/
-  messageDesc(file_table, 11);
+  messageDesc(file_table, 6);
 
 /**
  * @generated from service kasane.TableService
@@ -555,10 +286,10 @@ export const TableService: GenService<{
   create: {
     methodKind: "unary";
     input: typeof CreateTableRequestSchema;
-    output: typeof TableSummarySchema;
+    output: typeof TableInfoSchema;
   },
   /**
-   * テーブルの詳細情報（空間IDの総数 count を含む）を取得する。
+   * テーブルの詳細情報を取得する。
    *
    * @generated from rpc kasane.TableService.Get
    */
@@ -578,14 +309,14 @@ export const TableService: GenService<{
     output: typeof ListTablesResponseSchema;
   },
   /**
-   * テーブルの名前、制約、説明文、または時間ロック設定を更新する。
+   * テーブルの名前、制約、説明文、または時間ロック設定を更新し、更新後の情報を返す。
    *
    * @generated from rpc kasane.TableService.Update
    */
   update: {
     methodKind: "unary";
     input: typeof UpdateTableRequestSchema;
-    output: typeof UpdateTableResponseSchema;
+    output: typeof TableInfoSchema;
   },
   /**
    * テーブルを削除する。
@@ -595,17 +326,7 @@ export const TableService: GenService<{
   delete: {
     methodKind: "unary";
     input: typeof DeleteTableRequestSchema;
-    output: typeof DeleteTableResponseSchema;
-  },
-  /**
-   * テーブルを複製する。
-   *
-   * @generated from rpc kasane.TableService.Copy
-   */
-  copy: {
-    methodKind: "unary";
-    input: typeof CopyTableRequestSchema;
-    output: typeof TableSummarySchema;
+    output: typeof EmptySchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_table, 0);
