@@ -164,13 +164,14 @@ jobs:
             compatibilityDate = "2025-09-01",
           );
           EOF
-          npx workerd serve config.capnp &
+          npx workerd serve config.capnp > workerd.log 2>&1 &
           for i in $(seq 1 30); do
             out=$(curl -sf http://127.0.0.1:8787/) && break
             sleep 1
           done
           echo "$out"
-          test "$out" = "20/0/100/200=10"
+          kill %1
+          if [ "$out" != "20/0/100/200=10" ]; then cat workerd.log; exit 1; fi
 
   consumer-typecheck:
     name: Consumer Typecheck (${{ matrix.format }}, ${{ matrix.resolution }})
