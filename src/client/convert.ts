@@ -200,18 +200,15 @@ export function toTypedValue(
   throw new Error(`Unsupported value type for TypedValue: ${typeof value}`);
 }
 
-/**
- * ProtoTypedValue を JS のプリミティブ値へ変換する。
- * INT は `number` で返す。
- */
+/** ProtoTypedValue を JS のプリミティブ値へ変換する。 */
 export function fromTypedValue(
   pb: ProtoTypedValue,
-): string | number | boolean | null {
+): string | bigint | boolean | null {
   switch (pb.kind.case) {
     case "stringVal":
       return pb.kind.value;
     case "intVal":
-      return Number(pb.kind.value);
+      return pb.kind.value;
     case "boolVal":
       return pb.kind.value;
     case "nullVal":
@@ -331,7 +328,7 @@ export type TableInfo = {
   dataType: TableDataType;
   maxZoomLevel: number;
   isTemporal: boolean;
-  count: number;
+  count: bigint;
   constraints?: TableConstraints | undefined;
   description?: string | undefined;
 };
@@ -343,7 +340,7 @@ export function fromProtoTableInfo(pb: ProtoTableInfo): TableInfo {
     dataType: fromProtoTableDataType(pb.dataType),
     maxZoomLevel: pb.maxZoomLevel,
     isTemporal: pb.isTemporal,
-    count: Number(pb.count),
+    count: pb.count,
     constraints: pb.constraints,
     description: pb.description,
   };
