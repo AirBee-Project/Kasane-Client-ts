@@ -78,5 +78,9 @@ function isConnectivityFailure(err: unknown): boolean {
   if (!(err instanceof ConnectError)) {
     return true;
   }
-  return err.code === Code.Unavailable;
+  // connect-web は fetch の失敗（接続の拒否など）を、TypeError を cause に持つ Unknown で返す。
+  return (
+    err.code === Code.Unavailable ||
+    (err.code === Code.Unknown && err.cause instanceof TypeError)
+  );
 }
