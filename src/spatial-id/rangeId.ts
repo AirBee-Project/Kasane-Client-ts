@@ -1,6 +1,6 @@
 import { SpatialIdError } from "./error.js";
 import { FlexId } from "./flexId.js";
-import { Interval } from "./interval.js";
+import { Interval, timeSpanToIntervalRange } from "./interval.js";
 import { SingleId } from "./singleId.js";
 import {
   checkF,
@@ -117,6 +117,40 @@ export class RangeId {
       this.t[0] === 0 &&
       this.t[1] === 0
     );
+  }
+
+  /** Unix 時刻（秒）を含む時間を設定した {@link RangeId} を返す。 */
+  public withTimeAt(interval: Interval | number, unixSeconds: number): RangeId {
+    const resolved = Interval.from(interval);
+    return this.withTime(resolved, resolved.indexAt(unixSeconds));
+  }
+
+  /**
+   * Unix 時刻（秒）の区間 `[start, end)` を時間として設定した {@link RangeId} を返す。
+   * 時間間隔は区間に合わせて自動で決まる。
+   */
+  public withTimeSpan(start: number, end: number): RangeId {
+    const [interval, tMin, tMax] = timeSpanToIntervalRange(start, end);
+    return new RangeId(this.z, this.f, this.x, this.y, interval, [tMin, tMax]);
+  }
+
+  /** 時間の指定を外し、全時間に戻す。 */
+  public withoutTime(): RangeId {
+    return new RangeId(this.z, this.f, this.x, this.y, Interval.WHOLE, [0, 0]);
+  }
+
+  /**
+   * この ID が占める絶対秒区間 `[start, end)`（Unix 時刻）を返す。
+   */
+  public secondsRange(): [number, number] {
+    const unit = this.interval.seconds();
+    return [this.t[0] * unit, (this.t[1] + 1) * unit];
+  }
+
+  /** Unix 時刻（秒）が、この ID の時間に含まれるか。 */
+  public containsTime(unixSeconds: number): boolean {
+    const [start, end] = this.secondsRange();
+    return start <= unixSeconds && unixSeconds < end;
   }
 
   /**

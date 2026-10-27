@@ -45,6 +45,18 @@ export class Interval {
     return input instanceof Interval ? input : Interval.create(input);
   }
 
+  /**
+   * Unix 時刻（秒）が属する時間インデックス `t = floor(u / i)` を返す。
+   * 計算した `t` が 0 以上の有限の数でない場合は `TOutOfRange` を投げる。
+   */
+  public indexAt(unixSeconds: number): number {
+    const t = Math.floor(unixSeconds / this.value);
+    if (!(Number.isFinite(t) && t >= 0)) {
+      throw new SpatialIdError({ kind: "TOutOfRange", i: this.value, t });
+    }
+    return t;
+  }
+
   /**  {@link Interval} の秒数。 */
   public seconds(): number {
     return this.value;
@@ -60,4 +72,30 @@ export class Interval {
       throw new SpatialIdError({ kind: "TOutOfRange", i: this.value, t: tMax });
     }
   }
+}
+
+/**
+ * 絶対秒区間 `[start, end)` を、それをちょうど表せる最も粗い単位と `t` の範囲へ直す。
+ * 単位は `start` と区間幅の最大公約数。
+ * `start` が負、`start >= end`、`end` が {@link Interval.MAX_SECONDS} を超える、または整数でない場合は
+ * `TOutOfRange` を投げる。
+ */
+export function timeSpanToIntervalRange(
+  start: number,
+  end: number,
+): [Interval, number, number] {
+  if (
+    !Number.isInteger(start) ||
+    !Number.isInteger(end) ||
+    start < 0 ||
+    start >= end ||
+    end > Interval.MAX_SECONDS
+  ) {
+    throw new SpatialIdError({ kind: "TOutOfRange", i: 1, t: end });
+  }
+  let [a, b] = [start, end - start];
+  while (b !== 0) {
+    [a, b] = [b, a % b];
+  }
+  return [Interval.create(a), start / a, end / a - 1];
 }
