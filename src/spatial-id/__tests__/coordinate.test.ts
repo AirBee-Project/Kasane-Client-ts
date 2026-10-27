@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Coordinate } from "../coordinate.js";
 import { GeometryError, SpatialIdError } from "../error.js";
+import { RangeId } from "../rangeId.js";
 import { SingleId } from "../singleId.js";
 
 function expectError(fn: () => unknown, info: GeometryError["info"]) {
@@ -136,5 +137,36 @@ describe("SingleId.toCenterCoordinate / toCoordinateRange（空間IDから座標
     expect(b.latitude[1]).toBeCloseTo(85.0511287798066, 10);
     expect(b.longitude).toEqual([-180, 180]);
     expect(b.altitude).toEqual([0, 2 ** 25]);
+  });
+});
+
+describe("RangeId.toCenterCoordinate / toCoordinateRange（RangeId から座標へ）", () => {
+  it("中心はインデックスの平均から求める", () => {
+    const range = RangeId.create(20, [0, 2], [931388, 931390], 412906);
+    const single = SingleId.create(20, 1, 931389, 412906);
+    expect(range.toCenterCoordinate()).toEqual(single.toCenterCoordinate());
+  });
+
+  it("1 ボクセルの RangeId は SingleId と同じ範囲になる", () => {
+    const single = SingleId.parse("20/3/931389/412906");
+    expect(single.toRangeId().toCoordinateRange()).toEqual(
+      single.toCoordinateRange(),
+    );
+  });
+
+  it("両端のボクセルの外側を囲む", () => {
+    const r = RangeId.parse(
+      "20/0:7/931389:931394/412900:412901",
+    ).toCoordinateRange();
+    const nw = SingleId.parse("20/0/931389/412900").toCoordinateRange();
+    const se = SingleId.parse("20/7/931394/412901").toCoordinateRange();
+    expect(r.longitude).toEqual([nw.longitude[0], se.longitude[1]]);
+    expect(r.latitude).toEqual([se.latitude[0], nw.latitude[1]]);
+    expect(r.altitude).toEqual([0, 8 * 32]);
+  });
+
+  it("経度 180 度をまたぐ範囲は、西端の経度が東端より大きくなる", () => {
+    const r = RangeId.create(3, 0, [6, 1], 2).toCoordinateRange();
+    expect(r.longitude).toEqual([90, -90]);
   });
 });

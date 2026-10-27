@@ -1,4 +1,5 @@
 import { GeometryError } from "./error.js";
+import type { RangeId } from "./rangeId.js";
 import { SingleId } from "./singleId.js";
 import { checkZoom } from "./utils.js";
 
@@ -91,6 +92,24 @@ export function singleIdToCoordinateRange(id: SingleId): CoordinateRange {
     latitude: [yToLatitude(z, y + 1), yToLatitude(z, y)],
     longitude: [xToLongitude(z, x), xToLongitude(z, x + 1)],
     altitude: [fToAltitude(z, f), fToAltitude(z, f + 1)],
+  };
+}
+
+export function rangeIdToCenterCoordinate(id: RangeId): Coordinate {
+  const { z, f, x, y } = id;
+  return Coordinate.createUnchecked(
+    yToLatitude(z, (y[0] + y[1]) / 2 + 0.5),
+    xToLongitude(z, (x[0] + x[1]) / 2 + 0.5),
+    fToAltitude(z, (f[0] + f[1]) / 2 + 0.5),
+  );
+}
+
+export function rangeIdToCoordinateRange(id: RangeId): CoordinateRange {
+  const { z, f, x, y } = id;
+  return {
+    latitude: [yToLatitude(z, y[1] + 1), yToLatitude(z, y[0])],
+    longitude: [xToLongitude(z, x[0]), xToLongitude(z, x[1] + 1)],
+    altitude: [fToAltitude(z, f[0]), fToAltitude(z, f[1] + 1)],
   };
 }
 

@@ -1,3 +1,9 @@
+import {
+  type Coordinate,
+  type CoordinateRange,
+  rangeIdToCenterCoordinate,
+  rangeIdToCoordinateRange,
+} from "./coordinate.js";
 import { SpatialIdError } from "./error.js";
 import { FlexId } from "./flexId.js";
 import { Interval } from "./interval.js";
@@ -108,6 +114,16 @@ export class RangeId {
     resolved.validatedSpan(tRange[0], tRange[1]);
 
     return new RangeId(this.z, this.f, this.x, this.y, resolved, tRange);
+  }
+
+  /** ボクセルの中心を {@link Coordinate} で返す。 */
+  public toCenterCoordinate(): Coordinate {
+    return rangeIdToCenterCoordinate(this);
+  }
+
+  /** ボクセルの範囲を、緯度・経度・高度ごとの `[最小, 最大]` で返す。 */
+  public toCoordinateRange(): CoordinateRange {
+    return rangeIdToCoordinateRange(this);
   }
 
   /** 全時間を指しているか。 */
