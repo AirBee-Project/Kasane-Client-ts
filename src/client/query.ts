@@ -81,7 +81,6 @@ export class QueryBuilder {
         },
       };
     } else {
-      // { min, max }
       mode = {
         case: "inRange",
         value: {

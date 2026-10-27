@@ -6,13 +6,15 @@ import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegen
 import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
 import type { DataRole, UserRole } from "./common_pb";
 import { file_common } from "./common_pb";
+import type { EmptySchema } from "@bufbuild/protobuf/wkt";
+import { file_google_protobuf_empty } from "@bufbuild/protobuf/wkt";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file users.proto.
  */
 export const file_users: GenFile = /*@__PURE__*/
-  fileDesc("Cgt1c2Vycy5wcm90bxIGa2FzYW5lIt8CCg1Qcml2aWxlZ2VSdWxlEi4KBmdsb2JhbBgBIAEoCzIcLmthc2FuZS5Qcml2aWxlZ2VSdWxlLkdsb2JhbEgAEjIKCGRhdGFiYXNlGAIgASgLMh4ua2FzYW5lLlByaXZpbGVnZVJ1bGUuRGF0YWJhc2VIABIsCgV0YWJsZRgDIAEoCzIbLmthc2FuZS5Qcml2aWxlZ2VSdWxlLlRhYmxlSAAaKAoGR2xvYmFsEh4KBHJvbGUYASABKA4yEC5rYXNhbmUuVXNlclJvbGUaOwoIRGF0YWJhc2USDwoHZGJfbmFtZRgBIAEoCRIeCgRyb2xlGAIgASgOMhAua2FzYW5lLkRhdGFSb2xlGkwKBVRhYmxlEg8KB2RiX25hbWUYASABKAkSEgoKdGFibGVfbmFtZRgCIAEoCRIeCgRyb2xlGAMgASgOMhAua2FzYW5lLkRhdGFSb2xlQgcKBXNjb3BlIogCCg9Qcml2aWxlZ2VUYXJnZXQSMAoGZ2xvYmFsGAEgASgLMh4ua2FzYW5lLlByaXZpbGVnZVRhcmdldC5HbG9iYWxIABI0CghkYXRhYmFzZRgCIAEoCzIgLmthc2FuZS5Qcml2aWxlZ2VUYXJnZXQuRGF0YWJhc2VIABIuCgV0YWJsZRgDIAEoCzIdLmthc2FuZS5Qcml2aWxlZ2VUYXJnZXQuVGFibGVIABoICgZHbG9iYWwaGwoIRGF0YWJhc2USDwoHZGJfbmFtZRgBIAEoCRosCgVUYWJsZRIPCgdkYl9uYW1lGAEgASgJEhIKCnRhYmxlX25hbWUYAiABKAlCCAoGdGFyZ2V0IlsKC1VzZXJTdW1tYXJ5EhAKCHVzZXJuYW1lGAEgASgJEioKC2dsb2JhbF9yb2xlGAIgASgOMhAua2FzYW5lLlVzZXJSb2xlSACIAQFCDgoMX2dsb2JhbF9yb2xlIkcKCFVzZXJJbmZvEhAKCHVzZXJuYW1lGAEgASgJEikKCnByaXZpbGVnZXMYAiADKAsyFS5rYXNhbmUuUHJpdmlsZWdlUnVsZSJiChFDcmVhdGVVc2VyUmVxdWVzdBIQCgh1c2VybmFtZRgBIAEoCRIQCghwYXNzd29yZBgCIAEoCRIpCgpwcml2aWxlZ2VzGAMgAygLMhUua2FzYW5lLlByaXZpbGVnZVJ1bGUiFAoSQ3JlYXRlVXNlclJlc3BvbnNlIiIKDkdldFVzZXJSZXF1ZXN0EhAKCHVzZXJuYW1lGAEgASgJIiUKEURlbGV0ZVVzZXJSZXF1ZXN0EhAKCHVzZXJuYW1lGAEgASgJIhQKEkRlbGV0ZVVzZXJSZXNwb25zZSJOChBMaXN0VXNlcnNSZXF1ZXN0EhIKBWFmdGVyGAEgASgJSACIAQESEgoFbGltaXQYAiABKA1IAYgBAUIICgZfYWZ0ZXJCCAoGX2xpbWl0IlMKEUxpc3RVc2Vyc1Jlc3BvbnNlEiIKBXVzZXJzGAEgAygLMhMua2FzYW5lLlVzZXJTdW1tYXJ5EhEKBG5leHQYAiABKAlIAIgBAUIHCgVfbmV4dCI7ChVVcGRhdGVQYXNzd29yZFJlcXVlc3QSEAoIdXNlcm5hbWUYASABKAkSEAoIcGFzc3dvcmQYAiABKAkiGAoWVXBkYXRlUGFzc3dvcmRSZXNwb25zZSIoChRHZXRQcml2aWxlZ2VzUmVxdWVzdBIQCgh1c2VybmFtZRgBIAEoCSI/ChJQcml2aWxlZ2VzUmVzcG9uc2USKQoKcHJpdmlsZWdlcxgBIAMoCzIVLmthc2FuZS5Qcml2aWxlZ2VSdWxlIlMKFUdyYW50UHJpdmlsZWdlUmVxdWVzdBIQCgh1c2VybmFtZRgBIAEoCRIoCglwcml2aWxlZ2UYAiABKAsyFS5rYXNhbmUuUHJpdmlsZWdlUnVsZSIYChZHcmFudFByaXZpbGVnZVJlc3BvbnNlIlMKFlJldm9rZVByaXZpbGVnZVJlcXVlc3QSEAoIdXNlcm5hbWUYASABKAkSJwoGdGFyZ2V0GAIgASgLMhcua2FzYW5lLlByaXZpbGVnZVRhcmdldCIZChdSZXZva2VQcml2aWxlZ2VSZXNwb25zZTK+BAoLVXNlclNlcnZpY2USOwoETGlzdBIYLmthc2FuZS5MaXN0VXNlcnNSZXF1ZXN0Ghkua2FzYW5lLkxpc3RVc2Vyc1Jlc3BvbnNlEj8KBkNyZWF0ZRIZLmthc2FuZS5DcmVhdGVVc2VyUmVxdWVzdBoaLmthc2FuZS5DcmVhdGVVc2VyUmVzcG9uc2USLwoDR2V0EhYua2FzYW5lLkdldFVzZXJSZXF1ZXN0GhAua2FzYW5lLlVzZXJJbmZvEj8KBkRlbGV0ZRIZLmthc2FuZS5EZWxldGVVc2VyUmVxdWVzdBoaLmthc2FuZS5EZWxldGVVc2VyUmVzcG9uc2USTwoOVXBkYXRlUGFzc3dvcmQSHS5rYXNhbmUuVXBkYXRlUGFzc3dvcmRSZXF1ZXN0Gh4ua2FzYW5lLlVwZGF0ZVBhc3N3b3JkUmVzcG9uc2USSQoNR2V0UHJpdmlsZWdlcxIcLmthc2FuZS5HZXRQcml2aWxlZ2VzUmVxdWVzdBoaLmthc2FuZS5Qcml2aWxlZ2VzUmVzcG9uc2USTwoOR3JhbnRQcml2aWxlZ2USHS5rYXNhbmUuR3JhbnRQcml2aWxlZ2VSZXF1ZXN0Gh4ua2FzYW5lLkdyYW50UHJpdmlsZWdlUmVzcG9uc2USUgoPUmV2b2tlUHJpdmlsZWdlEh4ua2FzYW5lLlJldm9rZVByaXZpbGVnZVJlcXVlc3QaHy5rYXNhbmUuUmV2b2tlUHJpdmlsZWdlUmVzcG9uc2ViBnByb3RvMw", [file_common]);
+  fileDesc("Cgt1c2Vycy5wcm90bxIGa2FzYW5lIt8CCg1Qcml2aWxlZ2VSdWxlEi4KBmdsb2JhbBgBIAEoCzIcLmthc2FuZS5Qcml2aWxlZ2VSdWxlLkdsb2JhbEgAEjIKCGRhdGFiYXNlGAIgASgLMh4ua2FzYW5lLlByaXZpbGVnZVJ1bGUuRGF0YWJhc2VIABIsCgV0YWJsZRgDIAEoCzIbLmthc2FuZS5Qcml2aWxlZ2VSdWxlLlRhYmxlSAAaKAoGR2xvYmFsEh4KBHJvbGUYASABKA4yEC5rYXNhbmUuVXNlclJvbGUaOwoIRGF0YWJhc2USDwoHZGJfbmFtZRgBIAEoCRIeCgRyb2xlGAIgASgOMhAua2FzYW5lLkRhdGFSb2xlGkwKBVRhYmxlEg8KB2RiX25hbWUYASABKAkSEgoKdGFibGVfbmFtZRgCIAEoCRIeCgRyb2xlGAMgASgOMhAua2FzYW5lLkRhdGFSb2xlQgcKBXNjb3BlIogCCg9Qcml2aWxlZ2VUYXJnZXQSMAoGZ2xvYmFsGAEgASgLMh4ua2FzYW5lLlByaXZpbGVnZVRhcmdldC5HbG9iYWxIABI0CghkYXRhYmFzZRgCIAEoCzIgLmthc2FuZS5Qcml2aWxlZ2VUYXJnZXQuRGF0YWJhc2VIABIuCgV0YWJsZRgDIAEoCzIdLmthc2FuZS5Qcml2aWxlZ2VUYXJnZXQuVGFibGVIABoICgZHbG9iYWwaGwoIRGF0YWJhc2USDwoHZGJfbmFtZRgBIAEoCRosCgVUYWJsZRIPCgdkYl9uYW1lGAEgASgJEhIKCnRhYmxlX25hbWUYAiABKAlCCAoGdGFyZ2V0IlsKC1VzZXJTdW1tYXJ5EhAKCHVzZXJuYW1lGAEgASgJEioKC2dsb2JhbF9yb2xlGAIgASgOMhAua2FzYW5lLlVzZXJSb2xlSACIAQFCDgoMX2dsb2JhbF9yb2xlIkcKCFVzZXJJbmZvEhAKCHVzZXJuYW1lGAEgASgJEikKCnByaXZpbGVnZXMYAiADKAsyFS5rYXNhbmUuUHJpdmlsZWdlUnVsZSJiChFDcmVhdGVVc2VyUmVxdWVzdBIQCgh1c2VybmFtZRgBIAEoCRIQCghwYXNzd29yZBgCIAEoCRIpCgpwcml2aWxlZ2VzGAMgAygLMhUua2FzYW5lLlByaXZpbGVnZVJ1bGUiIgoOR2V0VXNlclJlcXVlc3QSEAoIdXNlcm5hbWUYASABKAkiJQoRRGVsZXRlVXNlclJlcXVlc3QSEAoIdXNlcm5hbWUYASABKAkiTgoQTGlzdFVzZXJzUmVxdWVzdBISCgVhZnRlchgBIAEoCUgAiAEBEhIKBWxpbWl0GAIgASgNSAGIAQFCCAoGX2FmdGVyQggKBl9saW1pdCJTChFMaXN0VXNlcnNSZXNwb25zZRIiCgV1c2VycxgBIAMoCzITLmthc2FuZS5Vc2VyU3VtbWFyeRIRCgRuZXh0GAIgASgJSACIAQFCBwoFX25leHQiOwoVVXBkYXRlUGFzc3dvcmRSZXF1ZXN0EhAKCHVzZXJuYW1lGAEgASgJEhAKCHBhc3N3b3JkGAIgASgJIlMKFUdyYW50UHJpdmlsZWdlUmVxdWVzdBIQCgh1c2VybmFtZRgBIAEoCRIoCglwcml2aWxlZ2UYAiABKAsyFS5rYXNhbmUuUHJpdmlsZWdlUnVsZSJTChZSZXZva2VQcml2aWxlZ2VSZXF1ZXN0EhAKCHVzZXJuYW1lGAEgASgJEicKBnRhcmdldBgCIAEoCzIXLmthc2FuZS5Qcml2aWxlZ2VUYXJnZXQywAMKC1VzZXJTZXJ2aWNlEjsKBExpc3QSGC5rYXNhbmUuTGlzdFVzZXJzUmVxdWVzdBoZLmthc2FuZS5MaXN0VXNlcnNSZXNwb25zZRI1CgZDcmVhdGUSGS5rYXNhbmUuQ3JlYXRlVXNlclJlcXVlc3QaEC5rYXNhbmUuVXNlckluZm8SLwoDR2V0EhYua2FzYW5lLkdldFVzZXJSZXF1ZXN0GhAua2FzYW5lLlVzZXJJbmZvEjsKBkRlbGV0ZRIZLmthc2FuZS5EZWxldGVVc2VyUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRJHCg5VcGRhdGVQYXNzd29yZBIdLmthc2FuZS5VcGRhdGVQYXNzd29yZFJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkSQQoOR3JhbnRQcml2aWxlZ2USHS5rYXNhbmUuR3JhbnRQcml2aWxlZ2VSZXF1ZXN0GhAua2FzYW5lLlVzZXJJbmZvEkMKD1Jldm9rZVByaXZpbGVnZRIeLmthc2FuZS5SZXZva2VQcml2aWxlZ2VSZXF1ZXN0GhAua2FzYW5lLlVzZXJJbmZvYgZwcm90bzM", [file_common, file_google_protobuf_empty]);
 
 /**
  * API 上の権限ルール表現。保存形式は UUID ベースだが、外部には
@@ -294,19 +296,6 @@ export const CreateUserRequestSchema: GenMessage<CreateUserRequest> = /*@__PURE_
   messageDesc(file_users, 4);
 
 /**
- * @generated from message kasane.CreateUserResponse
- */
-export type CreateUserResponse = Message<"kasane.CreateUserResponse"> & {
-};
-
-/**
- * Describes the message kasane.CreateUserResponse.
- * Use `create(CreateUserResponseSchema)` to create a new message.
- */
-export const CreateUserResponseSchema: GenMessage<CreateUserResponse> = /*@__PURE__*/
-  messageDesc(file_users, 5);
-
-/**
  * **必要な権限**: 本人 または `global` / `admin`
  *
  * @generated from message kasane.GetUserRequest
@@ -323,7 +312,7 @@ export type GetUserRequest = Message<"kasane.GetUserRequest"> & {
  * Use `create(GetUserRequestSchema)` to create a new message.
  */
 export const GetUserRequestSchema: GenMessage<GetUserRequest> = /*@__PURE__*/
-  messageDesc(file_users, 6);
+  messageDesc(file_users, 5);
 
 /**
  * **必要な権限**: `global` / `admin`
@@ -342,20 +331,7 @@ export type DeleteUserRequest = Message<"kasane.DeleteUserRequest"> & {
  * Use `create(DeleteUserRequestSchema)` to create a new message.
  */
 export const DeleteUserRequestSchema: GenMessage<DeleteUserRequest> = /*@__PURE__*/
-  messageDesc(file_users, 7);
-
-/**
- * @generated from message kasane.DeleteUserResponse
- */
-export type DeleteUserResponse = Message<"kasane.DeleteUserResponse"> & {
-};
-
-/**
- * Describes the message kasane.DeleteUserResponse.
- * Use `create(DeleteUserResponseSchema)` to create a new message.
- */
-export const DeleteUserResponseSchema: GenMessage<DeleteUserResponse> = /*@__PURE__*/
-  messageDesc(file_users, 8);
+  messageDesc(file_users, 6);
 
 /**
  * **必要な権限**: `global` / `admin`
@@ -383,7 +359,7 @@ export type ListUsersRequest = Message<"kasane.ListUsersRequest"> & {
  * Use `create(ListUsersRequestSchema)` to create a new message.
  */
 export const ListUsersRequestSchema: GenMessage<ListUsersRequest> = /*@__PURE__*/
-  messageDesc(file_users, 9);
+  messageDesc(file_users, 7);
 
 /**
  * @generated from message kasane.ListUsersResponse
@@ -407,7 +383,7 @@ export type ListUsersResponse = Message<"kasane.ListUsersResponse"> & {
  * Use `create(ListUsersResponseSchema)` to create a new message.
  */
 export const ListUsersResponseSchema: GenMessage<ListUsersResponse> = /*@__PURE__*/
-  messageDesc(file_users, 10);
+  messageDesc(file_users, 8);
 
 /**
  * **必要な権限**: 本人 または `global` / `admin`
@@ -431,56 +407,7 @@ export type UpdatePasswordRequest = Message<"kasane.UpdatePasswordRequest"> & {
  * Use `create(UpdatePasswordRequestSchema)` to create a new message.
  */
 export const UpdatePasswordRequestSchema: GenMessage<UpdatePasswordRequest> = /*@__PURE__*/
-  messageDesc(file_users, 11);
-
-/**
- * @generated from message kasane.UpdatePasswordResponse
- */
-export type UpdatePasswordResponse = Message<"kasane.UpdatePasswordResponse"> & {
-};
-
-/**
- * Describes the message kasane.UpdatePasswordResponse.
- * Use `create(UpdatePasswordResponseSchema)` to create a new message.
- */
-export const UpdatePasswordResponseSchema: GenMessage<UpdatePasswordResponse> = /*@__PURE__*/
-  messageDesc(file_users, 12);
-
-/**
- * **必要な権限**: 本人 または `global` / `admin`
- *
- * @generated from message kasane.GetPrivilegesRequest
- */
-export type GetPrivilegesRequest = Message<"kasane.GetPrivilegesRequest"> & {
-  /**
-   * @generated from field: string username = 1;
-   */
-  username: string;
-};
-
-/**
- * Describes the message kasane.GetPrivilegesRequest.
- * Use `create(GetPrivilegesRequestSchema)` to create a new message.
- */
-export const GetPrivilegesRequestSchema: GenMessage<GetPrivilegesRequest> = /*@__PURE__*/
-  messageDesc(file_users, 13);
-
-/**
- * @generated from message kasane.PrivilegesResponse
- */
-export type PrivilegesResponse = Message<"kasane.PrivilegesResponse"> & {
-  /**
-   * @generated from field: repeated kasane.PrivilegeRule privileges = 1;
-   */
-  privileges: PrivilegeRule[];
-};
-
-/**
- * Describes the message kasane.PrivilegesResponse.
- * Use `create(PrivilegesResponseSchema)` to create a new message.
- */
-export const PrivilegesResponseSchema: GenMessage<PrivilegesResponse> = /*@__PURE__*/
-  messageDesc(file_users, 14);
+  messageDesc(file_users, 9);
 
 /**
  * **必要な権限**: `global` / `admin`
@@ -504,20 +431,7 @@ export type GrantPrivilegeRequest = Message<"kasane.GrantPrivilegeRequest"> & {
  * Use `create(GrantPrivilegeRequestSchema)` to create a new message.
  */
 export const GrantPrivilegeRequestSchema: GenMessage<GrantPrivilegeRequest> = /*@__PURE__*/
-  messageDesc(file_users, 15);
-
-/**
- * @generated from message kasane.GrantPrivilegeResponse
- */
-export type GrantPrivilegeResponse = Message<"kasane.GrantPrivilegeResponse"> & {
-};
-
-/**
- * Describes the message kasane.GrantPrivilegeResponse.
- * Use `create(GrantPrivilegeResponseSchema)` to create a new message.
- */
-export const GrantPrivilegeResponseSchema: GenMessage<GrantPrivilegeResponse> = /*@__PURE__*/
-  messageDesc(file_users, 16);
+  messageDesc(file_users, 10);
 
 /**
  * **必要な権限**: `global` / `admin`
@@ -541,20 +455,7 @@ export type RevokePrivilegeRequest = Message<"kasane.RevokePrivilegeRequest"> & 
  * Use `create(RevokePrivilegeRequestSchema)` to create a new message.
  */
 export const RevokePrivilegeRequestSchema: GenMessage<RevokePrivilegeRequest> = /*@__PURE__*/
-  messageDesc(file_users, 17);
-
-/**
- * @generated from message kasane.RevokePrivilegeResponse
- */
-export type RevokePrivilegeResponse = Message<"kasane.RevokePrivilegeResponse"> & {
-};
-
-/**
- * Describes the message kasane.RevokePrivilegeResponse.
- * Use `create(RevokePrivilegeResponseSchema)` to create a new message.
- */
-export const RevokePrivilegeResponseSchema: GenMessage<RevokePrivilegeResponse> = /*@__PURE__*/
-  messageDesc(file_users, 18);
+  messageDesc(file_users, 11);
 
 /**
  * @generated from service kasane.UserService
@@ -578,7 +479,7 @@ export const UserService: GenService<{
   create: {
     methodKind: "unary";
     input: typeof CreateUserRequestSchema;
-    output: typeof CreateUserResponseSchema;
+    output: typeof UserInfoSchema;
   },
   /**
    * 利用者の詳細情報と保持する権限一覧を取得する。
@@ -598,7 +499,7 @@ export const UserService: GenService<{
   delete: {
     methodKind: "unary";
     input: typeof DeleteUserRequestSchema;
-    output: typeof DeleteUserResponseSchema;
+    output: typeof EmptySchema;
   },
   /**
    * 利用者のパスワードを変更し、既存トークンを失効させる。
@@ -608,37 +509,27 @@ export const UserService: GenService<{
   updatePassword: {
     methodKind: "unary";
     input: typeof UpdatePasswordRequestSchema;
-    output: typeof UpdatePasswordResponseSchema;
+    output: typeof EmptySchema;
   },
   /**
-   * 利用者が保持する有効な権限ルール一覧を取得する。
-   *
-   * @generated from rpc kasane.UserService.GetPrivileges
-   */
-  getPrivileges: {
-    methodKind: "unary";
-    input: typeof GetPrivilegesRequestSchema;
-    output: typeof PrivilegesResponseSchema;
-  },
-  /**
-   * 利用者に権限ルールを付与する（既存ルールは置換）。
+   * 利用者に権限ルールを付与し（既存ルールは置換）、更新後の利用者情報を返す。
    *
    * @generated from rpc kasane.UserService.GrantPrivilege
    */
   grantPrivilege: {
     methodKind: "unary";
     input: typeof GrantPrivilegeRequestSchema;
-    output: typeof GrantPrivilegeResponseSchema;
+    output: typeof UserInfoSchema;
   },
   /**
-   * 利用者から対象リソースに対する権限を剥奪する。
+   * 利用者から対象リソースに対する権限を剥奪し、更新後の利用者情報を返す。
    *
    * @generated from rpc kasane.UserService.RevokePrivilege
    */
   revokePrivilege: {
     methodKind: "unary";
     input: typeof RevokePrivilegeRequestSchema;
-    output: typeof RevokePrivilegeResponseSchema;
+    output: typeof UserInfoSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_users, 0);

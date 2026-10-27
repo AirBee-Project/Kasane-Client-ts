@@ -4,6 +4,7 @@
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],
     "moduleResolution": "bundler",
+    "customConditions": ["kasane-source"],
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,

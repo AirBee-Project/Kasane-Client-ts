@@ -1,13 +1,11 @@
 import {
   fromProtoTableInfo,
-  fromProtoTableSummary,
   normalizeSpatialIds,
   type OutputFormat,
   type PrimitiveValue,
   type SpatialId,
   type TableDataType,
   type TableInfo,
-  type TableSummary,
   toProtoOutputFormat,
   toProtoTableDataType,
   toProtoZoomLevelPolicy,
@@ -115,20 +113,6 @@ export class TableHandle<T extends PrimitiveValue = PrimitiveValue> {
       tableName: this.tableName,
     });
   }
-
-  /** テーブルを複製する。 */
-  public async copy(
-    copyTableName: string,
-    copyDbName?: string,
-  ): Promise<TableSummary> {
-    const res = await this.client.tableClient.copy({
-      dbName: this.dbName,
-      tableName: this.tableName,
-      copyDbName,
-      copyTableName,
-    });
-    return fromProtoTableSummary(res);
-  }
 }
 
 /**
@@ -160,11 +144,11 @@ export class DatabaseHandle {
     await this.client.databaseClient.delete({ dbName: this.name });
   }
 
-  /** データベースの名前または説明文を更新する。 */
+  /** データベースの名前または説明文を更新し、更新後の情報を返す。 */
   public async update(options: {
     newName?: string;
     description?: string | null;
-  }): Promise<void> {
+  }): Promise<DatabaseInfo> {
     const descriptionUpdate: Parameters<
       typeof this.client.databaseClient.update
     >[0]["descriptionUpdate"] =
@@ -174,30 +158,22 @@ export class DatabaseHandle {
           ? { case: "setDescription", value: options.description }
           : { case: undefined };
 
-    await this.client.databaseClient.update({
+    return await this.client.databaseClient.update({
       dbName: this.name,
       newName: options.newName,
       descriptionUpdate,
     });
   }
 
-  /** データベースを複製する。 */
-  public async copy(copyName: string): Promise<DatabaseInfo> {
-    return await this.client.databaseClient.copy({
-      dbName: this.name,
-      copyName,
-    });
-  }
-
   /** テーブル一覧を取得する。 */
   public async listTables(options?: {
     rpcCallOptions?: RpcCallOptions;
-  }): Promise<TableSummary[]> {
+  }): Promise<TableInfo[]> {
     const res = await this.client.tableClient.list(
       { dbName: this.name },
       toCallOptions(options?.rpcCallOptions),
     );
-    return res.tables.map(fromProtoTableSummary);
+    return res.tables.map(fromProtoTableInfo);
   }
 
   /** テーブルを新規作成する。 */
@@ -208,10 +184,9 @@ export class DatabaseHandle {
     options?: {
       constraints?: TableConstraints;
       description?: string;
-      valueIndex?: boolean;
       isTemporal?: boolean;
     },
-  ): Promise<TableSummary> {
+  ): Promise<TableInfo> {
     const res = await this.client.tableClient.create({
       dbName: this.name,
       name,
@@ -219,9 +194,8 @@ export class DatabaseHandle {
       maxZoomLevel,
       constraints: options?.constraints,
       description: options?.description,
-      valueIndex: options?.valueIndex ?? false,
       isTemporal: options?.isTemporal ?? false,
     });
-    return fromProtoTableSummary(res);
+    return fromProtoTableInfo(res);
   }
 }

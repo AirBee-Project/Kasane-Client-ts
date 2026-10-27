@@ -6,13 +6,15 @@ import type { GenEnum, GenFile, GenMessage, GenService } from "@bufbuild/protobu
 import { enumDesc, fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
 import type { SpatialId, TypedValue, ZoomLevelPolicy } from "./common_pb";
 import { file_common } from "./common_pb";
+import type { EmptySchema } from "@bufbuild/protobuf/wkt";
+import { file_google_protobuf_empty } from "@bufbuild/protobuf/wkt";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file data.proto.
  */
 export const file_data: GenFile = /*@__PURE__*/
-  fileDesc("CgpkYXRhLnByb3RvEgZrYXNhbmUifAoJRGF0YUdyb3VwEhIKCGRpY3RfcmVmGAEgASgESAASKgoMaW5saW5lX3ZhbHVlGAIgASgLMhIua2FzYW5lLlR5cGVkVmFsdWVIABImCgtzcGF0aWFsX2lkcxgDIAMoCzIRLmthc2FuZS5TcGF0aWFsSWRCBwoFdmFsdWUiXQoSU2VhcmNoRGF0YVJlc3BvbnNlEiYKCmRpY3Rpb25hcnkYASADKAsyEi5rYXNhbmUuVHlwZWRWYWx1ZRIfCgRkYXRhGAIgAygLMhEua2FzYW5lLkRhdGFHcm91cCK6AQoRU2VhcmNoRGF0YVJlcXVlc3QSDwoHZGJfbmFtZRgBIAEoCRISCgp0YWJsZV9uYW1lGAIgASgJEiYKC3NwYXRpYWxfaWRzGAMgAygLMhEua2FzYW5lLlNwYXRpYWxJZBIyChF6b29tX2xldmVsX3BvbGljeRgEIAEoDjIXLmthc2FuZS5ab29tTGV2ZWxQb2xpY3kSJAoGZm9ybWF0GAUgASgOMhQua2FzYW5lLk91dHB1dEZvcm1hdCK3AQoRSW5zZXJ0RGF0YVJlcXVlc3QSDwoHZGJfbmFtZRgBIAEoCRISCgp0YWJsZV9uYW1lGAIgASgJEiEKBXZhbHVlGAMgASgLMhIua2FzYW5lLlR5cGVkVmFsdWUSJgoLc3BhdGlhbF9pZHMYBCADKAsyES5rYXNhbmUuU3BhdGlhbElkEjIKEXpvb21fbGV2ZWxfcG9saWN5GAUgASgOMhcua2FzYW5lLlpvb21MZXZlbFBvbGljeSIUChJJbnNlcnREYXRhUmVzcG9uc2UitwEKEVVwc2VydERhdGFSZXF1ZXN0Eg8KB2RiX25hbWUYASABKAkSEgoKdGFibGVfbmFtZRgCIAEoCRIhCgV2YWx1ZRgDIAEoCzISLmthc2FuZS5UeXBlZFZhbHVlEiYKC3NwYXRpYWxfaWRzGAQgAygLMhEua2FzYW5lLlNwYXRpYWxJZBIyChF6b29tX2xldmVsX3BvbGljeRgFIAEoDjIXLmthc2FuZS5ab29tTGV2ZWxQb2xpY3kiFAoSVXBzZXJ0RGF0YVJlc3BvbnNlIpQBChFSZW1vdmVEYXRhUmVxdWVzdBIPCgdkYl9uYW1lGAEgASgJEhIKCnRhYmxlX25hbWUYAiABKAkSJgoLc3BhdGlhbF9pZHMYAyADKAsyES5rYXNhbmUuU3BhdGlhbElkEjIKEXpvb21fbGV2ZWxfcG9saWN5GAQgASgOMhcua2FzYW5lLlpvb21MZXZlbFBvbGljeSIUChJSZW1vdmVEYXRhUmVzcG9uc2UqgQEKDE91dHB1dEZvcm1hdBIdChlPVVRQVVRfRk9STUFUX1VOU1BFQ0lGSUVEEAASGwoXT1VUUFVUX0ZPUk1BVF9TSU5HTEVfSUQQARIaChZPVVRQVVRfRk9STUFUX1JBTkdFX0lEEAISGQoVT1VUUFVUX0ZPUk1BVF9GTEVYX0lEEAMykwIKC0RhdGFTZXJ2aWNlEkEKBlNlYXJjaBIZLmthc2FuZS5TZWFyY2hEYXRhUmVxdWVzdBoaLmthc2FuZS5TZWFyY2hEYXRhUmVzcG9uc2UwARI/CgZJbnNlcnQSGS5rYXNhbmUuSW5zZXJ0RGF0YVJlcXVlc3QaGi5rYXNhbmUuSW5zZXJ0RGF0YVJlc3BvbnNlEj8KBlVwc2VydBIZLmthc2FuZS5VcHNlcnREYXRhUmVxdWVzdBoaLmthc2FuZS5VcHNlcnREYXRhUmVzcG9uc2USPwoGUmVtb3ZlEhkua2FzYW5lLlJlbW92ZURhdGFSZXF1ZXN0Ghoua2FzYW5lLlJlbW92ZURhdGFSZXNwb25zZWIGcHJvdG8z", [file_common]);
+  fileDesc("CgpkYXRhLnByb3RvEgZrYXNhbmUifAoJRGF0YUdyb3VwEhIKCGRpY3RfcmVmGAEgASgESAASKgoMaW5saW5lX3ZhbHVlGAIgASgLMhIua2FzYW5lLlR5cGVkVmFsdWVIABImCgtzcGF0aWFsX2lkcxgDIAMoCzIRLmthc2FuZS5TcGF0aWFsSWRCBwoFdmFsdWUiXQoSU2VhcmNoRGF0YVJlc3BvbnNlEiYKCmRpY3Rpb25hcnkYASADKAsyEi5rYXNhbmUuVHlwZWRWYWx1ZRIfCgRkYXRhGAIgAygLMhEua2FzYW5lLkRhdGFHcm91cCK6AQoRU2VhcmNoRGF0YVJlcXVlc3QSDwoHZGJfbmFtZRgBIAEoCRISCgp0YWJsZV9uYW1lGAIgASgJEiYKC3NwYXRpYWxfaWRzGAMgAygLMhEua2FzYW5lLlNwYXRpYWxJZBIyChF6b29tX2xldmVsX3BvbGljeRgEIAEoDjIXLmthc2FuZS5ab29tTGV2ZWxQb2xpY3kSJAoGZm9ybWF0GAUgASgOMhQua2FzYW5lLk91dHB1dEZvcm1hdCK2AQoQV3JpdGVEYXRhUmVxdWVzdBIPCgdkYl9uYW1lGAEgASgJEhIKCnRhYmxlX25hbWUYAiABKAkSIQoFdmFsdWUYAyABKAsyEi5rYXNhbmUuVHlwZWRWYWx1ZRImCgtzcGF0aWFsX2lkcxgEIAMoCzIRLmthc2FuZS5TcGF0aWFsSWQSMgoRem9vbV9sZXZlbF9wb2xpY3kYBSABKA4yFy5rYXNhbmUuWm9vbUxldmVsUG9saWN5IpQBChFSZW1vdmVEYXRhUmVxdWVzdBIPCgdkYl9uYW1lGAEgASgJEhIKCnRhYmxlX25hbWUYAiABKAkSJgoLc3BhdGlhbF9pZHMYAyADKAsyES5rYXNhbmUuU3BhdGlhbElkEjIKEXpvb21fbGV2ZWxfcG9saWN5GAQgASgOMhcua2FzYW5lLlpvb21MZXZlbFBvbGljeSqBAQoMT3V0cHV0Rm9ybWF0Eh0KGU9VVFBVVF9GT1JNQVRfVU5TUEVDSUZJRUQQABIbChdPVVRQVVRfRk9STUFUX1NJTkdMRV9JRBABEhoKFk9VVFBVVF9GT1JNQVRfUkFOR0VfSUQQAhIZChVPVVRQVVRfRk9STUFUX0ZMRVhfSUQQAzKFAgoLRGF0YVNlcnZpY2USQQoGU2VhcmNoEhkua2FzYW5lLlNlYXJjaERhdGFSZXF1ZXN0Ghoua2FzYW5lLlNlYXJjaERhdGFSZXNwb25zZTABEjoKBkluc2VydBIYLmthc2FuZS5Xcml0ZURhdGFSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5EjoKBlVwc2VydBIYLmthc2FuZS5Xcml0ZURhdGFSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5EjsKBlJlbW92ZRIZLmthc2FuZS5SZW1vdmVEYXRhUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eWIGcHJvdG8z", [file_common, file_google_protobuf_empty]);
 
 /**
  * dict_ref はストリーム全体で共有する辞書（SearchDataResponse.dictionary を受信順に
@@ -115,11 +117,11 @@ export const SearchDataRequestSchema: GenMessage<SearchDataRequest> = /*@__PURE_
   messageDesc(file_data, 2);
 
 /**
- * **必要な権限**: `table` / `write`
+ * Insert と Upsert で共用する。**必要な権限**: `table` / `write`
  *
- * @generated from message kasane.InsertDataRequest
+ * @generated from message kasane.WriteDataRequest
  */
-export type InsertDataRequest = Message<"kasane.InsertDataRequest"> & {
+export type WriteDataRequest = Message<"kasane.WriteDataRequest"> & {
   /**
    * @generated from field: string db_name = 1;
    */
@@ -147,76 +149,11 @@ export type InsertDataRequest = Message<"kasane.InsertDataRequest"> & {
 };
 
 /**
- * Describes the message kasane.InsertDataRequest.
- * Use `create(InsertDataRequestSchema)` to create a new message.
+ * Describes the message kasane.WriteDataRequest.
+ * Use `create(WriteDataRequestSchema)` to create a new message.
  */
-export const InsertDataRequestSchema: GenMessage<InsertDataRequest> = /*@__PURE__*/
+export const WriteDataRequestSchema: GenMessage<WriteDataRequest> = /*@__PURE__*/
   messageDesc(file_data, 3);
-
-/**
- * @generated from message kasane.InsertDataResponse
- */
-export type InsertDataResponse = Message<"kasane.InsertDataResponse"> & {
-};
-
-/**
- * Describes the message kasane.InsertDataResponse.
- * Use `create(InsertDataResponseSchema)` to create a new message.
- */
-export const InsertDataResponseSchema: GenMessage<InsertDataResponse> = /*@__PURE__*/
-  messageDesc(file_data, 4);
-
-/**
- * **必要な権限**: `table` / `write`
- *
- * @generated from message kasane.UpsertDataRequest
- */
-export type UpsertDataRequest = Message<"kasane.UpsertDataRequest"> & {
-  /**
-   * @generated from field: string db_name = 1;
-   */
-  dbName: string;
-
-  /**
-   * @generated from field: string table_name = 2;
-   */
-  tableName: string;
-
-  /**
-   * @generated from field: kasane.TypedValue value = 3;
-   */
-  value?: TypedValue | undefined;
-
-  /**
-   * @generated from field: repeated kasane.SpatialId spatial_ids = 4;
-   */
-  spatialIds: SpatialId[];
-
-  /**
-   * @generated from field: kasane.ZoomLevelPolicy zoom_level_policy = 5;
-   */
-  zoomLevelPolicy: ZoomLevelPolicy;
-};
-
-/**
- * Describes the message kasane.UpsertDataRequest.
- * Use `create(UpsertDataRequestSchema)` to create a new message.
- */
-export const UpsertDataRequestSchema: GenMessage<UpsertDataRequest> = /*@__PURE__*/
-  messageDesc(file_data, 5);
-
-/**
- * @generated from message kasane.UpsertDataResponse
- */
-export type UpsertDataResponse = Message<"kasane.UpsertDataResponse"> & {
-};
-
-/**
- * Describes the message kasane.UpsertDataResponse.
- * Use `create(UpsertDataResponseSchema)` to create a new message.
- */
-export const UpsertDataResponseSchema: GenMessage<UpsertDataResponse> = /*@__PURE__*/
-  messageDesc(file_data, 6);
 
 /**
  * **必要な権限**: `table` / `write`
@@ -250,20 +187,7 @@ export type RemoveDataRequest = Message<"kasane.RemoveDataRequest"> & {
  * Use `create(RemoveDataRequestSchema)` to create a new message.
  */
 export const RemoveDataRequestSchema: GenMessage<RemoveDataRequest> = /*@__PURE__*/
-  messageDesc(file_data, 7);
-
-/**
- * @generated from message kasane.RemoveDataResponse
- */
-export type RemoveDataResponse = Message<"kasane.RemoveDataResponse"> & {
-};
-
-/**
- * Describes the message kasane.RemoveDataResponse.
- * Use `create(RemoveDataResponseSchema)` to create a new message.
- */
-export const RemoveDataResponseSchema: GenMessage<RemoveDataResponse> = /*@__PURE__*/
-  messageDesc(file_data, 8);
+  messageDesc(file_data, 4);
 
 /**
  * 検索結果として返す空間IDの表現形式。
@@ -319,8 +243,8 @@ export const DataService: GenService<{
    */
   insert: {
     methodKind: "unary";
-    input: typeof InsertDataRequestSchema;
-    output: typeof InsertDataResponseSchema;
+    input: typeof WriteDataRequestSchema;
+    output: typeof EmptySchema;
   },
   /**
    * テーブルにデータを更新または挿入する。
@@ -329,8 +253,8 @@ export const DataService: GenService<{
    */
   upsert: {
     methodKind: "unary";
-    input: typeof UpsertDataRequestSchema;
-    output: typeof UpsertDataResponseSchema;
+    input: typeof WriteDataRequestSchema;
+    output: typeof EmptySchema;
   },
   /**
    * テーブルから指定された空間IDのデータを削除する。
@@ -340,7 +264,7 @@ export const DataService: GenService<{
   remove: {
     methodKind: "unary";
     input: typeof RemoveDataRequestSchema;
-    output: typeof RemoveDataResponseSchema;
+    output: typeof EmptySchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_data, 0);

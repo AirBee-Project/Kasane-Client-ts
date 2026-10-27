@@ -7,7 +7,13 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!src/client/gen", "!docs"]
+    "includes": [
+      "**",
+      "!src/client/gen",
+      "!src/client/wasm/gen",
+      "!wasm/target",
+      "!docs"
+    ]
   },
   "formatter": {
     "enabled": true,

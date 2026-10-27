@@ -26,10 +26,7 @@ import {
   MathOperator as ProtoMathOperator,
   MergePolicyKind as ProtoMergePolicyKind,
 } from "./gen/query_pb";
-import type {
-  TableInfo as ProtoTableInfo,
-  TableSummary as ProtoTableSummary,
-} from "./gen/table_pb";
+import type { TableInfo as ProtoTableInfo } from "./gen/table_pb";
 
 export type SpatialId = SingleId | RangeId | FlexId;
 
@@ -193,7 +190,6 @@ export function toTypedValue(
   if (typeof value === "boolean") {
     return create(TypedValueSchema, { kind: { case: "boolVal", value } });
   }
-  // 既に TypedValueSchema 形式のオブジェクトの場合
   if (typeof value === "object" && "kind" in value) {
     return value as ProtoTypedValue;
   }
@@ -298,31 +294,7 @@ export function fromProtoTableDataType(
   }
 }
 
-/**
- * `listTables()` が返すテーブルの要約。
- */
-export type TableSummary = {
-  name: string;
-  dataType: TableDataType;
-  maxZoomLevel: number;
-  isTemporal: boolean;
-  constraints?: TableConstraints | undefined;
-  description?: string | undefined;
-};
-
-/** proto の `TableSummary` を JS 側の形へ直す。 */
-export function fromProtoTableSummary(pb: ProtoTableSummary): TableSummary {
-  return {
-    name: pb.name,
-    dataType: fromProtoTableDataType(pb.dataType),
-    maxZoomLevel: pb.maxZoomLevel,
-    isTemporal: pb.isTemporal,
-    constraints: pb.constraints,
-    description: pb.description,
-  };
-}
-
-/** `info()` が返すテーブルの詳細。{@link TableSummary} に件数と説明が加わる。 */
+/** テーブルの情報。`count` は保持する空間ID（FlexId）の総数。 */
 export type TableInfo = {
   name: string;
   dataType: TableDataType;

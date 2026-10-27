@@ -4,13 +4,15 @@
 
 import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+import type { EmptySchema } from "@bufbuild/protobuf/wkt";
+import { file_google_protobuf_empty } from "@bufbuild/protobuf/wkt";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file database.proto.
  */
 export const file_database: GenFile = /*@__PURE__*/
-  fileDesc("Cg5kYXRhYmFzZS5wcm90bxIGa2FzYW5lIkYKDERhdGFiYXNlSW5mbxIMCgRuYW1lGAEgASgJEhgKC2Rlc2NyaXB0aW9uGAIgASgJSACIAQFCDgoMX2Rlc2NyaXB0aW9uIk8KFUNyZWF0ZURhdGFiYXNlUmVxdWVzdBIMCgRuYW1lGAEgASgJEhgKC2Rlc2NyaXB0aW9uGAIgASgJSACIAQFCDgoMX2Rlc2NyaXB0aW9uIiUKEkdldERhdGFiYXNlUmVxdWVzdBIPCgdkYl9uYW1lGAEgASgJIhYKFExpc3REYXRhYmFzZXNSZXF1ZXN0IkAKFUxpc3REYXRhYmFzZXNSZXNwb25zZRInCglkYXRhYmFzZXMYASADKAsyFC5rYXNhbmUuRGF0YWJhc2VJbmZvIpoBChVVcGRhdGVEYXRhYmFzZVJlcXVlc3QSDwoHZGJfbmFtZRgBIAEoCRIVCghuZXdfbmFtZRgCIAEoCUgBiAEBEhsKEWNsZWFyX2Rlc2NyaXB0aW9uGAMgASgISAASGQoPc2V0X2Rlc2NyaXB0aW9uGAQgASgJSABCFAoSZGVzY3JpcHRpb25fdXBkYXRlQgsKCV9uZXdfbmFtZSIYChZVcGRhdGVEYXRhYmFzZVJlc3BvbnNlIigKFURlbGV0ZURhdGFiYXNlUmVxdWVzdBIPCgdkYl9uYW1lGAEgASgJIhgKFkRlbGV0ZURhdGFiYXNlUmVzcG9uc2UiOQoTQ29weURhdGFiYXNlUmVxdWVzdBIPCgdkYl9uYW1lGAEgASgJEhEKCWNvcHlfbmFtZRgCIAEoCTKbAwoPRGF0YWJhc2VTZXJ2aWNlEj0KBkNyZWF0ZRIdLmthc2FuZS5DcmVhdGVEYXRhYmFzZVJlcXVlc3QaFC5rYXNhbmUuRGF0YWJhc2VJbmZvEjcKA0dldBIaLmthc2FuZS5HZXREYXRhYmFzZVJlcXVlc3QaFC5rYXNhbmUuRGF0YWJhc2VJbmZvEkMKBExpc3QSHC5rYXNhbmUuTGlzdERhdGFiYXNlc1JlcXVlc3QaHS5rYXNhbmUuTGlzdERhdGFiYXNlc1Jlc3BvbnNlEkcKBlVwZGF0ZRIdLmthc2FuZS5VcGRhdGVEYXRhYmFzZVJlcXVlc3QaHi5rYXNhbmUuVXBkYXRlRGF0YWJhc2VSZXNwb25zZRJHCgZEZWxldGUSHS5rYXNhbmUuRGVsZXRlRGF0YWJhc2VSZXF1ZXN0Gh4ua2FzYW5lLkRlbGV0ZURhdGFiYXNlUmVzcG9uc2USOQoEQ29weRIbLmthc2FuZS5Db3B5RGF0YWJhc2VSZXF1ZXN0GhQua2FzYW5lLkRhdGFiYXNlSW5mb2IGcHJvdG8z");
+  fileDesc("Cg5kYXRhYmFzZS5wcm90bxIGa2FzYW5lIkYKDERhdGFiYXNlSW5mbxIMCgRuYW1lGAEgASgJEhgKC2Rlc2NyaXB0aW9uGAIgASgJSACIAQFCDgoMX2Rlc2NyaXB0aW9uIk8KFUNyZWF0ZURhdGFiYXNlUmVxdWVzdBIMCgRuYW1lGAEgASgJEhgKC2Rlc2NyaXB0aW9uGAIgASgJSACIAQFCDgoMX2Rlc2NyaXB0aW9uIiUKEkdldERhdGFiYXNlUmVxdWVzdBIPCgdkYl9uYW1lGAEgASgJIhYKFExpc3REYXRhYmFzZXNSZXF1ZXN0IkAKFUxpc3REYXRhYmFzZXNSZXNwb25zZRInCglkYXRhYmFzZXMYASADKAsyFC5rYXNhbmUuRGF0YWJhc2VJbmZvIpoBChVVcGRhdGVEYXRhYmFzZVJlcXVlc3QSDwoHZGJfbmFtZRgBIAEoCRIVCghuZXdfbmFtZRgCIAEoCUgBiAEBEhsKEWNsZWFyX2Rlc2NyaXB0aW9uGAMgASgISAASGQoPc2V0X2Rlc2NyaXB0aW9uGAQgASgJSABCFAoSZGVzY3JpcHRpb25fdXBkYXRlQgsKCV9uZXdfbmFtZSIoChVEZWxldGVEYXRhYmFzZVJlcXVlc3QSDwoHZGJfbmFtZRgBIAEoCTLOAgoPRGF0YWJhc2VTZXJ2aWNlEj0KBkNyZWF0ZRIdLmthc2FuZS5DcmVhdGVEYXRhYmFzZVJlcXVlc3QaFC5rYXNhbmUuRGF0YWJhc2VJbmZvEjcKA0dldBIaLmthc2FuZS5HZXREYXRhYmFzZVJlcXVlc3QaFC5rYXNhbmUuRGF0YWJhc2VJbmZvEkMKBExpc3QSHC5rYXNhbmUuTGlzdERhdGFiYXNlc1JlcXVlc3QaHS5rYXNhbmUuTGlzdERhdGFiYXNlc1Jlc3BvbnNlEj0KBlVwZGF0ZRIdLmthc2FuZS5VcGRhdGVEYXRhYmFzZVJlcXVlc3QaFC5rYXNhbmUuRGF0YWJhc2VJbmZvEj8KBkRlbGV0ZRIdLmthc2FuZS5EZWxldGVEYXRhYmFzZVJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHliBnByb3RvMw", [file_google_protobuf_empty]);
 
 /**
  * @generated from message kasane.DatabaseInfo
@@ -151,19 +153,6 @@ export const UpdateDatabaseRequestSchema: GenMessage<UpdateDatabaseRequest> = /*
   messageDesc(file_database, 5);
 
 /**
- * @generated from message kasane.UpdateDatabaseResponse
- */
-export type UpdateDatabaseResponse = Message<"kasane.UpdateDatabaseResponse"> & {
-};
-
-/**
- * Describes the message kasane.UpdateDatabaseResponse.
- * Use `create(UpdateDatabaseResponseSchema)` to create a new message.
- */
-export const UpdateDatabaseResponseSchema: GenMessage<UpdateDatabaseResponse> = /*@__PURE__*/
-  messageDesc(file_database, 6);
-
-/**
  * **必要な権限**: `global` / `manage`
  *
  * @generated from message kasane.DeleteDatabaseRequest
@@ -180,44 +169,7 @@ export type DeleteDatabaseRequest = Message<"kasane.DeleteDatabaseRequest"> & {
  * Use `create(DeleteDatabaseRequestSchema)` to create a new message.
  */
 export const DeleteDatabaseRequestSchema: GenMessage<DeleteDatabaseRequest> = /*@__PURE__*/
-  messageDesc(file_database, 7);
-
-/**
- * @generated from message kasane.DeleteDatabaseResponse
- */
-export type DeleteDatabaseResponse = Message<"kasane.DeleteDatabaseResponse"> & {
-};
-
-/**
- * Describes the message kasane.DeleteDatabaseResponse.
- * Use `create(DeleteDatabaseResponseSchema)` to create a new message.
- */
-export const DeleteDatabaseResponseSchema: GenMessage<DeleteDatabaseResponse> = /*@__PURE__*/
-  messageDesc(file_database, 8);
-
-/**
- * **必要な権限**: `global` / `manage`
- *
- * @generated from message kasane.CopyDatabaseRequest
- */
-export type CopyDatabaseRequest = Message<"kasane.CopyDatabaseRequest"> & {
-  /**
-   * @generated from field: string db_name = 1;
-   */
-  dbName: string;
-
-  /**
-   * @generated from field: string copy_name = 2;
-   */
-  copyName: string;
-};
-
-/**
- * Describes the message kasane.CopyDatabaseRequest.
- * Use `create(CopyDatabaseRequestSchema)` to create a new message.
- */
-export const CopyDatabaseRequestSchema: GenMessage<CopyDatabaseRequest> = /*@__PURE__*/
-  messageDesc(file_database, 9);
+  messageDesc(file_database, 6);
 
 /**
  * @generated from service kasane.DatabaseService
@@ -254,14 +206,14 @@ export const DatabaseService: GenService<{
     output: typeof ListDatabasesResponseSchema;
   },
   /**
-   * データベースの名前または説明文を更新する。
+   * データベースの名前または説明文を更新し、更新後の情報を返す。
    *
    * @generated from rpc kasane.DatabaseService.Update
    */
   update: {
     methodKind: "unary";
     input: typeof UpdateDatabaseRequestSchema;
-    output: typeof UpdateDatabaseResponseSchema;
+    output: typeof DatabaseInfoSchema;
   },
   /**
    * データベースと配下のテーブルを削除する。
@@ -271,17 +223,7 @@ export const DatabaseService: GenService<{
   delete: {
     methodKind: "unary";
     input: typeof DeleteDatabaseRequestSchema;
-    output: typeof DeleteDatabaseResponseSchema;
-  },
-  /**
-   * データベースを丸ごと複製する。
-   *
-   * @generated from rpc kasane.DatabaseService.Copy
-   */
-  copy: {
-    methodKind: "unary";
-    input: typeof CopyDatabaseRequestSchema;
-    output: typeof DatabaseInfoSchema;
+    output: typeof EmptySchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_database, 0);
