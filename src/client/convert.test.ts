@@ -122,14 +122,14 @@ describe("TypedValue と JSプリミティブ値の相互変換", () => {
     const proto = toTypedValue(42);
     expect(proto.kind.case).toBe("intVal");
     expect(proto.kind.value).toBe(42n);
-    expect(fromTypedValue(proto)).toBe(42n);
+    expect(fromTypedValue(proto)).toBe(42);
   });
 
-  it("bigint値をTypedValueと相互変換できる", () => {
+  it("bigint値も書き込めて、読むとnumberになる", () => {
     const proto = toTypedValue(1000n);
     expect(proto.kind.case).toBe("intVal");
     expect(proto.kind.value).toBe(1000n);
-    expect(fromTypedValue(proto)).toBe(1000n);
+    expect(fromTypedValue(proto)).toBe(1000);
   });
 
   it("真偽値をTypedValueと相互変換できる", () => {
@@ -277,7 +277,7 @@ describe("TableSummary / TableInfo の変換", () => {
       dataType: "boolean",
       maxZoomLevel: 18,
       isTemporal: true,
-      count: 42n,
+      count: 42,
       description: "説明",
     });
   });
