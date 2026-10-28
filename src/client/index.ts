@@ -1,4 +1,4 @@
-import { type Client, createClient } from "@connectrpc/connect";
+import { type Client, createClient, type Transport } from "@connectrpc/connect";
 import { createGrpcWebTransport } from "@connectrpc/connect-web";
 import { createAuthInterceptor } from "./auth.js";
 import {
@@ -21,13 +21,12 @@ import { DatabaseHandle } from "./handle.js";
 import { QueryBuilder } from "./query.js";
 import { type RpcCallOptions, toCallOptions } from "./rpcCallOptions.js";
 import { ResultStream } from "./stream.js";
+import { WasmTransport } from "./wasmTransport.js";
 
 /**
  * Kasaneに接続するクライアント。
  */
 export class KasaneClient {
-  /** @internal */
-  public readonly auth: Client<typeof AuthService>;
   /** @internal */
   public readonly databaseClient: Client<typeof DatabaseService>;
   /** @internal */
@@ -37,35 +36,14 @@ export class KasaneClient {
   /** @internal */
   private readonly queryClient: Client<typeof QueryService>;
 
-  private token: string | undefined;
+  private readonly onLogout: () => void;
 
-  private constructor(
-    servers: string[],
-    onTokenExpired?: () => Promise<string | undefined>,
-  ) {
-    if (servers.length === 0) {
-      throw new Error("KasaneClient requires at least one server URL");
-    }
-
-    const transport = new FailoverTransport(
-      servers.map((baseUrl) =>
-        createGrpcWebTransport({
-          baseUrl,
-          interceptors: [
-            createAuthInterceptor({
-              getToken: () => this.token,
-              refreshToken: onTokenExpired,
-            }),
-          ],
-        }),
-      ),
-    );
-
-    this.auth = createClient(AuthService, transport);
+  private constructor(transport: Transport, onLogout: () => void = () => {}) {
     this.databaseClient = createClient(DatabaseService, transport);
     this.tableClient = createClient(TableService, transport);
     this.data = createClient(DataService, transport);
     this.queryClient = createClient(QueryService, transport);
+    this.onLogout = onLogout;
   }
 
   /**
@@ -82,24 +60,48 @@ export class KasaneClient {
     password: string,
   ): Promise<KasaneClient> {
     const serverList = Array.isArray(servers) ? servers : [servers];
+    if (serverList.length === 0) {
+      throw new Error("KasaneClient requires at least one server URL");
+    }
 
-    const client: KasaneClient = new KasaneClient(
-      serverList,
-      async (): Promise<string | undefined> => {
-        const res = await client.auth.login({ username, password });
-        client.token = res.token;
-        return res.token;
-      },
+    let token: string | undefined;
+    const login = async (): Promise<string> => {
+      token = (await auth.login({ username, password })).token;
+      return token;
+    };
+    const transport = new FailoverTransport(
+      serverList.map((baseUrl) =>
+        createGrpcWebTransport({
+          baseUrl,
+          interceptors: [
+            createAuthInterceptor({
+              getToken: () => token,
+              refreshToken: login,
+            }),
+          ],
+        }),
+      ),
     );
+    const auth = createClient(AuthService, transport);
 
-    const res = await client.auth.login({ username, password });
-    client.token = res.token;
-    return client;
+    await login();
+    return new KasaneClient(transport, () => {
+      token = undefined;
+    });
+  }
+
+  /**
+   * プロセス内で動くインメモリの Kasane（Wasm）を作り、それにつながる {@link KasaneClient} を返す。
+   * データはこのクライアントだけが持ち、利用者は root 固定なので認証は要らない。
+   */
+  public static async inMemory(): Promise<KasaneClient> {
+    const { createKasane } = await import("#kasane-wasm");
+    return new KasaneClient(new WasmTransport(await createKasane()));
   }
 
   /** 保持しているトークンを破棄する。以降の呼び出しは未認証状態になる。 */
   public logout(): void {
-    this.token = undefined;
+    this.onLogout();
   }
 
   /**
@@ -180,7 +182,6 @@ export type {
   SpatialId,
   TableDataType,
   TableInfo,
-  TableSummary,
   ZoomLevelPolicy,
 } from "./convert.js";
 export {

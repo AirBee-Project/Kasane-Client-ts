@@ -1,6 +1,6 @@
 {
   "name": "@airbee-project/kasane-client",
-  "version": "0.0.3",
+  "version": "0.9.0",
   "description": "kasane-client",
   "repository": {
     "type": "git",
@@ -26,9 +26,20 @@
       }
     }
   },
+  "imports": {
+    "#kasane-wasm": {
+      "kasane-source": "./src/client/wasm/inline.ts",
+      "workerd": "./dist/wasm/workerd.js",
+      "import": "./dist/wasm/inline.js",
+      "require": "./dist/wasm/inline.cjs",
+      "default": "./dist/wasm/inline.js"
+    }
+  },
   "files": [
     "dist",
+    "!dist/wasm/*.map",
     "src",
+    "!src/client/wasm/gen",
     "README.md"
   ],
   "scripts": {
@@ -38,10 +49,10 @@
     "lint": "biome lint --write .",
     "fmt": "biome format --write .",
     "check": "tsc --noEmit && biome check .",
-    "ci": "tsc --noEmit && biome check . && bun test",
-    "test": "bun test",
-    "test:watch": "bun test --watch",
-    "codegen": "protoc --plugin=protoc-gen-es=./node_modules/.bin/protoc-gen-es.exe --es_out=src/client/gen --es_opt=target=ts,import_extension=js --proto_path=proto proto/auth.proto proto/common.proto proto/data.proto proto/database.proto proto/query.proto proto/system.proto proto/table.proto proto/users.proto"
+    "ci": "tsc --noEmit && biome check . && bun run test",
+    "test": "bun test --conditions kasane-source",
+    "test:watch": "bun test --conditions kasane-source --watch",
+    "generate": "bun scripts/generate.ts"
   },
   "keywords": [],
   "devDependencies": {
