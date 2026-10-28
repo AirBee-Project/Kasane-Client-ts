@@ -10,17 +10,17 @@ describe("KasaneClient.inMemory", () => {
     const db = client.database("db");
     await db.createTable("risk", "int", 20);
 
-    const table = db.table<bigint>("risk");
+    const table = db.table<number>("risk");
     const id = SingleId.create(20, 0, 100, 200);
-    await table.insert(10n, id);
+    await table.insert(10, id);
 
     const found = [];
     for await (const item of table.search(id)) {
       found.push(item);
     }
-    expect(found.map((item) => item.value)).toEqual([10n]);
-    expect((await table.info()).count).toBe(1n);
-    expect((await db.listTables()).map((t) => t.count)).toEqual([1n]);
+    expect(found.map((item) => item.value)).toEqual([10]);
+    expect((await table.info()).count).toBe(1);
+    expect((await db.listTables()).map((t) => t.count)).toEqual([1]);
   });
 
   it("エラーは gRPC のコードを保ったまま ConnectError になる", async () => {
