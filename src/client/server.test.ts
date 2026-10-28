@@ -36,13 +36,13 @@ async function scenario(client: KasaneClient, db: string) {
   out.set("tableCreated", await handle.createTable("risk", "int", 20));
   await handle.createTable("label", "text", 20);
 
-  const risk = handle.table<bigint>("risk");
+  const risk = handle.table<number>("risk");
   const a = SingleId.create(20, 0, 100, 200);
   const b = SingleId.create(20, 0, 101, 200);
   const c = SingleId.create(20, 0, 102, 200);
   const range = RangeId.create(20, [0, 0], [100, 102], [200, 200]);
-  await risk.insert(10n, [a, b]);
-  await risk.upsert(20n, c);
+  await risk.insert(10, [a, b]);
+  await risk.upsert(20, c);
   out.set("search", sorted(await risk.search(range).toArray()));
   out.set(
     "searchRange",
