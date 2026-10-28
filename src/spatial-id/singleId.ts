@@ -93,6 +93,34 @@ export class SingleId {
     return this.interval.seconds() === Interval.MAX_SECONDS && this.t === 0;
   }
 
+  /** Unix 時刻（秒）を含む時間を設定した {@link SingleId} を返す。 */
+  public withTimeAt(
+    interval: Interval | number,
+    unixSeconds: number,
+  ): SingleId {
+    const resolved = Interval.from(interval);
+    return this.withTime(resolved, resolved.indexAt(unixSeconds));
+  }
+
+  /** 時間の指定を外し、全時間に戻す。 */
+  public withoutTime(): SingleId {
+    return new SingleId(this.z, this.f, this.x, this.y, Interval.WHOLE, 0);
+  }
+
+  /**
+   * この ID が占める絶対秒区間 `[start, end)`（Unix 時刻）を返す。
+   */
+  public secondsRange(): [number, number] {
+    const unit = this.interval.seconds();
+    return [this.t * unit, (this.t + 1) * unit];
+  }
+
+  /** Unix 時刻（秒）が、この ID の時間に含まれるか。 */
+  public containsTime(unixSeconds: number): boolean {
+    const [start, end] = this.secondsRange();
+    return start <= unixSeconds && unixSeconds < end;
+  }
+
   /**
    * この {@link SingleId} を文字列形式で出力する。
    * 全時間の場合は `"{z}/{f}/{x}/{y}"`、時間を持つ場合は `"{z}/{f}/{x}/{y}_{i}/{t}"`。
