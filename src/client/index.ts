@@ -191,7 +191,9 @@ export {
   isPermissionDeniedError,
   isUnauthenticatedError,
 } from "./errors.js";
+export type { TableConstraints } from "./gen/common_pb.js";
 export type { DatabaseInfo } from "./gen/database_pb.js";
+export type { QueryNode } from "./gen/query_pb.js";
 export {
   DatabaseHandle,
   TableHandle,

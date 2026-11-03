@@ -49,17 +49,22 @@
     "lint": "biome lint --write .",
     "fmt": "biome format --write .",
     "check": "tsc --noEmit && biome check .",
-    "ci": "tsc --noEmit && biome check . && bun run test",
+    "ci": "tsc --noEmit && biome check . && bun run docs:check && bun run test",
     "test": "bun test --conditions kasane-source",
     "test:watch": "bun test --conditions kasane-source --watch",
-    "generate": "bun scripts/generate.ts"
+    "generate": "bun scripts/generate.ts",
+    "docs": "bun scripts/docs-serve.ts",
+    "docs:build": "typedoc",
+    "docs:check": "typedoc --emit none --treatWarningsAsErrors"
   },
   "keywords": [],
   "devDependencies": {
     "@biomejs/biome": "^2.5.12",
     "@bufbuild/protoc-gen-es": "^2.14.1",
+    "browser-sync": "^3.0.4",
     "tsup": "^8.5.1",
-    "typescript": "~7.0.2",
+    "typedoc": "^0.28.20",
+    "typescript": "~6.0.0",
     "vitest": "^5.0.0"
   },
   "dependencies": {
