@@ -1,0 +1,23 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    // 自分自身のパッケージ名は補完の候補に出ないので、利用者と同じ import をエディタで補完できるように対応づける
+    "paths": {
+      "@airbee-project/kasane-client/spatial-id": [
+        "../src/spatial-id/index.ts"
+      ],
+      "@airbee-project/kasane-client/geometry": ["../src/geometry/index.ts"],
+      "@airbee-project/kasane-client/client": ["../src/client/index.ts"],
+      "@airbee-project/kasane-client/client/database": [
+        "../src/client/database/index.ts"
+      ],
+      "@airbee-project/kasane-client/client/query": [
+        "../src/client/query/index.ts"
+      ],
+      "@airbee-project/kasane-client/client/result": [
+        "../src/client/result/index.ts"
+      ]
+    }
+  },
+  "include": [".", "../src/**/index.ts"]
+}

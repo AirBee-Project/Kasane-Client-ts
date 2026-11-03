@@ -3,10 +3,25 @@
 - [Kasane v0.7](https://github.com/AirBee-Project/Kasane)との接続機能
 - インメモリの Kasane（Wasm）
 
+## import
+
+モジュールごとのサブパスから import します。サブパスは API ドキュメントのモジュールと同じです。
+
+| サブパス | 中身 |
+| :--- | :--- |
+| `@airbee-project/kasane-client/spatial-id` | `SingleId`、`RangeId`、`FlexId`、`Interval`、`SpatialIdError` |
+| `@airbee-project/kasane-client/geometry` | `Coordinate`、`GeometryError` |
+| `@airbee-project/kasane-client/client` | `KasaneClient`、通信エラーの判定関数 |
+| `@airbee-project/kasane-client/client/database` | `DatabaseHandle`、`TableHandle`、テーブルの型 |
+| `@airbee-project/kasane-client/client/query` | `query`、`QueryBuilder` |
+| `@airbee-project/kasane-client/client/result` | `ResultStream` |
+
+`spatial-id` と `geometry` は、Connect や Wasm を読み込みません。
+
 ## 接続
 
 ```ts
-import { KasaneClient } from "@airbee-project/kasane-client";
+import { KasaneClient } from "@airbee-project/kasane-client/client";
 
 // grpc-web で Kasane サーバーにつなぐ。複数の URL を渡すと、接続できないサーバーを飛ばす。
 const client = await KasaneClient.connect("http://localhost:5172", "root", "password");
@@ -33,7 +48,7 @@ KASANE_URL=http://localhost:5172 bun run test
 
 ### 生成コードと Wasm の更新
 
-`src/client/gen`（proto から生成した TypeScript）と `src/client/wasm/gen`（Wasm）は、`wasm/Cargo.toml` が参照する Kasane の `main` から作ります。次のコマンドで `main` の最新を取り直し、同じコミットから両方を作り直します。使った Kasane のコミットは `wasm/Cargo.lock` に残ります。
+`src/proto/gen`（proto から生成した TypeScript）と `src/client/wasm/gen`（Wasm）は、`wasm/Cargo.toml` が参照する Kasane の `main` から作ります。次のコマンドで `main` の最新を取り直し、同じコミットから両方を作り直します。使った Kasane のコミットは `wasm/Cargo.lock` に残ります。
 
 ```bash
 bun run generate

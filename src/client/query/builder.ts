@@ -1,37 +1,26 @@
 import { create } from "@bufbuild/protobuf";
 import {
-  type Direction,
-  type FalloffPattern,
-  type MathOperator,
-  type MergePolicy,
-  type PrimitiveValue,
-  type TableDataType,
   toProtoDirection,
   toProtoFalloffPattern,
   toProtoMathOperator,
   toProtoMergePolicy,
   toProtoTableDataType,
   toTypedValue,
-} from "./convert.js";
+} from "../../proto/convert.js";
 import {
   FilterConditionSchema,
   MathOperandSchema,
   type QueryNode,
   QueryNodeSchema,
-} from "./gen/query_pb.js";
-
-export type FilterConditionInput =
-  | { equals: PrimitiveValue }
-  | {
-      min?: PrimitiveValue;
-      max?: PrimitiveValue;
-    }
-  | {
-      notInRange: {
-        min?: PrimitiveValue;
-        max?: PrimitiveValue;
-      };
-    };
+} from "../../proto/gen/query_pb.js";
+import type { PrimitiveValue, TableDataType } from "../database/types.js";
+import type {
+  Direction,
+  FalloffPattern,
+  FilterConditionInput,
+  MathOperator,
+  MergePolicy,
+} from "./types.js";
 
 /**
  * 空間クエリ（AST）を流れるようなインターフェースで構築するビルダー。
@@ -39,13 +28,9 @@ export type FilterConditionInput =
 export class QueryBuilder {
   private readonly node: QueryNode;
 
+  /** @internal */
   constructor(node: QueryNode) {
     this.node = node;
-  }
-
-  /** 生成された wire フォーマットの `QueryNode` を取得する。 */
-  public toProto(): QueryNode {
-    return this.node;
   }
 
   /**
@@ -429,6 +414,11 @@ export class QueryBuilder {
   /** 除算演算（input / operand）。 */
   public divide(operand: number | bigint): QueryBuilder {
     return this.mathNode("divide", operand);
+  }
+
+  /** 生成された wire フォーマットの `QueryNode` を取得する。 */
+  public toProto(): QueryNode {
+    return this.node;
   }
 }
 

@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { Coordinate } from "../coordinate.js";
-import { GeometryError, SpatialIdError } from "../error.js";
-import { RangeId } from "../rangeId.js";
-import { SingleId } from "../singleId.js";
+import { SpatialIdError } from "../spatial-id/error.js";
+import { RangeId } from "../spatial-id/rangeId.js";
+import { SingleId } from "../spatial-id/singleId.js";
+import { Coordinate } from "./coordinate.js";
+import { GeometryError } from "./error.js";
 
 function expectError(fn: () => unknown, info: GeometryError["info"]) {
   try {

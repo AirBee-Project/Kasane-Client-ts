@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { SingleId } from "../spatial-id/singleId.js";
+import { KasaneClient } from "./client.js";
 import { isAlreadyExistsError, isNotFoundError } from "./errors.js";
-import { KasaneClient } from "./index.js";
 
 describe("KasaneClient.inMemory", () => {
   it("作成・書き込み・検索・件数が Wasm 上の Kasane で動く", async () => {

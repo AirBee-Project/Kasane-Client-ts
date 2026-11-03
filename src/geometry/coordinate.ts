@@ -1,15 +1,19 @@
+import type { RangeId } from "../spatial-id/rangeId.js";
+import { SingleId } from "../spatial-id/singleId.js";
+import { checkZoom } from "../spatial-id/utils.js";
 import { GeometryError } from "./error.js";
-import type { RangeId } from "./rangeId.js";
-import { SingleId } from "./singleId.js";
-import { checkZoom } from "./utils.js";
 
 const MAX_LATITUDE = 85.0511;
 const MAX_LONGITUDE = 180;
 const MAX_ALTITUDE = 2 ** 25;
 
+/** 緯度・経度・高度で表す座標。 */
 export class Coordinate {
+  /** 緯度（度）。 */
   public readonly latitude: number;
+  /** 経度（度）。 */
   public readonly longitude: number;
+  /** 高度。 */
   public readonly altitude: number;
 
   private constructor(latitude: number, longitude: number, altitude: number) {
@@ -71,9 +75,13 @@ export class Coordinate {
   }
 }
 
+/** ボクセルが占める範囲。 */
 export type CoordinateRange = {
+  /** 緯度の範囲 `[最小, 最大]`。 */
   latitude: [number, number];
+  /** 経度の範囲 `[最小, 最大]`。 */
   longitude: [number, number];
+  /** 高度の範囲 `[最小, 最大]`。 */
   altitude: [number, number];
 };
 

@@ -1,4 +1,4 @@
-// Kasane の main の最新を取り直し、同じコミットから src/client/gen と src/client/wasm/gen を作る。
+// Kasane の main の最新を取り直し、同じコミットから src/proto/gen と src/client/wasm/gen を作る。
 // 必要なもの: cargo（wasm32-unknown-unknown ターゲット）、protoc、Cargo.lock と同じ版の wasm-bindgen。
 // wasm-opt があればサイズを縮める。
 
@@ -14,7 +14,7 @@ import { protocGenEs } from "@bufbuild/protoc-gen-es/dist/cjs/src/protoc-gen-es-
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const manifest = join(root, "wasm", "Cargo.toml");
-const genDir = join(root, "src", "client", "gen");
+const genDir = join(root, "src", "proto", "gen");
 const wasmDir = join(root, "src", "client", "wasm", "gen");
 const target = "wasm32-unknown-unknown";
 

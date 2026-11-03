@@ -1,7 +1,21 @@
 import { create } from "@bufbuild/protobuf";
+import type {
+  PrimitiveValue,
+  TableDataType,
+  TableInfo,
+  ZoomLevelPolicy,
+} from "../client/database/types.js";
+import type {
+  Direction,
+  FalloffPattern,
+  MathOperator,
+  MergePolicy,
+} from "../client/query/types.js";
+import type { OutputFormat } from "../client/result/types.js";
 import { FlexId } from "../spatial-id/flexId.js";
 import { RangeId } from "../spatial-id/rangeId.js";
 import { SingleId } from "../spatial-id/singleId.js";
+import type { SpatialId } from "../spatial-id/types.js";
 import { fMax, fMin, xyMax } from "../spatial-id/utils.js";
 import {
   FlexIdSchema,
@@ -16,7 +30,6 @@ import {
   RangeIdSchema,
   SingleIdSchema,
   SpatialIdSchema,
-  type TableConstraints,
   TypedValueSchema,
 } from "./gen/common_pb.js";
 import { OutputFormat as ProtoOutputFormat } from "./gen/data_pb.js";
@@ -27,8 +40,6 @@ import {
   MergePolicyKind as ProtoMergePolicyKind,
 } from "./gen/query_pb.js";
 import type { TableInfo as ProtoTableInfo } from "./gen/table_pb.js";
-
-export type SpatialId = SingleId | RangeId | FlexId;
 
 /** `SingleId`/`RangeId`/`FlexId` を、対応するwireフォーマットの `SpatialId`(oneof)へ変換する。 */
 export function toProtoSpatialId(id: SpatialId): ProtoSpatialId {
@@ -159,14 +170,6 @@ export function normalizeSpatialIds(
 
 // --- JS プリミティブ ⇄ TypedValue ---
 
-export type PrimitiveValue =
-  | string
-  | number
-  | bigint
-  | boolean
-  | null
-  | undefined;
-
 /** JS のプリミティブ値または既存の ProtoTypedValue を ProtoTypedValue へ変換する。 */
 export function toTypedValue(
   value: PrimitiveValue | ProtoTypedValue,
@@ -217,8 +220,6 @@ export function fromTypedValue(
   }
 }
 
-export type ZoomLevelPolicy = "error" | "ignore" | "normalize";
-
 export function toProtoZoomLevelPolicy(
   policy?: ZoomLevelPolicy,
   defaultPolicy: ProtoZoomLevelPolicy = ProtoZoomLevelPolicy.ERROR,
@@ -238,8 +239,6 @@ export function toProtoZoomLevelPolicy(
   }
 }
 
-export type OutputFormat = "singleId" | "rangeId" | "flexId";
-
 export function toProtoOutputFormat(format?: OutputFormat): ProtoOutputFormat {
   if (!format) {
     return ProtoOutputFormat.UNSPECIFIED;
@@ -255,8 +254,6 @@ export function toProtoOutputFormat(format?: OutputFormat): ProtoOutputFormat {
       return ProtoOutputFormat.UNSPECIFIED;
   }
 }
-
-export type TableDataType = "text" | "int" | "boolean" | "enum" | "presence";
 
 export function toProtoTableDataType(type: TableDataType): ProtoTableDataType {
   switch (type) {
@@ -297,17 +294,6 @@ export function fromProtoTableDataType(
   }
 }
 
-/** テーブルの情報。`count` は保持する空間ID（FlexId）の総数。 */
-export type TableInfo = {
-  name: string;
-  dataType: TableDataType;
-  maxZoomLevel: number;
-  isTemporal: boolean;
-  count: number;
-  constraints?: TableConstraints | undefined;
-  description?: string | undefined;
-};
-
 /** proto の `TableInfo` を JS 側の形へ直す。 */
 export function fromProtoTableInfo(pb: ProtoTableInfo): TableInfo {
   return {
@@ -320,15 +306,6 @@ export function fromProtoTableInfo(pb: ProtoTableInfo): TableInfo {
     description: pb.description,
   };
 }
-
-export type MergePolicy =
-  | "overwrite"
-  | "keepExisting"
-  | "sum"
-  | "max"
-  | "min"
-  | "average"
-  | "difference";
 
 export function toProtoMergePolicy(policy?: MergePolicy): ProtoMergePolicyKind {
   if (!policy) {
@@ -354,8 +331,6 @@ export function toProtoMergePolicy(policy?: MergePolicy): ProtoMergePolicyKind {
   }
 }
 
-export type MathOperator = "add" | "subtract" | "multiply" | "divide";
-
 export function toProtoMathOperator(op: MathOperator): ProtoMathOperator {
   switch (op) {
     case "add":
@@ -370,8 +345,6 @@ export function toProtoMathOperator(op: MathOperator): ProtoMathOperator {
       return ProtoMathOperator.UNSPECIFIED;
   }
 }
-
-export type FalloffPattern = "linear" | "quadraticIn" | "quadraticOut";
 
 export function toProtoFalloffPattern(
   pattern?: FalloffPattern,
@@ -390,8 +363,6 @@ export function toProtoFalloffPattern(
       return ProtoFalloffPattern.UNSPECIFIED;
   }
 }
-
-export type Direction = "upper" | "lower";
 
 export function toProtoDirection(dir?: Direction): ProtoDirection {
   if (!dir) {

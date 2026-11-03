@@ -3,7 +3,7 @@ import {
   type CoordinateRange,
   rangeIdToCenterCoordinate,
   rangeIdToCoordinateRange,
-} from "./coordinate.js";
+} from "../geometry/coordinate.js";
 import { SpatialIdError } from "./error.js";
 import { FlexId } from "./flexId.js";
 import { Interval, timeSpanToIntervalRange } from "./interval.js";
@@ -24,12 +24,19 @@ import {
   xyMax,
 } from "./utils.js";
 
+/** 各軸を `[min, max]` の範囲で指定した時空間 ID。 */
 export class RangeId {
+  /** ズームレベル `{z}`。 */
   public readonly z: number;
+  /** 高度方向のインデックスの範囲 `[min, max]`。 */
   public readonly f: [number, number];
+  /** X 方向のインデックスの範囲 `[min, max]`。経度の周期境界をまたぐときは `x[0] > x[1]` になる。 */
   public readonly x: [number, number];
+  /** Y 方向のインデックスの範囲 `[min, max]`。 */
   public readonly y: [number, number];
+  /** 時間間隔 `{i}`。時間を指定していなければ {@link Interval.WHOLE}。 */
   public readonly interval: Interval;
+  /** 時間インデックスの範囲 `[min, max]`。 */
   public readonly t: [number, number];
 
   private constructor(
@@ -79,107 +86,6 @@ export class RangeId {
     }
 
     return new RangeId(z, fRange, xRange, yRange, Interval.WHOLE, [0, 0]);
-  }
-
-  /**
-   * 検証を行わずに {@link RangeId} を作成する。
-   * 高速に作成できるが、**不正な値を渡した場合の挙動は未定義**になる。
-   */
-  public static createUnchecked(
-    z: number,
-    f: RangeInput,
-    x: RangeInput,
-    y: RangeInput,
-  ): RangeId {
-    return new RangeId(
-      z,
-      intoRange(f),
-      intoRange(x),
-      intoRange(y),
-      Interval.WHOLE,
-      [0, 0],
-    );
-  }
-
-  /**
-   * 時間を設定する。`interval` は {@link Interval} または秒数のどちらでも渡せる。
-   * `t` は `[min, max]` のペア、または両端が等しい単一の値で指定できる。
-   */
-  public withTime(interval: Interval | number, t: RangeInput): RangeId {
-    const resolved = Interval.from(interval);
-    const tRange = intoRange(t);
-    if (tRange[0] > tRange[1]) {
-      [tRange[0], tRange[1]] = [tRange[1], tRange[0]];
-    }
-    resolved.validatedSpan(tRange[0], tRange[1]);
-
-    return new RangeId(this.z, this.f, this.x, this.y, resolved, tRange);
-  }
-
-  /** ボクセルの中心を {@link Coordinate} で返す。 */
-  public toCenterCoordinate(): Coordinate {
-    return rangeIdToCenterCoordinate(this);
-  }
-
-  /** ボクセルの範囲を、緯度・経度・高度ごとの `[最小, 最大]` で返す。 */
-  public toCoordinateRange(): CoordinateRange {
-    return rangeIdToCoordinateRange(this);
-  }
-
-  /** 全時間を指しているか。 */
-  public isWholeTime(): boolean {
-    return (
-      this.interval.seconds() === Interval.MAX_SECONDS &&
-      this.t[0] === 0 &&
-      this.t[1] === 0
-    );
-  }
-
-  /** Unix 時刻（秒）を含む時間を設定した {@link RangeId} を返す。 */
-  public withTimeAt(interval: Interval | number, unixSeconds: number): RangeId {
-    const resolved = Interval.from(interval);
-    return this.withTime(resolved, resolved.indexAt(unixSeconds));
-  }
-
-  /**
-   * Unix 時刻（秒）の区間 `[start, end)` を時間として設定した {@link RangeId} を返す。
-   * 時間間隔は区間に合わせて自動で決まる。
-   */
-  public withTimeSpan(start: number, end: number): RangeId {
-    const [interval, tMin, tMax] = timeSpanToIntervalRange(start, end);
-    return new RangeId(this.z, this.f, this.x, this.y, interval, [tMin, tMax]);
-  }
-
-  /** 時間の指定を外し、全時間に戻す。 */
-  public withoutTime(): RangeId {
-    return new RangeId(this.z, this.f, this.x, this.y, Interval.WHOLE, [0, 0]);
-  }
-
-  /**
-   * この ID が占める絶対秒区間 `[start, end)`（Unix 時刻）を返す。
-   */
-  public secondsRange(): [number, number] {
-    const unit = this.interval.seconds();
-    return [this.t[0] * unit, (this.t[1] + 1) * unit];
-  }
-
-  /** Unix 時刻（秒）が、この ID の時間に含まれるか。 */
-  public containsTime(unixSeconds: number): boolean {
-    const [start, end] = this.secondsRange();
-    return start <= unixSeconds && unixSeconds < end;
-  }
-
-  /**
-   * この {@link RangeId} を文字列形式で出力する。
-   * 形式は `"{z}/{f}/{x}/{y}"`、時間を持つ場合は `"{z}/{f}/{x}/{y}_{i}/{t}"`。
-   * 各軸は両端が等しい場合は単一値に自動圧縮される（例: `4/-3/8:9/5:10`）。
-   */
-  public toString(): string {
-    const base = `${this.z}/${formatDimension(this.f)}/${formatDimension(this.x)}/${formatDimension(this.y)}`;
-    if (this.isWholeTime()) {
-      return base;
-    }
-    return `${base}_${this.interval.seconds()}/${formatDimension(this.t)}`;
   }
 
   /**
@@ -286,6 +192,107 @@ export class RangeId {
     }
 
     return id;
+  }
+
+  /**
+   * 検証を行わずに {@link RangeId} を作成する。
+   * 高速に作成できるが、**不正な値を渡した場合の挙動は未定義**になる。
+   */
+  public static createUnchecked(
+    z: number,
+    f: RangeInput,
+    x: RangeInput,
+    y: RangeInput,
+  ): RangeId {
+    return new RangeId(
+      z,
+      intoRange(f),
+      intoRange(x),
+      intoRange(y),
+      Interval.WHOLE,
+      [0, 0],
+    );
+  }
+
+  /**
+   * 時間を設定する。`interval` は {@link Interval} または秒数のどちらでも渡せる。
+   * `t` は `[min, max]` のペア、または両端が等しい単一の値で指定できる。
+   */
+  public withTime(interval: Interval | number, t: RangeInput): RangeId {
+    const resolved = Interval.from(interval);
+    const tRange = intoRange(t);
+    if (tRange[0] > tRange[1]) {
+      [tRange[0], tRange[1]] = [tRange[1], tRange[0]];
+    }
+    resolved.validatedSpan(tRange[0], tRange[1]);
+
+    return new RangeId(this.z, this.f, this.x, this.y, resolved, tRange);
+  }
+
+  /** ボクセルの中心を {@link Coordinate} で返す。 */
+  public toCenterCoordinate(): Coordinate {
+    return rangeIdToCenterCoordinate(this);
+  }
+
+  /** ボクセルの範囲を、緯度・経度・高度ごとの `[最小, 最大]` で返す。 */
+  public toCoordinateRange(): CoordinateRange {
+    return rangeIdToCoordinateRange(this);
+  }
+
+  /** 全時間を指しているか。 */
+  public isWholeTime(): boolean {
+    return (
+      this.interval.seconds() === Interval.MAX_SECONDS &&
+      this.t[0] === 0 &&
+      this.t[1] === 0
+    );
+  }
+
+  /** Unix 時刻（秒）を含む時間を設定した {@link RangeId} を返す。 */
+  public withTimeAt(interval: Interval | number, unixSeconds: number): RangeId {
+    const resolved = Interval.from(interval);
+    return this.withTime(resolved, resolved.indexAt(unixSeconds));
+  }
+
+  /**
+   * Unix 時刻（秒）の区間 `[start, end)` を時間として設定した {@link RangeId} を返す。
+   * 時間間隔は区間に合わせて自動で決まる。
+   */
+  public withTimeSpan(start: number, end: number): RangeId {
+    const [interval, tMin, tMax] = timeSpanToIntervalRange(start, end);
+    return new RangeId(this.z, this.f, this.x, this.y, interval, [tMin, tMax]);
+  }
+
+  /** 時間の指定を外し、全時間に戻す。 */
+  public withoutTime(): RangeId {
+    return new RangeId(this.z, this.f, this.x, this.y, Interval.WHOLE, [0, 0]);
+  }
+
+  /**
+   * この ID が占める絶対秒区間 `[start, end)`（Unix 時刻）を返す。
+   */
+  public secondsRange(): [number, number] {
+    const unit = this.interval.seconds();
+    return [this.t[0] * unit, (this.t[1] + 1) * unit];
+  }
+
+  /** Unix 時刻（秒）が、この ID の時間に含まれるか。 */
+  public containsTime(unixSeconds: number): boolean {
+    const [start, end] = this.secondsRange();
+    return start <= unixSeconds && unixSeconds < end;
+  }
+
+  /**
+   * この {@link RangeId} を文字列形式で出力する。
+   * 形式は `"{z}/{f}/{x}/{y}"`、時間を持つ場合は `"{z}/{f}/{x}/{y}_{i}/{t}"`。
+   * 各軸は両端が等しい場合は単一値に自動圧縮される（例: `4/-3/8:9/5:10`）。
+   */
+  public toString(): string {
+    const base = `${this.z}/${formatDimension(this.f)}/${formatDimension(this.x)}/${formatDimension(this.y)}`;
+    if (this.isWholeTime()) {
+      return base;
+    }
+    return `${base}_${this.interval.seconds()}/${formatDimension(this.t)}`;
   }
 
   /** `x` の周期境界（`x[0] > x[1]` の折り返し）を考慮して、Xインデックスを列挙する。 */

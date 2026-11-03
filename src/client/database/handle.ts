@@ -1,31 +1,36 @@
 import {
   fromProtoTableInfo,
   normalizeSpatialIds,
-  type OutputFormat,
-  type PrimitiveValue,
-  type SpatialId,
-  type TableDataType,
-  type TableInfo,
   toProtoOutputFormat,
   toProtoTableDataType,
   toProtoZoomLevelPolicy,
   toTypedValue,
-  type ZoomLevelPolicy,
-} from "./convert.js";
-import type { TableConstraints } from "./gen/common_pb.js";
-import type { DatabaseInfo } from "./gen/database_pb.js";
-import type { KasaneClient } from "./index.js";
-import { type RpcCallOptions, toCallOptions } from "./rpcCallOptions.js";
-import { ResultStream } from "./stream.js";
+} from "../../proto/convert.js";
+import type { TableConstraints } from "../../proto/gen/common_pb.js";
+import type { DatabaseInfo } from "../../proto/gen/database_pb.js";
+import type { SpatialId } from "../../spatial-id/types.js";
+import type { KasaneClient } from "../client.js";
+import { type RpcCallOptions, toCallOptions } from "../options.js";
+import { ResultStream } from "../result/stream.js";
+import type { OutputFormat } from "../result/types.js";
+import type {
+  PrimitiveValue,
+  TableDataType,
+  TableInfo,
+  ZoomLevelPolicy,
+} from "./types.js";
 
 /**
  * 特定のテーブルに対する操作を行うスコープ付きハンドル。
  */
 export class TableHandle<T extends PrimitiveValue = PrimitiveValue> {
-  public readonly client: KasaneClient;
+  private readonly client: KasaneClient;
+  /** テーブルが属するデータベースの名前。 */
   public readonly dbName: string;
+  /** テーブル名。 */
   public readonly tableName: string;
 
+  /** @internal */
   constructor(client: KasaneClient, dbName: string, tableName: string) {
     this.client = client;
     this.dbName = dbName;
@@ -119,9 +124,11 @@ export class TableHandle<T extends PrimitiveValue = PrimitiveValue> {
  * 特定のデータベースに対する操作を行うスコープ付きハンドル。
  */
 export class DatabaseHandle {
-  public readonly client: KasaneClient;
+  private readonly client: KasaneClient;
+  /** データベース名。 */
   public readonly name: string;
 
+  /** @internal */
   constructor(client: KasaneClient, name: string) {
     this.client = client;
     this.name = name;
@@ -132,6 +139,40 @@ export class DatabaseHandle {
     tableName: string,
   ): TableHandle<T> {
     return new TableHandle<T>(this.client, this.name, tableName);
+  }
+
+  /** テーブルを新規作成する。 */
+  public async createTable(
+    name: string,
+    dataType: TableDataType,
+    maxZoomLevel: number,
+    options?: {
+      constraints?: TableConstraints;
+      description?: string;
+      isTemporal?: boolean;
+    },
+  ): Promise<TableInfo> {
+    const res = await this.client.tableClient.create({
+      dbName: this.name,
+      name,
+      dataType: toProtoTableDataType(dataType),
+      maxZoomLevel,
+      constraints: options?.constraints,
+      description: options?.description,
+      isTemporal: options?.isTemporal ?? false,
+    });
+    return fromProtoTableInfo(res);
+  }
+
+  /** テーブル一覧を取得する。 */
+  public async listTables(options?: {
+    rpcCallOptions?: RpcCallOptions;
+  }): Promise<TableInfo[]> {
+    const res = await this.client.tableClient.list(
+      { dbName: this.name },
+      toCallOptions(options?.rpcCallOptions),
+    );
+    return res.tables.map(fromProtoTableInfo);
   }
 
   /** データベースの詳細情報を取得する。 */
@@ -163,39 +204,5 @@ export class DatabaseHandle {
       newName: options.newName,
       descriptionUpdate,
     });
-  }
-
-  /** テーブル一覧を取得する。 */
-  public async listTables(options?: {
-    rpcCallOptions?: RpcCallOptions;
-  }): Promise<TableInfo[]> {
-    const res = await this.client.tableClient.list(
-      { dbName: this.name },
-      toCallOptions(options?.rpcCallOptions),
-    );
-    return res.tables.map(fromProtoTableInfo);
-  }
-
-  /** テーブルを新規作成する。 */
-  public async createTable(
-    name: string,
-    dataType: TableDataType,
-    maxZoomLevel: number,
-    options?: {
-      constraints?: TableConstraints;
-      description?: string;
-      isTemporal?: boolean;
-    },
-  ): Promise<TableInfo> {
-    const res = await this.client.tableClient.create({
-      dbName: this.name,
-      name,
-      dataType: toProtoTableDataType(dataType),
-      maxZoomLevel,
-      constraints: options?.constraints,
-      description: options?.description,
-      isTemporal: options?.isTemporal ?? false,
-    });
-    return fromProtoTableInfo(res);
   }
 }

@@ -3,19 +3,26 @@ import {
   type CoordinateRange,
   singleIdToCenterCoordinate,
   singleIdToCoordinateRange,
-} from "./coordinate.js";
+} from "../geometry/coordinate.js";
 import { SpatialIdError } from "./error.js";
 import type { FlexId } from "./flexId.js";
 import { Interval } from "./interval.js";
 import { RangeId } from "./rangeId.js";
 import { checkF, checkX, checkY, checkZoom, parseInteger } from "./utils.js";
 
+/** 1つのボクセルを表す時空間 ID。仕様の `{z}/{f}/{x}/{y}_{i}/{t}` に対応する。 */
 export class SingleId {
+  /** ズームレベル `{z}`。 */
   public readonly z: number;
+  /** 高度方向のインデックス `{f}`。 */
   public readonly f: number;
+  /** X 方向のインデックス `{x}`。 */
   public readonly x: number;
+  /** Y 方向のインデックス `{y}`。 */
   public readonly y: number;
+  /** 時間間隔 `{i}`。時間を指定していなければ {@link Interval.WHOLE}。 */
   public readonly interval: Interval;
+  /** 時間インデックス `{t}`。 */
   public readonly t: number;
 
   private constructor(
@@ -46,91 +53,6 @@ export class SingleId {
     checkY(z, y);
 
     return new SingleId(z, f, x, y, Interval.WHOLE, 0);
-  }
-
-  /**
-   * 検証を行わずに {@link SingleId} を作成する。
-   * 高速に作成できるが、**不正な値を渡した場合の挙動は未定義**になる。
-   */
-  public static createUnchecked(
-    z: number,
-    f: number,
-    x: number,
-    y: number,
-  ): SingleId {
-    return new SingleId(z, f, x, y, Interval.WHOLE, 0);
-  }
-
-  /**
-   * 時間を設定する。`interval` は {@link Interval} または秒数のどちらでも渡せる。
-   */
-  public withTime(interval: Interval | number, t: number): SingleId {
-    const resolved = Interval.from(interval);
-    resolved.validatedSpan(t, t);
-    return new SingleId(this.z, this.f, this.x, this.y, resolved, t);
-  }
-
-  /** {@link SingleId} を {@link RangeId} へ変換する。 */
-  public toRangeId(): RangeId {
-    return RangeId.create(this.z, this.f, this.x, this.y).withTime(
-      this.interval,
-      this.t,
-    );
-  }
-
-  /** ボクセルの中心を {@link Coordinate} で返す。 */
-  public toCenterCoordinate(): Coordinate {
-    return singleIdToCenterCoordinate(this);
-  }
-
-  /** ボクセルの範囲を、緯度・経度・高度ごとの `[最小, 最大]` で返す。 */
-  public toCoordinateRange(): CoordinateRange {
-    return singleIdToCoordinateRange(this);
-  }
-
-  /** 全時間を指しているか。 */
-  public isWholeTime(): boolean {
-    return this.interval.seconds() === Interval.MAX_SECONDS && this.t === 0;
-  }
-
-  /** Unix 時刻（秒）を含む時間を設定した {@link SingleId} を返す。 */
-  public withTimeAt(
-    interval: Interval | number,
-    unixSeconds: number,
-  ): SingleId {
-    const resolved = Interval.from(interval);
-    return this.withTime(resolved, resolved.indexAt(unixSeconds));
-  }
-
-  /** 時間の指定を外し、全時間に戻す。 */
-  public withoutTime(): SingleId {
-    return new SingleId(this.z, this.f, this.x, this.y, Interval.WHOLE, 0);
-  }
-
-  /**
-   * この ID が占める絶対秒区間 `[start, end)`（Unix 時刻）を返す。
-   */
-  public secondsRange(): [number, number] {
-    const unit = this.interval.seconds();
-    return [this.t * unit, (this.t + 1) * unit];
-  }
-
-  /** Unix 時刻（秒）が、この ID の時間に含まれるか。 */
-  public containsTime(unixSeconds: number): boolean {
-    const [start, end] = this.secondsRange();
-    return start <= unixSeconds && unixSeconds < end;
-  }
-
-  /**
-   * この {@link SingleId} を文字列形式で出力する。
-   * 全時間の場合は `"{z}/{f}/{x}/{y}"`、時間を持つ場合は `"{z}/{f}/{x}/{y}_{i}/{t}"`。
-   */
-  public toString(): string {
-    const base = `${this.z}/${this.f}/${this.x}/${this.y}`;
-    if (this.isWholeTime()) {
-      return base;
-    }
-    return `${base}_${this.interval.seconds()}/${this.t}`;
   }
 
   /**
@@ -236,6 +158,91 @@ export class SingleId {
     }
 
     return id;
+  }
+
+  /**
+   * 検証を行わずに {@link SingleId} を作成する。
+   * 高速に作成できるが、**不正な値を渡した場合の挙動は未定義**になる。
+   */
+  public static createUnchecked(
+    z: number,
+    f: number,
+    x: number,
+    y: number,
+  ): SingleId {
+    return new SingleId(z, f, x, y, Interval.WHOLE, 0);
+  }
+
+  /**
+   * 時間を設定する。`interval` は {@link Interval} または秒数のどちらでも渡せる。
+   */
+  public withTime(interval: Interval | number, t: number): SingleId {
+    const resolved = Interval.from(interval);
+    resolved.validatedSpan(t, t);
+    return new SingleId(this.z, this.f, this.x, this.y, resolved, t);
+  }
+
+  /** {@link SingleId} を {@link RangeId} へ変換する。 */
+  public toRangeId(): RangeId {
+    return RangeId.create(this.z, this.f, this.x, this.y).withTime(
+      this.interval,
+      this.t,
+    );
+  }
+
+  /** ボクセルの中心を {@link Coordinate} で返す。 */
+  public toCenterCoordinate(): Coordinate {
+    return singleIdToCenterCoordinate(this);
+  }
+
+  /** ボクセルの範囲を、緯度・経度・高度ごとの `[最小, 最大]` で返す。 */
+  public toCoordinateRange(): CoordinateRange {
+    return singleIdToCoordinateRange(this);
+  }
+
+  /** 全時間を指しているか。 */
+  public isWholeTime(): boolean {
+    return this.interval.seconds() === Interval.MAX_SECONDS && this.t === 0;
+  }
+
+  /** Unix 時刻（秒）を含む時間を設定した {@link SingleId} を返す。 */
+  public withTimeAt(
+    interval: Interval | number,
+    unixSeconds: number,
+  ): SingleId {
+    const resolved = Interval.from(interval);
+    return this.withTime(resolved, resolved.indexAt(unixSeconds));
+  }
+
+  /** 時間の指定を外し、全時間に戻す。 */
+  public withoutTime(): SingleId {
+    return new SingleId(this.z, this.f, this.x, this.y, Interval.WHOLE, 0);
+  }
+
+  /**
+   * この ID が占める絶対秒区間 `[start, end)`（Unix 時刻）を返す。
+   */
+  public secondsRange(): [number, number] {
+    const unit = this.interval.seconds();
+    return [this.t * unit, (this.t + 1) * unit];
+  }
+
+  /** Unix 時刻（秒）が、この ID の時間に含まれるか。 */
+  public containsTime(unixSeconds: number): boolean {
+    const [start, end] = this.secondsRange();
+    return start <= unixSeconds && unixSeconds < end;
+  }
+
+  /**
+   * この {@link SingleId} を文字列形式で出力する。
+   * 全時間の場合は `"{z}/{f}/{x}/{y}"`、時間を持つ場合は `"{z}/{f}/{x}/{y}_{i}/{t}"`。
+   */
+  public toString(): string {
+    const base = `${this.z}/${this.f}/${this.x}/${this.y}`;
+    if (this.isWholeTime()) {
+      return base;
+    }
+    return `${base}_${this.interval.seconds()}/${this.t}`;
   }
 
   /** {@link SingleId} を {@link FlexId} へ変換する。 */
