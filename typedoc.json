@@ -6,8 +6,7 @@
     "src/client/index.ts",
     "src/client/database/index.ts",
     "src/client/query/index.ts",
-    "src/client/result/index.ts",
-    "src/errors/index.ts"
+    "src/client/result/index.ts"
   ],
   "tsconfig": "tsconfig.build.json",
   "out": "docs",

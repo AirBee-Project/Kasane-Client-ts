@@ -8,9 +8,12 @@
  * const id = tokyo.toSingleId(20);
  * ```
  *
+ * 緯度・経度・高度が範囲外のときは {@link GeometryError} を投げる。
+ *
  * @disableGroups
  * @sortStrategy documents-first
  * @module
  */
 
 export { Coordinate, type CoordinateRange } from "./coordinate.js";
+export { GeometryError, type GeometryErrorInfo } from "./error.js";

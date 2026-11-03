@@ -1,10 +1,10 @@
-import { SpatialIdError } from "../errors/spatialId.js";
 import {
   type Coordinate,
   type CoordinateRange,
   rangeIdToCenterCoordinate,
   rangeIdToCoordinateRange,
 } from "../geometry/coordinate.js";
+import { SpatialIdError } from "./error.js";
 import { FlexId } from "./flexId.js";
 import { Interval, timeSpanToIntervalRange } from "./interval.js";
 import { SingleId } from "./singleId.js";

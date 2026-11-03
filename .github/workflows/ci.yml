@@ -84,8 +84,8 @@ jobs:
       - name: Import package
         working-directory: consumer
         run: |
-          esm='import { SingleId } from "@airbee-project/kasane-client"; console.log(SingleId.create(5, 3, 2, 10).toString());'
-          cjs='const { SingleId } = require("@airbee-project/kasane-client"); console.log(SingleId.create(5, 3, 2, 10).toString());'
+          esm='import { SingleId } from "@airbee-project/kasane-client/spatial-id"; console.log(SingleId.create(5, 3, 2, 10).toString());'
+          cjs='const { SingleId } = require("@airbee-project/kasane-client/spatial-id"); console.log(SingleId.create(5, 3, 2, 10).toString());'
           case "${{ matrix.runtime }}" in
             node-esm) node --input-type=module -e "$esm" ;;
             node-cjs) node -e "$cjs" ;;
@@ -93,12 +93,13 @@ jobs:
             deno) deno eval "$esm" ;;
           esac
 
-      - name: Use in-memory Kasane (Wasm)
+      # サブパスごとにクラスが複製されると、spatial-id で作った SingleId を client が判定できなくなる。
+      - name: Use in-memory Kasane (Wasm) across subpaths
         working-directory: consumer
         run: |
           body='const c = await KasaneClient.inMemory(); await c.createDatabase("db"); const d = c.database("db"); await d.createTable("t", "int", 20); const id = SingleId.create(20, 0, 100, 200); await d.table("t").insert(10n, id); const r = await d.table("t").search(id).toArray(); const out = r.map((x) => `${x.id}=${x.value}`).join(","); if (out !== "20/0/100/200=10") throw new Error(out); console.log(out);'
-          esm="import { KasaneClient, SingleId } from \"@airbee-project/kasane-client\"; $body"
-          cjs="const { KasaneClient, SingleId } = require(\"@airbee-project/kasane-client\"); (async () => { $body })().catch((e) => { console.error(e); process.exit(1); });"
+          esm="import { SingleId } from \"@airbee-project/kasane-client/spatial-id\"; import { KasaneClient } from \"@airbee-project/kasane-client/client\"; $body"
+          cjs="const { SingleId } = require(\"@airbee-project/kasane-client/spatial-id\"); const { KasaneClient } = require(\"@airbee-project/kasane-client/client\"); (async () => { $body })().catch((e) => { console.error(e); process.exit(1); });"
           case "${{ matrix.runtime }}" in
             node-esm) node --input-type=module -e "$esm" ;;
             node-cjs) node -e "$cjs" ;;
@@ -129,7 +130,8 @@ jobs:
           npm init -y
           npm install ../package.tgz wrangler@4
           cat > src/worker.js <<'EOF'
-          import { KasaneClient, SingleId } from "@airbee-project/kasane-client";
+          import { KasaneClient } from "@airbee-project/kasane-client/client";
+          import { SingleId } from "@airbee-project/kasane-client/spatial-id";
 
           export default {
             async fetch() {
@@ -181,6 +183,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - { format: commonjs, resolution: node10 }
           - { format: commonjs, resolution: node16 }
           - { format: module, resolution: node16 }
           - { format: module, resolution: bundler }
@@ -207,6 +210,20 @@ jobs:
       - name: Typecheck consumer
         working-directory: consumer
         run: |
-          echo 'import { SingleId } from "@airbee-project/kasane-client"; export const id: SingleId = SingleId.create(5, 3, 2, 10);' > index.ts
-          if [ "${{ matrix.resolution }}" = bundler ]; then module=esnext; else module=node16; fi
+          cat > index.ts <<'EOF'
+          import { SingleId, SpatialIdError } from "@airbee-project/kasane-client/spatial-id";
+          import { Coordinate } from "@airbee-project/kasane-client/geometry";
+          import { KasaneClient } from "@airbee-project/kasane-client/client";
+          import type { TableInfo } from "@airbee-project/kasane-client/client/database";
+          import { query } from "@airbee-project/kasane-client/client/query";
+          import type { ResultItem } from "@airbee-project/kasane-client/client/result";
+          export const id: SingleId = Coordinate.create(35, 139, 0).toSingleId(20);
+          export const q = query.source("db", "t");
+          export type T = [TableInfo, ResultItem, typeof KasaneClient, SpatialIdError];
+          EOF
+          case "${{ matrix.resolution }}" in
+            bundler) module=esnext ;;
+            node10) module=commonjs ;;
+            *) module=node16 ;;
+          esac
           npx tsc --noEmit --strict --lib es2022,dom --module "$module" --moduleResolution ${{ matrix.resolution }} index.ts

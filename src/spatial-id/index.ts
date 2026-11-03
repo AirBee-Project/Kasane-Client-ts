@@ -13,6 +13,18 @@
  * }
  * ```
  *
+ * 値が不正なときは {@link SpatialIdError} を投げる。`info.kind` で種類を判別できる。
+ *
+ * ```ts
+ * try {
+ *   SingleId.create(31, 0, 0, 0);
+ * } catch (e) {
+ *   if (e instanceof SpatialIdError && e.info.kind === "ZOutOfRange") {
+ *     console.log(e.info.z); // 31
+ *   }
+ * }
+ * ```
+ *
  * @disableGroups
  * @sortStrategy documents-first
  * @module
@@ -24,4 +36,5 @@ export { RangeId } from "./rangeId.js";
 export { FlexId } from "./flexId.js";
 export type { SpatialId } from "./types.js";
 export { Interval } from "./interval.js";
+export { SpatialIdError, type SpatialIdErrorInfo } from "./error.js";
 export { MAX_ZOOM, type RangeInput, TIME_MAX_ZOOM } from "./utils.js";

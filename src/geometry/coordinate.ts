@@ -1,7 +1,7 @@
-import { GeometryError } from "../errors/geometry.js";
 import type { RangeId } from "../spatial-id/rangeId.js";
 import { SingleId } from "../spatial-id/singleId.js";
 import { checkZoom } from "../spatial-id/utils.js";
+import { GeometryError } from "./error.js";
 
 const MAX_LATITUDE = 85.0511;
 const MAX_LONGITUDE = 180;
