@@ -9,7 +9,7 @@
     "ignoreUnknown": false,
     "includes": [
       "**",
-      "!src/client/gen",
+      "!src/proto/gen",
       "!src/client/wasm/gen",
       "!wasm/target",
       "!docs"

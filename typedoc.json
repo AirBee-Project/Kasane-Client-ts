@@ -1,10 +1,25 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["src/client/index.ts", "src/spatial-id/index.ts"],
+  "entryPoints": [
+    "src/spatial-id/index.ts",
+    "src/geometry/index.ts",
+    "src/client/index.ts",
+    "src/client/database/index.ts",
+    "src/client/query/index.ts",
+    "src/client/result/index.ts",
+    "src/errors/index.ts"
+  ],
   "tsconfig": "tsconfig.build.json",
   "out": "docs",
   "excludeInternal": true,
-  "externalPattern": ["**/node_modules/**", "**/src/client/gen/**"],
+  "externalPattern": ["**/node_modules/**", "**/src/proto/gen/**"],
   "excludeExternals": true,
-  "intentionallyNotExported": ["DatabaseInfo", "QueryNode", "TableConstraints"]
+  "intentionallyNotExported": ["DatabaseInfo", "QueryNode", "TableConstraints"],
+  "sort": ["kind", "source-order"],
+  "validation": {
+    "notExported": true,
+    "invalidLink": true,
+    "notDocumented": true
+  },
+  "sortEntryPoints": false
 }

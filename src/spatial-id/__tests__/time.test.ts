@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SpatialIdError } from "../error.js";
+import { SpatialIdError } from "../../errors/spatialId.js";
 import { Interval } from "../interval.js";
 import { RangeId } from "../rangeId.js";
 import { SingleId } from "../singleId.js";

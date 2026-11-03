@@ -1,14 +1,13 @@
-import {
-  fromProtoSpatialId,
-  fromTypedValue,
-  type SpatialId,
-} from "./convert.js";
-import type { TypedValue } from "./gen/common_pb.js";
-import type { SearchDataResponse } from "./gen/data_pb.js";
+import { fromProtoSpatialId, fromTypedValue } from "../../proto/convert.js";
+import type { TypedValue } from "../../proto/gen/common_pb.js";
+import type { SearchDataResponse } from "../../proto/gen/data_pb.js";
+import type { SpatialId } from "../../spatial-id/types.js";
 
 /** 検索・クエリ結果の単一アイテム。空間IDと値のペア。 */
 export interface ResultItem<T = unknown> {
+  /** 値を持つ空間 ID。 */
   id: SpatialId;
+  /** 空間 ID が持つ値。 */
   value: T;
 }
 

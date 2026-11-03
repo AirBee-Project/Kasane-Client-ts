@@ -33,7 +33,7 @@ KASANE_URL=http://localhost:5172 bun run test
 
 ### 生成コードと Wasm の更新
 
-`src/client/gen`（proto から生成した TypeScript）と `src/client/wasm/gen`（Wasm）は、`wasm/Cargo.toml` が参照する Kasane の `main` から作ります。次のコマンドで `main` の最新を取り直し、同じコミットから両方を作り直します。使った Kasane のコミットは `wasm/Cargo.lock` に残ります。
+`src/proto/gen`（proto から生成した TypeScript）と `src/client/wasm/gen`（Wasm）は、`wasm/Cargo.toml` が参照する Kasane の `main` から作ります。次のコマンドで `main` の最新を取り直し、同じコミットから両方を作り直します。使った Kasane のコミットは `wasm/Cargo.lock` に残ります。
 
 ```bash
 bun run generate

@@ -1,4 +1,4 @@
-import { SpatialIdError } from "./error.js";
+import { SpatialIdError } from "../errors/spatialId.js";
 
 /** 有効な空間ズームレベルの最大値 */
 export const MAX_ZOOM = 30;

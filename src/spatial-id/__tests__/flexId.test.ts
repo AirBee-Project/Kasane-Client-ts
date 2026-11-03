@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SpatialIdError } from "../error.js";
+import { SpatialIdError } from "../../errors/spatialId.js";
 import { FlexId } from "../flexId.js";
 
 describe("FlexId.create（生成と検証）", () => {

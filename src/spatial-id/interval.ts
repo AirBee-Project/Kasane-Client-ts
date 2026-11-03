@@ -1,4 +1,4 @@
-import { SpatialIdError } from "./error.js";
+import { SpatialIdError } from "../errors/spatialId.js";
 import { TIME_MAX_ZOOM } from "./utils.js";
 
 /**
