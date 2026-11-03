@@ -1,0 +1,10 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src/client/index.ts", "src/spatial-id/index.ts"],
+  "tsconfig": "tsconfig.build.json",
+  "out": "docs",
+  "excludeInternal": true,
+  "externalPattern": ["**/node_modules/**", "**/src/client/gen/**"],
+  "excludeExternals": true,
+  "intentionallyNotExported": ["DatabaseInfo", "QueryNode", "TableConstraints"]
+}

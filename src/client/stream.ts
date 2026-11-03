@@ -18,6 +18,7 @@ export interface ResultItem<T = unknown> {
 export class ResultStream<T = unknown> implements AsyncIterable<ResultItem<T>> {
   private readonly sourceStream: AsyncIterable<SearchDataResponse>;
 
+  /** @internal */
   constructor(sourceStream: AsyncIterable<SearchDataResponse>) {
     this.sourceStream = sourceStream;
   }
