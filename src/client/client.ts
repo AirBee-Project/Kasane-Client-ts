@@ -1,4 +1,10 @@
-import { type Client, createClient, type Transport } from "@connectrpc/connect";
+import {
+  type Client,
+  Code,
+  ConnectError,
+  createClient,
+  type Transport,
+} from "@connectrpc/connect";
 import { createGrpcWebTransport } from "@connectrpc/connect-web";
 import {
   normalizeSpatialIds,
@@ -12,7 +18,7 @@ import { DatabaseService } from "../proto/gen/database_pb.js";
 import type { QueryNode } from "../proto/gen/query_pb.js";
 import { QueryService } from "../proto/gen/query_pb.js";
 import { TableService } from "../proto/gen/table_pb.js";
-import type { SpatialId } from "../spatial-id/types.js";
+import type { SpatialId } from "../spatial-id/spatialId.js";
 import { createAuthInterceptor } from "./auth.js";
 import { DatabaseHandle } from "./database/handle.js";
 import type { TableDataType } from "./database/types.js";
@@ -53,6 +59,9 @@ export class KasaneClient {
    * @param servers 接続先サーバーURL（文字列またはURL配列）
    * @param username ユーザー名
    * @param password パスワード
+   *
+   * @throws `ConnectError` 接続先が空のとき（`InvalidArgument`）。
+   * @throws `ConnectError` 認証または通信に失敗したとき。
    */
   public static async connect(
     servers: string | string[],
@@ -61,7 +70,10 @@ export class KasaneClient {
   ): Promise<KasaneClient> {
     const serverList = Array.isArray(servers) ? servers : [servers];
     if (serverList.length === 0) {
-      throw new Error("KasaneClient requires at least one server URL");
+      throw new ConnectError(
+        "KasaneClient requires at least one server URL",
+        Code.InvalidArgument,
+      );
     }
 
     let token: string | undefined;
@@ -111,6 +123,8 @@ export class KasaneClient {
    *
    * @param name データベース名
    * @param description データベースの説明文
+   *
+   * @throws `ConnectError` 通信に失敗したとき、またはサーバーがエラーを返したとき。
    */
   public async createDatabase(
     name: string,
@@ -124,6 +138,8 @@ export class KasaneClient {
 
   /**
    * データベース一覧を取得する。
+   *
+   * @throws `ConnectError` 通信に失敗したとき、またはサーバーがエラーを返したとき。
    */
   public async listDatabases(options?: {
     rpcCallOptions?: RpcCallOptions;

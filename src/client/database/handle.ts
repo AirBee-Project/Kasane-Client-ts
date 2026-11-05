@@ -8,7 +8,7 @@ import {
 } from "../../proto/convert.js";
 import type { TableConstraints } from "../../proto/gen/common_pb.js";
 import type { DatabaseInfo } from "../../proto/gen/database_pb.js";
-import type { SpatialId } from "../../spatial-id/types.js";
+import type { SpatialId } from "../../spatial-id/spatialId.js";
 import type { KasaneClient } from "../client.js";
 import { type RpcCallOptions, toCallOptions } from "../options.js";
 import { ResultStream } from "../result/stream.js";
@@ -37,7 +37,12 @@ export class TableHandle<T extends PrimitiveValue = PrimitiveValue> {
     this.tableName = tableName;
   }
 
-  /** テーブルにデータを挿入する。既存データと重複がある場合は上書き。 */
+  /**
+   * テーブルにデータを挿入する。既存データと重複がある場合は上書き。
+   *
+   * @throws `ConnectError` 通信に失敗したとき、またはサーバーがエラーを返したとき。
+   * @throws `ConnectError` 値の型が対応していないとき（`InvalidArgument`）。
+   */
   public async insert(
     value: T,
     ids: SpatialId | SpatialId[],
@@ -52,7 +57,12 @@ export class TableHandle<T extends PrimitiveValue = PrimitiveValue> {
     });
   }
 
-  /** テーブルにデータを更新または挿入する。 */
+  /**
+   * テーブルにデータを更新または挿入する。
+   *
+   * @throws `ConnectError` 通信に失敗したとき、またはサーバーがエラーを返したとき。
+   * @throws `ConnectError` 値の型が対応していないとき（`InvalidArgument`）。
+   */
   public async upsert(
     value: T,
     ids: SpatialId | SpatialId[],
@@ -67,7 +77,11 @@ export class TableHandle<T extends PrimitiveValue = PrimitiveValue> {
     });
   }
 
-  /** テーブルから指定された空間IDのデータを削除する。 */
+  /**
+   * テーブルから指定された空間IDのデータを削除する。
+   *
+   * @throws `ConnectError` 通信に失敗したとき、またはサーバーがエラーを返したとき。
+   */
   public async remove(
     ids: SpatialId | SpatialId[],
     policy?: ZoomLevelPolicy,
@@ -80,7 +94,10 @@ export class TableHandle<T extends PrimitiveValue = PrimitiveValue> {
     });
   }
 
-  /** 指定された空間IDに合致するデータを検索する。 */
+  /**
+   * 指定された空間IDに合致するデータを検索する。
+   * 通信エラーは、返された {@link ResultStream} を走査したときに投げられる。
+   */
   public search(
     ids: SpatialId | SpatialId[],
     options?: {
@@ -102,7 +119,11 @@ export class TableHandle<T extends PrimitiveValue = PrimitiveValue> {
     return new ResultStream<T>(rawStream);
   }
 
-  /** テーブルの詳細情報を取得する。 */
+  /**
+   * テーブルの詳細情報を取得する。
+   *
+   * @throws `ConnectError` 通信に失敗したとき、またはサーバーがエラーを返したとき。
+   */
   public async info(): Promise<TableInfo> {
     const res = await this.client.tableClient.get({
       dbName: this.dbName,
@@ -111,7 +132,11 @@ export class TableHandle<T extends PrimitiveValue = PrimitiveValue> {
     return fromProtoTableInfo(res);
   }
 
-  /** テーブルを削除する。 */
+  /**
+   * テーブルを削除する。
+   *
+   * @throws `ConnectError` 通信に失敗したとき、またはサーバーがエラーを返したとき。
+   */
   public async delete(): Promise<void> {
     await this.client.tableClient.delete({
       dbName: this.dbName,
@@ -141,7 +166,11 @@ export class DatabaseHandle {
     return new TableHandle<T>(this.client, this.name, tableName);
   }
 
-  /** テーブルを新規作成する。 */
+  /**
+   * テーブルを新規作成する。
+   *
+   * @throws `ConnectError` 通信に失敗したとき、またはサーバーがエラーを返したとき。
+   */
   public async createTable(
     name: string,
     dataType: TableDataType,
@@ -164,7 +193,11 @@ export class DatabaseHandle {
     return fromProtoTableInfo(res);
   }
 
-  /** テーブル一覧を取得する。 */
+  /**
+   * テーブル一覧を取得する。
+   *
+   * @throws `ConnectError` 通信に失敗したとき、またはサーバーがエラーを返したとき。
+   */
   public async listTables(options?: {
     rpcCallOptions?: RpcCallOptions;
   }): Promise<TableInfo[]> {
@@ -175,17 +208,29 @@ export class DatabaseHandle {
     return res.tables.map(fromProtoTableInfo);
   }
 
-  /** データベースの詳細情報を取得する。 */
+  /**
+   * データベースの詳細情報を取得する。
+   *
+   * @throws `ConnectError` 通信に失敗したとき、またはサーバーがエラーを返したとき。
+   */
   public async info(): Promise<DatabaseInfo> {
     return await this.client.databaseClient.get({ dbName: this.name });
   }
 
-  /** データベースと配下のテーブルを削除する。 */
+  /**
+   * データベースと配下のテーブルを削除する。
+   *
+   * @throws `ConnectError` 通信に失敗したとき、またはサーバーがエラーを返したとき。
+   */
   public async delete(): Promise<void> {
     await this.client.databaseClient.delete({ dbName: this.name });
   }
 
-  /** データベースの名前または説明文を更新し、更新後の情報を返す。 */
+  /**
+   * データベースの名前または説明文を更新し、更新後の情報を返す。
+   *
+   * @throws `ConnectError` 通信に失敗したとき、またはサーバーがエラーを返したとき。
+   */
   public async update(options: {
     newName?: string;
     description?: string | null;

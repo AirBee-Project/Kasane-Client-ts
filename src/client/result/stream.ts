@@ -1,7 +1,7 @@
 import { fromProtoSpatialId, fromTypedValue } from "../../proto/convert.js";
 import type { TypedValue } from "../../proto/gen/common_pb.js";
 import type { SearchDataResponse } from "../../proto/gen/data_pb.js";
-import type { SpatialId } from "../../spatial-id/types.js";
+import type { SpatialId } from "../../spatial-id/spatialId.js";
 
 /** 検索・クエリ結果の単一アイテム。空間IDと値のペア。 */
 export interface ResultItem<T = unknown> {
@@ -25,6 +25,8 @@ export class ResultStream<T = unknown> implements AsyncIterable<ResultItem<T>> {
   /**
    * チャンクごとの値辞書と空間IDを自動解決し、
    * `{ id, value }` のアイテムを順次 yield する非同期イテレータ。
+   *
+   * @throws `ConnectError` 通信に失敗したとき、またはサーバーの応答を解釈できないとき。
    */
   public async *[Symbol.asyncIterator](): AsyncIterator<ResultItem<T>> {
     // dictionary はストリーム全体で共有され、各チャンクはその追加分だけを運ぶ。
@@ -50,7 +52,11 @@ export class ResultStream<T = unknown> implements AsyncIterable<ResultItem<T>> {
     }
   }
 
-  /** すべての結果を配列として収集して返す。 */
+  /**
+   * すべての結果を配列として収集して返す。
+   *
+   * @throws `ConnectError` 通信に失敗したとき、またはサーバーの応答を解釈できないとき。
+   */
   public async toArray(): Promise<ResultItem<T>[]> {
     const results: ResultItem<T>[] = [];
     for await (const item of this) {
@@ -61,6 +67,8 @@ export class ResultStream<T = unknown> implements AsyncIterable<ResultItem<T>> {
 
   /**
    * 結果を値ごとにグループ化し、`Map<value, SpatialId[]>` として返す。
+   *
+   * @throws `ConnectError` 通信に失敗したとき、またはサーバーの応答を解釈できないとき。
    */
   public async toDictionaryMap(): Promise<Map<T, SpatialId[]>> {
     const map = new Map<T, SpatialId[]>();

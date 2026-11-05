@@ -49,32 +49,32 @@ describe("RangeId.createUnchecked（検証なしの生成）", () => {
 
 describe("RangeId.withTime（時間区間の設定）", () => {
   it("単一値または[min, max]ペアを受け取り、昇順に並び替える", () => {
-    const range = RangeId.create(4, [-3, 6], [8, 9], [5, 10]).withTime(
+    const range = RangeId.create(4, [-3, 6], [8, 9], [5, 10]).timeWith(
       3600,
       [8, 5],
     );
-    expect(range.interval.seconds()).toBe(3600);
+    expect(range.i.seconds()).toBe(3600);
     expect(range.t).toEqual([5, 8]);
   });
 });
 
-describe("RangeId.toSingleIds（SingleIdへの展開）", () => {
+describe("RangeId.singleIds（SingleIdへの展開）", () => {
   it("直方体を全ての点へ展開する", () => {
     const range = RangeId.create(4, [0, 1], [0, 1], [0, 1]);
-    const singles = [...range.toSingleIds()];
+    const singles = [...range.singleIds()];
     expect(singles).toHaveLength(8);
     expect(singles.every((s) => s.z === 4)).toBe(true);
   });
 
   it("周期境界をまたぐx範囲(x[0] > x[1])を正しく展開する", () => {
     const range = RangeId.create(3, 0, [6, 1], 0); // 6, 7, 0, 1と折り返す
-    const xs = [...range.toSingleIds()].map((s) => s.x);
+    const xs = [...range.singleIds()].map((s) => s.x);
     expect(xs).toEqual([6, 7, 0, 1]);
   });
 
   it("時間の範囲にも展開する", () => {
-    const range = RangeId.create(4, 0, 0, 0).withTime(3600, [0, 2]);
-    const ts = [...range.toSingleIds()].map((s) => s.t);
+    const range = RangeId.create(4, 0, 0, 0).timeWith(3600, [0, 2]);
+    const ts = [...range.singleIds()].map((s) => s.t);
     expect(ts).toEqual([0, 1, 2]);
   });
 });
@@ -107,7 +107,7 @@ describe("RangeId（FlexIdイテレータとしての展開）", () => {
       }
     }
 
-    const direct = [...range.toSingleIds()].map((s) => `${s.f},${s.x},${s.y}`);
+    const direct = [...range.singleIds()].map((s) => `${s.f},${s.x},${s.y}`);
     expect(covered.size).toBe(direct.length);
     for (const key of direct) {
       expect(covered.has(key)).toBe(true);
@@ -115,7 +115,7 @@ describe("RangeId（FlexIdイテレータとしての展開）", () => {
   });
 
   it("2の冪でない時間範囲を、ちょうど覆うSegment群へ分解する", () => {
-    const range = RangeId.create(4, 0, 1, 1).withTime(1800, [1, 3]); // [1800, 7200)
+    const range = RangeId.create(4, 0, 1, 1).timeWith(1800, [1, 3]); // [1800, 7200)
     const flexes = [...range];
 
     const seconds = new Set<number>();
@@ -141,9 +141,9 @@ describe("SingleId・RangeId・FlexId の相互変換", () => {
   });
 
   it("FlexIdの時間Segmentは、RangeId上の等価なIntervalへ対応する", () => {
-    const flex = FlexId.create(3, 1, 3, 1, 3, 1).withTime(25, 7); // 2^(35-25)=1024秒
+    const flex = FlexId.create(3, 1, 3, 1, 3, 1).withTimeSegment(25, 7); // 2^(35-25)=1024秒
     const range = flex.toRangeId();
-    expect(range.interval.seconds()).toBe(1024);
+    expect(range.i.seconds()).toBe(1024);
     expect(range.t).toEqual([7, 7]);
   });
 });
@@ -165,7 +165,7 @@ describe("RangeId.toString（文字列化）", () => {
   });
 
   it("時間付きのRangeIdを正しく文字列化する（時間の範囲および単一値）", () => {
-    const rangeWithSpan = RangeId.create(4, [-3, 6], [8, 9], [5, 10]).withTime(
+    const rangeWithSpan = RangeId.create(4, [-3, 6], [8, 9], [5, 10]).timeWith(
       3600,
       [0, 2],
     );
@@ -176,7 +176,7 @@ describe("RangeId.toString（文字列化）", () => {
       [-3, 6],
       [8, 9],
       [5, 10],
-    ).withTime(3600, 0);
+    ).timeWith(3600, 0);
     expect(rangeWithSingleT.toString()).toBe("4/-3:6/8:9/5:10_3600/0");
   });
 
@@ -193,7 +193,7 @@ describe("RangeId.parse（文字列からの復元）", () => {
     expect(range.f).toEqual([-3, 6]);
     expect(range.x).toEqual([8, 9]);
     expect(range.y).toEqual([5, 10]);
-    expect(range.isWholeTime()).toBe(true);
+    expect(range.timeIsWhole()).toBe(true);
   });
 
   it("一部または全部が単一値の文字列表現から正しく復元できる", () => {
@@ -210,16 +210,16 @@ describe("RangeId.parse（文字列からの復元）", () => {
 
   it("時間付きの文字列表現から正しく復元できる", () => {
     const withSpan = RangeId.parse("4/-3:6/8:9/5:10_3600/0:2");
-    expect(withSpan.interval.seconds()).toBe(3600);
+    expect(withSpan.i.seconds()).toBe(3600);
     expect(withSpan.t).toEqual([0, 2]);
 
     const withSingle = RangeId.parse("4/-3:6/8:9/5:10_3600/0");
-    expect(withSingle.interval.seconds()).toBe(3600);
+    expect(withSingle.i.seconds()).toBe(3600);
     expect(withSingle.t).toEqual([0, 0]);
   });
 
   it("toString()の出力をparse()で元通り復元できる（ラウンドトリップ）", () => {
-    const original = RangeId.create(4, [-3, 6], [8, 9], [5, 10]).withTime(
+    const original = RangeId.create(4, [-3, 6], [8, 9], [5, 10]).timeWith(
       3600,
       [1, 3],
     );
@@ -228,7 +228,7 @@ describe("RangeId.parse（文字列からの復元）", () => {
     expect(restored.f).toEqual(original.f);
     expect(restored.x).toEqual(original.x);
     expect(restored.y).toEqual(original.y);
-    expect(restored.interval.seconds()).toBe(original.interval.seconds());
+    expect(restored.i.seconds()).toBe(original.i.seconds());
     expect(restored.t).toEqual(original.t);
   });
 

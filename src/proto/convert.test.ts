@@ -29,7 +29,7 @@ describe("SingleId と Protobuf SingleId の相互変換", () => {
   });
 
   it("特定時間セグメントを持つIDを相互変換できる", () => {
-    const single = SingleId.create(12, 0, 3638, 1614).withTime(1800, 809712);
+    const single = SingleId.create(12, 0, 3638, 1614).timeWith(1800, 809712);
     const pb = toProtoSingleId(single);
     expect(pb.i).toBe(1800n);
     expect(pb.t).toBe(809712n);
@@ -58,7 +58,7 @@ describe("RangeId と Protobuf RangeId の相互変換", () => {
   });
 
   it("時間区間を持つ範囲IDを相互変換できる", () => {
-    const range = RangeId.create(4, [-3, 6], [8, 9], [5, 10]).withTime(
+    const range = RangeId.create(4, [-3, 6], [8, 9], [5, 10]).timeWith(
       3600,
       [5, 8],
     );
@@ -83,7 +83,7 @@ describe("FlexId と Protobuf FlexId の相互変換", () => {
   });
 
   it("時間セグメントを持つFlexIdを相互変換できる", () => {
-    const flex = FlexId.create(5, 3, 2, 3, 10, 1).withTime(25, 7);
+    const flex = FlexId.create(5, 3, 2, 3, 10, 1).withTimeSegment(25, 7);
     const pb = toProtoFlexId(flex);
     expect(pb.tZoomlevel).toBe(25);
     expect(pb.tIndex).toBe(7n);

@@ -1,12 +1,17 @@
 import { SpatialIdError } from "./error.js";
-import { TIME_MAX_ZOOM } from "./utils.js";
+import { TimeSegment } from "./timeSegment.js";
+import { TimeSpan } from "./timeSpan.js";
+import { TZoomLevel } from "./zoomLevel.js";
 
 /**
  * 時間間隔 `{i}`を表現する型。よく使う値は定数として用意している。
  */
 export class Interval {
-  /** このライブラリが扱える最大の時間間隔 */
-  public static readonly MAX_SECONDS = 2 ** TIME_MAX_ZOOM;
+  /** 最も粗い時間単位を表す二進層の指数。時間軸の最大ズームレベル（{@link TZoomLevel.MAX}）と等しい。 */
+  public static readonly MAX_POW = TZoomLevel.MAX;
+
+  /** このライブラリが扱える最大の時間間隔（`2^`{@link Interval.MAX_POW} 秒） */
+  public static readonly MAX_SECONDS = 2 ** Interval.MAX_POW;
 
   private readonly value: number;
 
@@ -25,9 +30,20 @@ export class Interval {
   /** 1秒。 */
   public static readonly SECOND = new Interval(1);
 
+  // 定数は全 ID から共有されるので、型を迂回した書き換えが全体に及ばないよう凍結する
+  static {
+    Object.freeze(Interval.WHOLE);
+    Object.freeze(Interval.DAY);
+    Object.freeze(Interval.HOUR);
+    Object.freeze(Interval.MINUTE);
+    Object.freeze(Interval.SECOND);
+  }
+
   /**
    * 秒数から {@link Interval} を作成する。
-   * `seconds` が正の整数でない、または {@link Interval.MAX_SECONDS} を超える場合はエラーを投げる。
+   * `seconds` は正の整数で、{@link Interval.MAX_SECONDS} 以下でなければならない。
+   *
+   * @throws {@link SpatialIdError} `TIntervalError` `seconds` が不正なとき
    */
   public static create(seconds: number): Interval {
     if (
@@ -40,16 +56,21 @@ export class Interval {
     return new Interval(seconds);
   }
 
-  /** {@link Interval} 自身、または秒数の整数のどちらからでも {@link Interval} を得る。 */
+  /**
+   * {@link Interval} 自身、または秒数の整数のどちらからでも {@link Interval} を得る。
+   *
+   * @throws {@link SpatialIdError} `TIntervalError` 秒数が不正なとき
+   */
   public static from(input: Interval | number): Interval {
     return input instanceof Interval ? input : Interval.create(input);
   }
 
   /**
    * Unix 時刻（秒）が属する時間インデックス `t = floor(u / i)` を返す。
-   * 計算した `t` が 0 以上の有限の数でない場合は `TOutOfRange` を投げる。
+   *
+   * @throws {@link SpatialIdError} `TOutOfRange` 計算した `t` が 0 以上の有限の数でないとき
    */
-  public indexAt(unixSeconds: number): number {
+  public indexOf(unixSeconds: number): number {
     const t = Math.floor(unixSeconds / this.value);
     if (!(Number.isFinite(t) && t >= 0)) {
       throw new SpatialIdError({ kind: "TOutOfRange", i: this.value, t });
@@ -62,40 +83,60 @@ export class Interval {
     return this.value;
   }
 
+  /** 2つの {@link Interval} の秒数が等しいかを判定する。 */
+  public equals(other: Interval): boolean {
+    return this.value === other.value;
+  }
+
   /**
-   * `{i}` と `{t}` の範囲（両端含む）が占める絶対秒区間の終端が {@link Interval.MAX_SECONDS} を超えないかを検証する。超える場合はエラーを投げる。
+   * 秒数が2の冪かを判定する。
+   *
+   * 2の冪であれば、時間は {@link FlexId} の時間軸の1Segmentに収まる。
+   * そうでない間隔（例: 1800秒）は、木構造へ入れるときに複数のSegmentへ分解される。
    */
-  public validatedSpan(tMin: number, tMax: number): void {
+  public isPowerOfTwo(): boolean {
+    return Number.isInteger(Math.log2(this.value));
+  }
+
+  /**
+   * 時間軸のズームレベルが表す1Segmentの幅を、{@link Interval} として返す。
+   *
+   * @internal
+   */
+  public static fromZoom(zoom: TZoomLevel): Interval {
+    return zoom.value === TZoomLevel.MIN
+      ? Interval.WHOLE
+      : new Interval(zoom.segmentSeconds());
+  }
+
+  /**
+   * `{i}` と `{t}` を、{@link FlexId} が持てる時間軸の1Segmentへ直す。
+   *
+   * @throws {@link SpatialIdError} `TIntervalError` 秒数が2の冪でないとき
+   * @throws {@link SpatialIdError} `TOutOfRange` `t` が範囲外のとき
+   * @internal
+   */
+  public asSegment(t: number): TimeSegment {
+    if (!this.isPowerOfTwo()) {
+      throw new SpatialIdError({ kind: "TIntervalError", i: this.value });
+    }
+    const zoom = TZoomLevel.create(TZoomLevel.MAX - Math.log2(this.value));
+    zoom.checkIndex(t);
+    return TimeSegment.of(zoom, t);
+  }
+
+  /**
+   * `{i}` と `{t}` の範囲（両端含む）が占める絶対秒区間を、検証して返す。
+   *
+   * @throws {@link SpatialIdError} `TOutOfRange` 区間が不正、または終端が {@link Interval.MAX_SECONDS} を超えるとき
+   * @internal
+   */
+  public validatedSpan(tMin: number, tMax: number): TimeSpan {
     const start = tMin * this.value;
     const end = (tMax + 1) * this.value;
     if (start >= end || end > Interval.MAX_SECONDS) {
       throw new SpatialIdError({ kind: "TOutOfRange", i: this.value, t: tMax });
     }
+    return TimeSpan.createUnchecked(start, end);
   }
-}
-
-/**
- * 絶対秒区間 `[start, end)` を、それをちょうど表せる最も粗い単位と `t` の範囲へ直す。
- * 単位は `start` と区間幅の最大公約数。
- * `start` が負、`start >= end`、`end` が {@link Interval.MAX_SECONDS} を超える、または整数でない場合は
- * `TOutOfRange` を投げる。
- */
-export function timeSpanToIntervalRange(
-  start: number,
-  end: number,
-): [Interval, number, number] {
-  if (
-    !Number.isInteger(start) ||
-    !Number.isInteger(end) ||
-    start < 0 ||
-    start >= end ||
-    end > Interval.MAX_SECONDS
-  ) {
-    throw new SpatialIdError({ kind: "TOutOfRange", i: 1, t: end });
-  }
-  let [a, b] = [start, end - start];
-  while (b !== 0) {
-    [a, b] = [b, a % b];
-  }
-  return [Interval.create(a), start / a, end / a - 1];
 }

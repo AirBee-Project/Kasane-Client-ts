@@ -1,19 +1,15 @@
-import {
-  type Coordinate,
-  type CoordinateRange,
-  singleIdToCenterCoordinate,
-  singleIdToCoordinateRange,
-} from "../geometry/coordinate.js";
+import { Coordinate, type CoordinateRange } from "../geometry/coordinate.js";
 import { SpatialIdError } from "./error.js";
 import type { FlexId } from "./flexId.js";
 import { Interval } from "./interval.js";
 import { RangeId } from "./rangeId.js";
-import { checkF, checkX, checkY, checkZoom, parseInteger } from "./utils.js";
+import type { SpatialId } from "./spatialId.js";
+import { SpatialIdBase } from "./spatialIdBase.js";
+import { ZoomLevel } from "./zoomLevel.js";
 
 /** 1つのボクセルを表す時空間 ID。仕様の `{z}/{f}/{x}/{y}_{i}/{t}` に対応する。 */
-export class SingleId {
-  /** ズームレベル `{z}`。 */
-  public readonly z: number;
+export class SingleId extends SpatialIdBase {
+  private readonly zoom: ZoomLevel;
   /** 高度方向のインデックス `{f}`。 */
   public readonly f: number;
   /** X 方向のインデックス `{x}`。 */
@@ -21,46 +17,63 @@ export class SingleId {
   /** Y 方向のインデックス `{y}`。 */
   public readonly y: number;
   /** 時間間隔 `{i}`。時間を指定していなければ {@link Interval.WHOLE}。 */
-  public readonly interval: Interval;
+  public readonly i: Interval;
   /** 時間インデックス `{t}`。 */
   public readonly t: number;
 
   private constructor(
-    z: number,
+    zoom: ZoomLevel,
     f: number,
     x: number,
     y: number,
-    interval: Interval,
+    i: Interval,
     t: number,
   ) {
-    this.z = z;
+    super();
+    this.zoom = zoom;
     this.f = f;
     this.x = x;
     this.y = y;
-    this.interval = interval;
+    this.i = i;
     this.t = t;
+  }
+
+  /** ズームレベル `{z}`。 */
+  public get z(): number {
+    return this.zoom.value;
   }
 
   /**
    * 指定された値から {@link SingleId} を作成する。
-   * `z`, `f`, `x`, `y` が各ズームレベルにおける範囲内にあるかを検証し、範囲外の場合はエラーを投げる。
-   * 時間は指定しておらず、全時間（{@link Interval.WHOLE}）となる。。
+   * `z`, `f`, `x`, `y` が各ズームレベルにおける範囲内にあるかを検証する。
+   * 時間は指定しておらず、全時間（{@link Interval.WHOLE}）となる。
+   *
+   * @throws {@link SpatialIdError} `ZOutOfRange` `z` が範囲外のとき
+   * @throws {@link SpatialIdError} `FOutOfRange` `f` が範囲外のとき
+   * @throws {@link SpatialIdError} `XOutOfRange` `x` が範囲外のとき
+   * @throws {@link SpatialIdError} `YOutOfRange` `y` が範囲外のとき
    */
   public static create(z: number, f: number, x: number, y: number): SingleId {
-    checkZoom(z);
-    checkF(z, f);
-    checkX(z, x);
-    checkY(z, y);
+    const zoom = ZoomLevel.create(z);
+    zoom.checkF(f);
+    zoom.checkX(x);
+    zoom.checkY(y);
 
-    return new SingleId(z, f, x, y, Interval.WHOLE, 0);
+    return new SingleId(zoom, f, x, y, Interval.WHOLE, 0);
   }
 
   /**
    * 文字列表現から {@link SingleId} を復元する。
    *
    * 形式は `"{z}/{f}/{x}/{y}"`、時間を持つ場合は `"{z}/{f}/{x}/{y}_{i}/{t}"`。
-   * 書式不正の場合は {@link SpatialIdError}（`ParseSpatialIdFormat`）を投げる。
-   * 各値が範囲外の場合は各検証エラー（{@link SpatialIdError}）を投げる。
+   *
+   * @throws {@link SpatialIdError} `ParseSpatialIdFormat` 書式が不正なとき
+   * @throws {@link SpatialIdError} `ZOutOfRange` `z` が範囲外のとき
+   * @throws {@link SpatialIdError} `FOutOfRange` `f` が範囲外のとき
+   * @throws {@link SpatialIdError} `XOutOfRange` `x` が範囲外のとき
+   * @throws {@link SpatialIdError} `YOutOfRange` `y` が範囲外のとき
+   * @throws {@link SpatialIdError} `TIntervalError` `i` が不正なとき
+   * @throws {@link SpatialIdError} `TOutOfRange` `t` が範囲外のとき
    */
   public static parse(text: string): SingleId {
     const underscoreIndex = text.indexOf("_");
@@ -102,10 +115,10 @@ export class SingleId {
       });
     }
 
-    const z = parseInteger(zStr);
-    const f = parseInteger(fStr);
-    const x = parseInteger(xStr);
-    const y = parseInteger(yStr);
+    const z = SingleId.parseInteger(zStr);
+    const f = SingleId.parseInteger(fStr);
+    const x = SingleId.parseInteger(xStr);
+    const y = SingleId.parseInteger(yStr);
 
     if (z === null || f === null || x === null || y === null) {
       throw new SpatialIdError({
@@ -144,8 +157,8 @@ export class SingleId {
         });
       }
 
-      const i = parseInteger(iStr);
-      const t = parseInteger(tStr);
+      const i = SingleId.parseInteger(iStr);
+      const t = SingleId.parseInteger(tStr);
       if (i === null || t === null) {
         throw new SpatialIdError({
           kind: "ParseSpatialIdFormat",
@@ -154,7 +167,7 @@ export class SingleId {
         });
       }
 
-      return id.withTime(i, t);
+      return id.timeWith(i, t);
     }
 
     return id;
@@ -170,67 +183,53 @@ export class SingleId {
     x: number,
     y: number,
   ): SingleId {
-    return new SingleId(z, f, x, y, Interval.WHOLE, 0);
+    return new SingleId(
+      ZoomLevel.createUnchecked(z),
+      f,
+      x,
+      y,
+      Interval.WHOLE,
+      0,
+    );
   }
 
   /**
-   * 時間を設定する。`interval` は {@link Interval} または秒数のどちらでも渡せる。
+   * 時間を含め、検証を行わずに {@link SingleId} を作成する。
+   * **不正な値を渡した場合の挙動は未定義**になる。
+   *
+   * @internal
    */
-  public withTime(interval: Interval | number, t: number): SingleId {
-    const resolved = Interval.from(interval);
-    resolved.validatedSpan(t, t);
-    return new SingleId(this.z, this.f, this.x, this.y, resolved, t);
+  public static createUncheckedWithTime(
+    zoom: ZoomLevel,
+    f: number,
+    x: number,
+    y: number,
+    i: Interval,
+    t: number,
+  ): SingleId {
+    return new SingleId(zoom, f, x, y, i, t);
   }
 
   /** {@link SingleId} を {@link RangeId} へ変換する。 */
   public toRangeId(): RangeId {
-    return RangeId.create(this.z, this.f, this.x, this.y).withTime(
-      this.interval,
-      this.t,
+    const { zoom, f, x, y, i, t } = this;
+    return RangeId.createUncheckedWithTime(zoom, [f, f], [x, x], [y, y], i, [
+      t,
+      t,
+    ]);
+  }
+
+  /** すべての値が等しい {@link SingleId} かを判定する。 */
+  public equals(other: SpatialId): boolean {
+    return (
+      other instanceof SingleId &&
+      this.zoom === other.zoom &&
+      this.f === other.f &&
+      this.x === other.x &&
+      this.y === other.y &&
+      this.i.equals(other.i) &&
+      this.t === other.t
     );
-  }
-
-  /** ボクセルの中心を {@link Coordinate} で返す。 */
-  public toCenterCoordinate(): Coordinate {
-    return singleIdToCenterCoordinate(this);
-  }
-
-  /** ボクセルの範囲を、緯度・経度・高度ごとの `[最小, 最大]` で返す。 */
-  public toCoordinateRange(): CoordinateRange {
-    return singleIdToCoordinateRange(this);
-  }
-
-  /** 全時間を指しているか。 */
-  public isWholeTime(): boolean {
-    return this.interval.seconds() === Interval.MAX_SECONDS && this.t === 0;
-  }
-
-  /** Unix 時刻（秒）を含む時間を設定した {@link SingleId} を返す。 */
-  public withTimeAt(
-    interval: Interval | number,
-    unixSeconds: number,
-  ): SingleId {
-    const resolved = Interval.from(interval);
-    return this.withTime(resolved, resolved.indexAt(unixSeconds));
-  }
-
-  /** 時間の指定を外し、全時間に戻す。 */
-  public withoutTime(): SingleId {
-    return new SingleId(this.z, this.f, this.x, this.y, Interval.WHOLE, 0);
-  }
-
-  /**
-   * この ID が占める絶対秒区間 `[start, end)`（Unix 時刻）を返す。
-   */
-  public secondsRange(): [number, number] {
-    const unit = this.interval.seconds();
-    return [this.t * unit, (this.t + 1) * unit];
-  }
-
-  /** Unix 時刻（秒）が、この ID の時間に含まれるか。 */
-  public containsTime(unixSeconds: number): boolean {
-    const [start, end] = this.secondsRange();
-    return start <= unixSeconds && unixSeconds < end;
   }
 
   /**
@@ -239,14 +238,76 @@ export class SingleId {
    */
   public toString(): string {
     const base = `${this.z}/${this.f}/${this.x}/${this.y}`;
-    if (this.isWholeTime()) {
+    if (this.timeIsWhole()) {
       return base;
     }
-    return `${base}_${this.interval.seconds()}/${this.t}`;
+    return `${base}_${this.i.seconds()}/${this.t}`;
   }
 
   /** {@link SingleId} を {@link FlexId} へ変換する。 */
   public [Symbol.iterator](): Generator<FlexId> {
     return this.toRangeId()[Symbol.iterator]();
+  }
+
+  /** この {@link SingleId} 自身のみを1つ返す。 */
+  public *singleIds(): Generator<SingleId> {
+    yield this;
+  }
+  /** 時間を含まない、空間3次元（F/X/Y）の中心を {@link Coordinate} で返す。 */
+  public spatialCenter(): Coordinate {
+    const { z, f, x, y } = this;
+    return Coordinate.fromIndex(z, f + 0.5, x + 0.5, y + 0.5);
+  }
+
+  /**
+   * 時間を含まない、空間3次元の直方体を構成する8頂点の座標を返す。
+   *
+   * 高度（低い方から）、緯度（`y` の小さい方から）、経度（西から）の順に並ぶ。
+   */
+  public spatialVertices(): readonly [
+    Coordinate,
+    Coordinate,
+    Coordinate,
+    Coordinate,
+    Coordinate,
+    Coordinate,
+    Coordinate,
+    Coordinate,
+  ] {
+    return this.toRangeId().spatialVertices();
+  }
+
+  /** ボクセルの範囲を、緯度・経度・高度ごとの `[最小, 最大]` で返す。 */
+  public spatialRange(): CoordinateRange {
+    const { z, f, x, y } = this;
+    return Coordinate.range(
+      Coordinate.fromIndex(z, f, x, y + 1),
+      Coordinate.fromIndex(z, f + 1, x + 1, y),
+    );
+  }
+
+  /**
+   * 時間を設定する。`i` は {@link Interval} または秒数のどちらでも渡せる。
+   *
+   * @throws {@link SpatialIdError} `TIntervalError` `i` が不正なとき
+   * @throws {@link SpatialIdError} `TOutOfRange` `t` が範囲外のとき
+   */
+  public timeWith(i: Interval | number, t: number): SingleId {
+    const resolved = Interval.from(i);
+    resolved.validatedSpan(t, t);
+    return new SingleId(this.zoom, this.f, this.x, this.y, resolved, t);
+  }
+
+  /** 時間の指定を外し、全時間に戻す。 */
+  public timeCleared(): SingleId {
+    return new SingleId(this.zoom, this.f, this.x, this.y, Interval.WHOLE, 0);
+  }
+
+  /**
+   * この ID が占める絶対秒区間 `[start, end)`（Unix 時刻）を返す。
+   */
+  public timeRange(): readonly [number, number] {
+    const unit = this.i.seconds();
+    return [this.t * unit, (this.t + 1) * unit];
   }
 }

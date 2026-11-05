@@ -1,22 +1,24 @@
-/** {@link GeometryError} の種類と、失敗した値。`kind` で判別する。 */
+/**
+ * {@link GeometryError} の種類と、失敗した値。`kind` で判別する。
+ *
+ * @inline
+ * @hidden
+ */
 export type GeometryErrorInfo =
-  /** 緯度が有効範囲外。 */
   | {
-      /** エラーの種類。 */
+      /** 緯度が有効範囲外。 */
       kind: "LatitudeOutOfRange";
       /** 指定された緯度。 */
       latitude: number;
     }
-  /** 経度が有効範囲外。 */
   | {
-      /** エラーの種類。 */
+      /** 経度が有効範囲外。 */
       kind: "LongitudeOutOfRange";
       /** 指定された経度。 */
       longitude: number;
     }
-  /** 高度が有効範囲外。 */
   | {
-      /** エラーの種類。 */
+      /** 高度が有効範囲外。 */
       kind: "AltitudeOutOfRange";
       /** 指定された高度。 */
       altitude: number;

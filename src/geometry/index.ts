@@ -5,7 +5,7 @@
  *
  * ```ts
  * const tokyo = Coordinate.create(35.681, 139.767, 0);
- * const id = tokyo.toSingleId(20);
+ * const id = tokyo.singleId(20);
  * ```
  *
  * 緯度・経度・高度が範囲外のときは {@link GeometryError} を投げる。

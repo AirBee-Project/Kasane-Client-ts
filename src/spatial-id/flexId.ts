@@ -1,61 +1,110 @@
+import type { Coordinate, CoordinateRange } from "../geometry/coordinate.js";
 import { SpatialIdError } from "./error.js";
 import { Interval } from "./interval.js";
 import { RangeId } from "./rangeId.js";
 import type { SingleId } from "./singleId.js";
-import {
-  checkF,
-  checkTIndex,
-  checkTZoom,
-  checkX,
-  checkY,
-  checkZoom,
-  parseInteger,
-  segmentSeconds,
-} from "./utils.js";
+import type { SpatialId } from "./spatialId.js";
+import { SpatialIdBase } from "./spatialIdBase.js";
+import { TZoomLevel, ZoomLevel } from "./zoomLevel.js";
 
 /** 軸ごとに異なるズームレベルを持つ拡張時空間 ID。 */
-export class FlexId {
-  /** 高度方向のズームレベル。 */
-  public readonly fZoomLevel: number;
+export class FlexId extends SpatialIdBase {
+  /**
+   * 高度方向のインデックスの最大値側で、全空間の上半分（`f = 0`）を覆う {@link FlexId}。
+   * 全時間を指す。
+   */
+  public static readonly UPPER_MAX: FlexId = new FlexId(
+    ZoomLevel.createUnchecked(ZoomLevel.MIN),
+    0,
+    ZoomLevel.createUnchecked(ZoomLevel.MIN),
+    0,
+    ZoomLevel.createUnchecked(ZoomLevel.MIN),
+    0,
+    TZoomLevel.createUnchecked(TZoomLevel.MIN),
+    0,
+  );
+
+  /** 全空間の下半分（`f = -1`）を覆う {@link FlexId}。全時間を指す。 */
+  public static readonly LOWER_MAX: FlexId = new FlexId(
+    ZoomLevel.createUnchecked(ZoomLevel.MIN),
+    -1,
+    ZoomLevel.createUnchecked(ZoomLevel.MIN),
+    0,
+    ZoomLevel.createUnchecked(ZoomLevel.MIN),
+    0,
+    TZoomLevel.createUnchecked(TZoomLevel.MIN),
+    0,
+  );
+
+  // 全 ID から共有される定数なので、型を迂回した書き換えが全体に及ばないよう凍結する
+  static {
+    Object.freeze(FlexId.UPPER_MAX);
+    Object.freeze(FlexId.LOWER_MAX);
+  }
+
+  private readonly fZoom: ZoomLevel;
   /** 高度方向のインデックス。 */
   public readonly fIndex: number;
-  /** X 方向のズームレベル。 */
-  public readonly xZoomLevel: number;
+  private readonly xZoom: ZoomLevel;
   /** X 方向のインデックス。 */
   public readonly xIndex: number;
-  /** Y 方向のズームレベル。 */
-  public readonly yZoomLevel: number;
+  private readonly yZoom: ZoomLevel;
   /** Y 方向のインデックス。 */
   public readonly yIndex: number;
-  /** 時間軸のズームレベル（0 以上 {@link TIME_MAX_ZOOM} 以下）。 */
-  public readonly tZoomLevel: number;
+  private readonly tZoom: TZoomLevel;
   /** 時間軸のインデックス。 */
   public readonly tIndex: number;
 
   private constructor(
-    fZoomLevel: number,
+    fZoom: ZoomLevel,
     fIndex: number,
-    xZoomLevel: number,
+    xZoom: ZoomLevel,
     xIndex: number,
-    yZoomLevel: number,
+    yZoom: ZoomLevel,
     yIndex: number,
-    tZoomLevel: number,
+    tZoom: TZoomLevel,
     tIndex: number,
   ) {
-    this.fZoomLevel = fZoomLevel;
+    super();
+    this.fZoom = fZoom;
     this.fIndex = fIndex;
-    this.xZoomLevel = xZoomLevel;
+    this.xZoom = xZoom;
     this.xIndex = xIndex;
-    this.yZoomLevel = yZoomLevel;
+    this.yZoom = yZoom;
     this.yIndex = yIndex;
-    this.tZoomLevel = tZoomLevel;
+    this.tZoom = tZoom;
     this.tIndex = tIndex;
+  }
+
+  /** 高度方向のズームレベル。 */
+  public get fZoomLevel(): number {
+    return this.fZoom.value;
+  }
+
+  /** X 方向のズームレベル。 */
+  public get xZoomLevel(): number {
+    return this.xZoom.value;
+  }
+
+  /** Y 方向のズームレベル。 */
+  public get yZoomLevel(): number {
+    return this.yZoom.value;
+  }
+
+  /** 時間軸のズームレベル（0 以上 {@link TZoomLevel.MAX} 以下）。 */
+  public get tZoomLevel(): number {
+    return this.tZoom.value;
   }
 
   /**
    * 空間3軸（F/X/Y）からそれぞれ独立したズームレベルで {@link FlexId} を作成する。
-   * 各インデックスが対応するズームレベルの範囲内にあるかを検証し、範囲外の場合はエラーを投げる。
+   * 各インデックスが対応するズームレベルの範囲内にあるかを検証する。
    * 時間軸は全時間（ズーム0、インデックス0）から始まる。
+   *
+   * @throws {@link SpatialIdError} `ZOutOfRange` いずれかのズームレベルが範囲外のとき
+   * @throws {@link SpatialIdError} `FOutOfRange` `fIndex` が範囲外のとき
+   * @throws {@link SpatialIdError} `XOutOfRange` `xIndex` が範囲外のとき
+   * @throws {@link SpatialIdError} `YOutOfRange` `yIndex` が範囲外のとき
    */
   public static create(
     fZoomLevel: number,
@@ -65,22 +114,22 @@ export class FlexId {
     yZoomLevel: number,
     yIndex: number,
   ): FlexId {
-    checkZoom(fZoomLevel);
-    checkZoom(xZoomLevel);
-    checkZoom(yZoomLevel);
+    const fZoom = ZoomLevel.create(fZoomLevel);
+    const xZoom = ZoomLevel.create(xZoomLevel);
+    const yZoom = ZoomLevel.create(yZoomLevel);
 
-    checkF(fZoomLevel, fIndex);
-    checkX(xZoomLevel, xIndex);
-    checkY(yZoomLevel, yIndex);
+    fZoom.checkF(fIndex);
+    xZoom.checkX(xIndex);
+    yZoom.checkY(yIndex);
 
     return new FlexId(
-      fZoomLevel,
+      fZoom,
       fIndex,
-      xZoomLevel,
+      xZoom,
       xIndex,
-      yZoomLevel,
+      yZoom,
       yIndex,
-      0,
+      TZoomLevel.createUnchecked(TZoomLevel.MIN),
       0,
     );
   }
@@ -89,8 +138,13 @@ export class FlexId {
    * 文字列表現から {@link FlexId} を復元する。
    *
    * 形式は `"{fz}/{fi}|{xz}/{xi}|{yz}/{yi}"`。時間を持つ場合は 4 軸目 `"|{tz}/{ti}"` が続く。
-   * 書式不正の場合は {@link SpatialIdError}（`ParseSpatialIdFormat`）を投げる。
-   * 各値が範囲外の場合は各検証エラー（{@link SpatialIdError}）を投げる。
+   *
+   * @throws {@link SpatialIdError} `ParseSpatialIdFormat` 書式が不正なとき
+   * @throws {@link SpatialIdError} `ZOutOfRange` いずれかのズームレベルが範囲外のとき
+   * @throws {@link SpatialIdError} `FOutOfRange` `fIndex` が範囲外のとき
+   * @throws {@link SpatialIdError} `XOutOfRange` `xIndex` が範囲外のとき
+   * @throws {@link SpatialIdError} `YOutOfRange` `yIndex` が範囲外のとき
+   * @throws {@link SpatialIdError} `TOutOfRange` `tIndex` が範囲外のとき
    */
   public static parse(text: string): FlexId {
     const parts = text.split("|");
@@ -119,8 +173,8 @@ export class FlexId {
           input: text,
         });
       }
-      const zoom = parseInteger(zoomStr);
-      const index = parseInteger(indexStr);
+      const zoom = FlexId.parseInteger(zoomStr);
+      const index = FlexId.parseInteger(indexStr);
       if (zoom === null || index === null) {
         throw new SpatialIdError({
           kind: "ParseSpatialIdFormat",
@@ -148,7 +202,7 @@ export class FlexId {
 
     if (tPart !== undefined) {
       const [tz, ti] = parseAxis(tPart);
-      return id.withTime(tz, ti);
+      return id.withTimeSegment(tz, ti);
     }
 
     return id;
@@ -167,50 +221,43 @@ export class FlexId {
     yIndex: number,
   ): FlexId {
     return new FlexId(
-      fZoomLevel,
+      ZoomLevel.createUnchecked(fZoomLevel),
       fIndex,
-      xZoomLevel,
+      ZoomLevel.createUnchecked(xZoomLevel),
       xIndex,
-      yZoomLevel,
+      ZoomLevel.createUnchecked(yZoomLevel),
       yIndex,
-      0,
+      TZoomLevel.createUnchecked(TZoomLevel.MIN),
       0,
     );
   }
 
   /**
-   * 時間を設定する。引数は空間と同じくズームレベルとインデックス値である。
+   * 時間を含め、検証を行わずに {@link FlexId} を作成する。
+   * **不正な値を渡した場合の挙動は未定義**になる。
+   *
+   * @internal
    */
-  public withTime(tZoomLevel: number, tIndex: number): FlexId {
-    checkTZoom(tZoomLevel);
-    checkTIndex(tZoomLevel, tIndex);
-
+  public static createUncheckedWithTime(
+    fZoom: ZoomLevel,
+    fIndex: number,
+    xZoom: ZoomLevel,
+    xIndex: number,
+    yZoom: ZoomLevel,
+    yIndex: number,
+    tZoom: TZoomLevel,
+    tIndex: number,
+  ): FlexId {
     return new FlexId(
-      this.fZoomLevel,
-      this.fIndex,
-      this.xZoomLevel,
-      this.xIndex,
-      this.yZoomLevel,
-      this.yIndex,
-      tZoomLevel,
+      fZoom,
+      fIndex,
+      xZoom,
+      xIndex,
+      yZoom,
+      yIndex,
+      tZoom,
       tIndex,
     );
-  }
-
-  /** 全時間を指しているか。 */
-  public isWholeTime(): boolean {
-    return this.tZoomLevel === 0 && this.tIndex === 0;
-  }
-
-  /**
-   * {@link FlexId} を文字列形式で出力する。
-   */
-  public toString(): string {
-    const base = `${this.fZoomLevel}/${this.fIndex}|${this.xZoomLevel}/${this.xIndex}|${this.yZoomLevel}/${this.yIndex}`;
-    if (this.isWholeTime()) {
-      return base;
-    }
-    return `${base}|${this.tZoomLevel}/${this.tIndex}`;
   }
 
   /**
@@ -224,21 +271,129 @@ export class FlexId {
       return [start, start + scale - 1];
     };
 
-    return RangeId.create(
-      maxZoom,
+    return RangeId.createUncheckedWithTime(
+      ZoomLevel.createUnchecked(maxZoom),
       widen(this.fZoomLevel, this.fIndex),
       widen(this.xZoomLevel, this.xIndex),
       widen(this.yZoomLevel, this.yIndex),
-    ).withTime(Interval.create(segmentSeconds(this.tZoomLevel)), this.tIndex);
+      Interval.fromZoom(this.tZoom),
+      [this.tIndex, this.tIndex],
+    );
+  }
+
+  /** すべての値が等しい {@link FlexId} かを判定する。 */
+  public equals(other: SpatialId): boolean {
+    return (
+      other instanceof FlexId &&
+      this.fZoom === other.fZoom &&
+      this.fIndex === other.fIndex &&
+      this.xZoom === other.xZoom &&
+      this.xIndex === other.xIndex &&
+      this.yZoom === other.yZoom &&
+      this.yIndex === other.yIndex &&
+      this.tZoom === other.tZoom &&
+      this.tIndex === other.tIndex
+    );
+  }
+
+  /**
+   * {@link FlexId} を文字列形式で出力する。
+   */
+  public toString(): string {
+    const base = `${this.fZoomLevel}/${this.fIndex}|${this.xZoomLevel}/${this.xIndex}|${this.yZoomLevel}/${this.yIndex}`;
+    if (this.timeIsWhole()) {
+      return base;
+    }
+    return `${base}|${this.tZoomLevel}/${this.tIndex}`;
   }
 
   /** {@link FlexId} を複数の {@link SingleId} へ展開する。 */
-  public toSingleIds(): Generator<SingleId> {
-    return this.toRangeId().toSingleIds();
+  public singleIds(): Generator<SingleId> {
+    return this.toRangeId().singleIds();
   }
 
   /** 自身だけを1つ返す。 */
   public *[Symbol.iterator](): Generator<FlexId> {
     yield this;
+  }
+  /** 時間を含まない、空間3次元（F/X/Y）の中心を {@link Coordinate} で返す。 */
+  public spatialCenter(): Coordinate {
+    return this.toRangeId().spatialCenter();
+  }
+
+  /**
+   * 時間を含まない、空間3次元の直方体を構成する8頂点の座標を返す。
+   *
+   * 高度（低い方から）、緯度（`y` の小さい方から）、経度（西から）の順に並ぶ。
+   */
+  public spatialVertices(): readonly [
+    Coordinate,
+    Coordinate,
+    Coordinate,
+    Coordinate,
+    Coordinate,
+    Coordinate,
+    Coordinate,
+    Coordinate,
+  ] {
+    return this.toRangeId().spatialVertices();
+  }
+
+  /** ボクセルの範囲を、緯度・経度・高度ごとの `[最小, 最大]` で返す。 */
+  public spatialRange(): CoordinateRange {
+    return this.toRangeId().spatialRange();
+  }
+
+  /**
+   * 時間軸の Segment を設定する。引数は空間と同じくズームレベルとインデックス値である。
+   *
+   * {@link SingleId} と {@link RangeId} の `timeWith(i, t)` は「秒数の間隔」と「インデックス」を取るので、
+   * 同じ値を渡しても意味が異なる。1 Segment の幅は `2^(35 - tZoomLevel)` 秒である。
+   *
+   * @throws {@link SpatialIdError} `ZOutOfRange` 時間軸のズームレベルが範囲外のとき
+   * @throws {@link SpatialIdError} `TOutOfRange` `tIndex` が範囲外のとき
+   */
+  public withTimeSegment(
+    tZoomLevel: TZoomLevel | number,
+    tIndex: number,
+  ): FlexId {
+    const tZoom =
+      typeof tZoomLevel === "number"
+        ? TZoomLevel.create(tZoomLevel)
+        : tZoomLevel;
+    tZoom.checkIndex(tIndex);
+
+    return new FlexId(
+      this.fZoom,
+      this.fIndex,
+      this.xZoom,
+      this.xIndex,
+      this.yZoom,
+      this.yIndex,
+      tZoom,
+      tIndex,
+    );
+  }
+
+  /** 時間の指定を外し、全時間に戻す。 */
+  public timeCleared(): FlexId {
+    return new FlexId(
+      this.fZoom,
+      this.fIndex,
+      this.xZoom,
+      this.xIndex,
+      this.yZoom,
+      this.yIndex,
+      TZoomLevel.createUnchecked(TZoomLevel.MIN),
+      0,
+    );
+  }
+
+  /**
+   * この ID が占める絶対秒区間 `[start, end)`（Unix 時刻）を返す。
+   */
+  public timeRange(): readonly [number, number] {
+    const unit = this.tZoom.segmentSeconds();
+    return [this.tIndex * unit, (this.tIndex + 1) * unit];
   }
 }

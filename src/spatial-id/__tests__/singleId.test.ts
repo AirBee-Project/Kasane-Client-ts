@@ -11,7 +11,7 @@ describe("SingleId.create（生成と検証）", () => {
     expect(id.f).toBe(3);
     expect(id.x).toBe(2);
     expect(id.y).toBe(10);
-    expect(id.interval).toBe(Interval.WHOLE);
+    expect(id.i).toBe(Interval.WHOLE);
     expect(id.t).toBe(0);
   });
 
@@ -31,27 +31,27 @@ describe("SingleId.createUnchecked（検証なしの生成）", () => {
     expect(id.f).toBe(3);
     expect(id.x).toBe(2);
     expect(id.y).toBe(10);
-    expect(id.interval).toBe(Interval.WHOLE);
+    expect(id.i).toBe(Interval.WHOLE);
     expect(id.t).toBe(0);
   });
 });
 
 describe("SingleId.withTime（時間区間の設定）", () => {
   it("仕様書の例(12/0/3638/1614_1800/809712)と一致する", () => {
-    const id = SingleId.create(12, 0, 3638, 1614).withTime(1800, 809712);
-    expect(id.interval.seconds()).toBe(1800);
+    const id = SingleId.create(12, 0, 3638, 1614).timeWith(1800, 809712);
+    expect(id.i.seconds()).toBe(1800);
     expect(id.t).toBe(809712);
   });
 
   it("Interval定数と等価な秒数のリテラルのどちらでも渡せる", () => {
-    const byConst = SingleId.create(4, 0, 1, 1).withTime(Interval.HOUR, 3);
-    const byLiteral = SingleId.create(4, 0, 1, 1).withTime(3600, 3);
-    expect(byConst.interval.seconds()).toBe(byLiteral.interval.seconds());
+    const byConst = SingleId.create(4, 0, 1, 1).timeWith(Interval.HOUR, 3);
+    const byLiteral = SingleId.create(4, 0, 1, 1).timeWith(3600, 3);
+    expect(byConst.i.seconds()).toBe(byLiteral.i.seconds());
     expect(byConst.t).toBe(byLiteral.t);
   });
 
   it("0秒の間隔はエラーを投げる", () => {
-    expect(() => SingleId.create(5, 3, 2, 10).withTime(0, 0)).toThrow(
+    expect(() => SingleId.create(5, 3, 2, 10).timeWith(0, 0)).toThrow(
       SpatialIdError,
     );
   });
@@ -66,17 +66,17 @@ describe("SingleId.toRangeId（RangeIdへの変換）", () => {
     expect(range.y).toEqual([10, 10]);
   });
 
-  it("interval/tはそのまま引き継がれる", () => {
-    const single = SingleId.create(5, 3, 2, 10).withTime(1800, 5);
+  it("i/tはそのまま引き継がれる", () => {
+    const single = SingleId.create(5, 3, 2, 10).timeWith(1800, 5);
     const range = single.toRangeId();
-    expect(range.interval.seconds()).toBe(1800);
+    expect(range.i.seconds()).toBe(1800);
     expect(range.t).toEqual([5, 5]);
   });
 });
 
 describe("SingleId（FlexIdイテレータとしての展開）", () => {
   it("時間間隔が2の冪ならFlexIdは1個だけ", () => {
-    const single = SingleId.create(5, 3, 2, 10).withTime(1024, 7);
+    const single = SingleId.create(5, 3, 2, 10).timeWith(1024, 7);
     const flexes = [...single];
     expect(flexes).toHaveLength(1);
     const [flex] = flexes;
@@ -86,7 +86,7 @@ describe("SingleId（FlexIdイテレータとしての展開）", () => {
   });
 
   it("2の冪でない間隔は複数のFlexIdへちょうど分解される", () => {
-    const single = SingleId.create(4, 0, 0, 0).withTime(1800, 4);
+    const single = SingleId.create(4, 0, 0, 0).timeWith(1800, 4);
     const flexes = [...single];
     expect(flexes.length).toBeGreaterThan(1);
 
@@ -105,7 +105,7 @@ describe("SingleId.toString（文字列化）", () => {
   });
 
   it("時間付きのSingleIdを{z}/{f}/{x}/{y}_{i}/{t}形式で出力する", () => {
-    const id = SingleId.create(12, 0, 3638, 1614).withTime(1800, 809712);
+    const id = SingleId.create(12, 0, 3638, 1614).timeWith(1800, 809712);
     expect(id.toString()).toBe("12/0/3638/1614_1800/809712");
   });
 
@@ -122,7 +122,7 @@ describe("SingleId.parse（文字列からの復元）", () => {
     expect(id.f).toBe(3);
     expect(id.x).toBe(2);
     expect(id.y).toBe(10);
-    expect(id.isWholeTime()).toBe(true);
+    expect(id.timeIsWhole()).toBe(true);
   });
 
   it("時間付き文字列表現から正しく復元できる", () => {
@@ -131,18 +131,18 @@ describe("SingleId.parse（文字列からの復元）", () => {
     expect(id.f).toBe(0);
     expect(id.x).toBe(3638);
     expect(id.y).toBe(1614);
-    expect(id.interval.seconds()).toBe(1800);
+    expect(id.i.seconds()).toBe(1800);
     expect(id.t).toBe(809712);
   });
 
   it("toString()の出力をparse()で元通り復元できる（ラウンドトリップ）", () => {
-    const original = SingleId.create(12, 0, 3638, 1614).withTime(1800, 809712);
+    const original = SingleId.create(12, 0, 3638, 1614).timeWith(1800, 809712);
     const restored = SingleId.parse(original.toString());
     expect(restored.z).toBe(original.z);
     expect(restored.f).toBe(original.f);
     expect(restored.x).toBe(original.x);
     expect(restored.y).toBe(original.y);
-    expect(restored.interval.seconds()).toBe(original.interval.seconds());
+    expect(restored.i.seconds()).toBe(original.i.seconds());
     expect(restored.t).toBe(original.t);
   });
 

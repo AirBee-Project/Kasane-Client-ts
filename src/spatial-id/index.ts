@@ -6,7 +6,7 @@
  * - {@link FlexId}: 軸ごとに異なるズームレベルを持つ ID
  *
  * ```ts
- * const single = SingleId.create(12, 0, 3638, 1614).withTime(Interval.HOUR, 0);
+ * const single = SingleId.create(12, 0, 3638, 1614).timeWith(Interval.HOUR, 0);
  * const range = RangeId.parse("4/-3/8:9/5:10");
  * for (const flex of range) {
  *   console.log(flex.toString());
@@ -34,7 +34,7 @@
 export { SingleId } from "./singleId.js";
 export { RangeId } from "./rangeId.js";
 export { FlexId } from "./flexId.js";
-export type { SpatialId } from "./types.js";
+export type { SpatialId } from "./spatialId.js";
 export { Interval } from "./interval.js";
 export { SpatialIdError, type SpatialIdErrorInfo } from "./error.js";
-export { MAX_ZOOM, type RangeInput, TIME_MAX_ZOOM } from "./utils.js";
+export { TZoomLevel, ZoomLevel } from "./zoomLevel.js";
