@@ -7,17 +7,14 @@ export class ZoomLevel {
   /** 有効な空間ズームレベルの最大値。 */
   public static readonly MAX = 30;
 
-  // 生成のたびに割り当てないよう、有効な全ズームレベルを先に作っておく
-  private static readonly ALL: readonly ZoomLevel[] = Array.from(
-    { length: ZoomLevel.MAX + 1 },
-    (_, z) => new ZoomLevel(z),
+  // 生成のたびに割り当てないよう、有効な全ズームレベルを先に作っておく。
+  // 全 ID が同じインスタンスを共有するので、型を迂回した書き換えが全体に及ばないよう凍結する。
+  // static ブロックに分けると、tsup の CJS 変換でフィールド初期化より先に実行されて失敗する。
+  private static readonly ALL: readonly ZoomLevel[] = Object.freeze(
+    Array.from({ length: ZoomLevel.MAX + 1 }, (_, z) =>
+      Object.freeze(new ZoomLevel(z)),
+    ),
   );
-
-  // 全 ID が同じインスタンスを共有するので、型を迂回した書き換えが全体に及ばないよう凍結する
-  static {
-    for (const zoom of ZoomLevel.ALL) Object.freeze(zoom);
-    Object.freeze(ZoomLevel.ALL);
-  }
 
   /** ズームレベルの値。 */
   public readonly value: number;
@@ -109,15 +106,11 @@ export class TZoomLevel {
   /** 時間軸のズームレベルの最大値。 */
   public static readonly MAX = 35;
 
-  private static readonly ALL: readonly TZoomLevel[] = Array.from(
-    { length: TZoomLevel.MAX + 1 },
-    (_, z) => new TZoomLevel(z),
+  private static readonly ALL: readonly TZoomLevel[] = Object.freeze(
+    Array.from({ length: TZoomLevel.MAX + 1 }, (_, z) =>
+      Object.freeze(new TZoomLevel(z)),
+    ),
   );
-
-  static {
-    for (const zoom of TZoomLevel.ALL) Object.freeze(zoom);
-    Object.freeze(TZoomLevel.ALL);
-  }
 
   /** ズームレベルの値。 */
   public readonly value: number;

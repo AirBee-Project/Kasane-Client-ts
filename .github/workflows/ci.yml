@@ -217,7 +217,7 @@ jobs:
           import type { TableInfo } from "@airbee-project/kasane-client/client/database";
           import { query } from "@airbee-project/kasane-client/client/query";
           import type { ResultItem } from "@airbee-project/kasane-client/client/result";
-          export const id: SingleId = Coordinate.create(35, 139, 0).toSingleId(20);
+          export const id: SingleId = Coordinate.create(35, 139, 0).singleId(20);
           export const q = query.source("db", "t");
           export type T = [TableInfo, ResultItem, typeof KasaneClient, SpatialIdError];
           EOF
