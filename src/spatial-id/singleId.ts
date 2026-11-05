@@ -310,5 +310,4 @@ export class SingleId extends SpatialIdBase {
     const unit = this.i.seconds();
     return [this.t * unit, (this.t + 1) * unit];
   }
-
 }

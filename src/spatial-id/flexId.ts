@@ -396,5 +396,4 @@ export class FlexId extends SpatialIdBase {
     const unit = this.tZoom.segmentSeconds();
     return [this.tIndex * unit, (this.tIndex + 1) * unit];
   }
-
 }
