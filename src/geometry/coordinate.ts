@@ -1,14 +1,13 @@
-import type { RangeId } from "../spatial-id/rangeId.js";
 import { SingleId } from "../spatial-id/singleId.js";
-import { checkZoom } from "../spatial-id/utils.js";
+import { ZoomLevel } from "../spatial-id/zoomLevel.js";
 import { GeometryError } from "./error.js";
-
-const MAX_LATITUDE = 85.0511;
-const MAX_LONGITUDE = 180;
-const MAX_ALTITUDE = 2 ** 25;
 
 /** 緯度・経度・高度で表す座標。 */
 export class Coordinate {
+  private static readonly MAX_LATITUDE = 85.0511;
+  private static readonly MAX_LONGITUDE = 180;
+  private static readonly MAX_ALTITUDE = 2 ** 25;
+
   /** 緯度（度）。 */
   public readonly latitude: number;
   /** 経度（度）。 */
@@ -24,20 +23,38 @@ export class Coordinate {
 
   /**
    * 指定された値から {@link Coordinate} を作成する。
-   * 値が範囲外の場合はエラーを投げる。
+   *
+   * @throws {@link GeometryError} `LatitudeOutOfRange` `latitude` が範囲外のとき
+   * @throws {@link GeometryError} `LongitudeOutOfRange` `longitude` が範囲外のとき
+   * @throws {@link GeometryError} `AltitudeOutOfRange` `altitude` が範囲外のとき
    */
   public static create(
     latitude: number,
     longitude: number,
     altitude: number,
   ): Coordinate {
-    if (!(latitude >= -MAX_LATITUDE && latitude <= MAX_LATITUDE)) {
+    if (
+      !(
+        latitude >= -Coordinate.MAX_LATITUDE &&
+        latitude <= Coordinate.MAX_LATITUDE
+      )
+    ) {
       throw new GeometryError({ kind: "LatitudeOutOfRange", latitude });
     }
-    if (!(longitude >= -MAX_LONGITUDE && longitude <= MAX_LONGITUDE)) {
+    if (
+      !(
+        longitude >= -Coordinate.MAX_LONGITUDE &&
+        longitude <= Coordinate.MAX_LONGITUDE
+      )
+    ) {
       throw new GeometryError({ kind: "LongitudeOutOfRange", longitude });
     }
-    if (!(altitude >= -MAX_ALTITUDE && altitude <= MAX_ALTITUDE)) {
+    if (
+      !(
+        altitude >= -Coordinate.MAX_ALTITUDE &&
+        altitude <= Coordinate.MAX_ALTITUDE
+      )
+    ) {
       throw new GeometryError({ kind: "AltitudeOutOfRange", altitude });
     }
     return new Coordinate(latitude, longitude, altitude);
@@ -54,12 +71,24 @@ export class Coordinate {
     return new Coordinate(latitude, longitude, altitude);
   }
 
-  /** この座標を含む、ズームレベル `z` のボクセルの {@link SingleId} を返す。 */
-  public toSingleId(z: number): SingleId {
-    checkZoom(z);
+  /**
+   * `"{latitude}, {longitude}, {altitude}"` の形式で出力する。
+   * 順序は {@link Coordinate.create} の引数と同じ。
+   */
+  public toString(): string {
+    return `${this.latitude}, ${this.longitude}, ${this.altitude}`;
+  }
+
+  /**
+   * この座標を含む、ズームレベル `z` のボクセルの {@link SingleId} を返す。
+   *
+   * @throws {@link spatial-id!SpatialIdError} `ZOutOfRange` `z` が範囲外のとき
+   */
+  public singleId(z: number): SingleId {
+    ZoomLevel.create(z);
     const n = 2 ** z;
 
-    const f = Math.floor((this.altitude * n) / MAX_ALTITUDE);
+    const f = Math.floor((this.altitude * n) / Coordinate.MAX_ALTITUDE);
     const x = Math.floor(((this.longitude + 180) / 360) * n);
     const rad = this.latitude * (Math.PI / 180);
     const y = Math.floor(
@@ -68,72 +97,57 @@ export class Coordinate {
 
     return SingleId.createUnchecked(
       z,
-      clamp(f, -n, n - 1),
-      clamp(x, 0, n - 1),
-      clamp(y, 0, n - 1),
+      Coordinate.clamp(f, -n, n - 1),
+      Coordinate.clamp(x, 0, n - 1),
+      Coordinate.clamp(y, 0, n - 1),
     );
+  }
+
+  /**
+   * ズームレベル `z` の（小数を含む）インデックス `f`, `x`, `y` が指す点の座標を返す。
+   * セグメントの端なら整数、中心なら `+0.5` した値を渡す。
+   *
+   * @internal
+   */
+  public static fromIndex(
+    z: number,
+    f: number,
+    x: number,
+    y: number,
+  ): Coordinate {
+    const n = 2 ** z;
+    const t = Math.PI * (1 - (2 * y) / n);
+    return new Coordinate(
+      Math.atan(Math.sinh(t)) * (180 / Math.PI), // Rust の to_degrees() と同じ順で計算する
+      (x / n) * 360 - 180,
+      (f * Coordinate.MAX_ALTITUDE) / n,
+    );
+  }
+
+  /**
+   * `min` と `max` を対角とする {@link CoordinateRange} を返す。
+   *
+   * @internal
+   */
+  public static range(min: Coordinate, max: Coordinate): CoordinateRange {
+    return {
+      latitude: [min.latitude, max.latitude],
+      longitude: [min.longitude, max.longitude],
+      altitude: [min.altitude, max.altitude],
+    };
+  }
+
+  private static clamp(v: number, min: number, max: number): number {
+    return Math.min(Math.max(v, min), max);
   }
 }
 
 /** ボクセルが占める範囲。 */
 export type CoordinateRange = {
   /** 緯度の範囲 `[最小, 最大]`。 */
-  latitude: [number, number];
+  latitude: readonly [number, number];
   /** 経度の範囲 `[最小, 最大]`。 */
-  longitude: [number, number];
+  longitude: readonly [number, number];
   /** 高度の範囲 `[最小, 最大]`。 */
-  altitude: [number, number];
+  altitude: readonly [number, number];
 };
-
-export function singleIdToCenterCoordinate(id: SingleId): Coordinate {
-  const { z, f, x, y } = id;
-  return Coordinate.createUnchecked(
-    yToLatitude(z, y + 0.5),
-    xToLongitude(z, x + 0.5),
-    fToAltitude(z, f + 0.5),
-  );
-}
-
-export function singleIdToCoordinateRange(id: SingleId): CoordinateRange {
-  const { z, f, x, y } = id;
-  return {
-    latitude: [yToLatitude(z, y + 1), yToLatitude(z, y)],
-    longitude: [xToLongitude(z, x), xToLongitude(z, x + 1)],
-    altitude: [fToAltitude(z, f), fToAltitude(z, f + 1)],
-  };
-}
-
-export function rangeIdToCenterCoordinate(id: RangeId): Coordinate {
-  const { z, f, x, y } = id;
-  return Coordinate.createUnchecked(
-    yToLatitude(z, (y[0] + y[1]) / 2 + 0.5),
-    xToLongitude(z, (x[0] + x[1]) / 2 + 0.5),
-    fToAltitude(z, (f[0] + f[1]) / 2 + 0.5),
-  );
-}
-
-export function rangeIdToCoordinateRange(id: RangeId): CoordinateRange {
-  const { z, f, x, y } = id;
-  return {
-    latitude: [yToLatitude(z, y[1] + 1), yToLatitude(z, y[0])],
-    longitude: [xToLongitude(z, x[0]), xToLongitude(z, x[1] + 1)],
-    altitude: [fToAltitude(z, f[0]), fToAltitude(z, f[1] + 1)],
-  };
-}
-
-function clamp(v: number, min: number, max: number): number {
-  return Math.min(Math.max(v, min), max);
-}
-
-function xToLongitude(z: number, x: number): number {
-  return (x / 2 ** z) * 360 - 180;
-}
-
-function yToLatitude(z: number, y: number): number {
-  const t = Math.PI * (1 - (2 * y) / 2 ** z);
-  return Math.atan(Math.sinh(t)) * (180 / Math.PI); // Rust の to_degrees() と同じ順で計算する
-}
-
-function fToAltitude(z: number, f: number): number {
-  return (f * MAX_ALTITUDE) / 2 ** z;
-}

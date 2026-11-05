@@ -32,21 +32,21 @@ describe("FlexId.createUnchecked（検証なしの生成）", () => {
 
 describe("FlexId.withTime（時間セグメントの設定）", () => {
   it("ズーム+インデックスで時間Segmentを設定する(ズーム25=1024秒)", () => {
-    const id = FlexId.create(5, 3, 2, 3, 10, 1).withTime(25, 7);
+    const id = FlexId.create(5, 3, 2, 3, 10, 1).withTimeSegment(25, 7);
     expect(id.tZoomLevel).toBe(25);
     expect(id.tIndex).toBe(7);
   });
 
   it("時間ズームの上限35を超えるとエラーを投げる", () => {
-    expect(() => FlexId.create(5, 3, 2, 3, 10, 1).withTime(60, 0)).toThrow(
-      SpatialIdError,
-    );
+    expect(() =>
+      FlexId.create(5, 3, 2, 3, 10, 1).withTimeSegment(60, 0),
+    ).toThrow(SpatialIdError);
   });
 
   it("そのズームに対して範囲外の時間インデックスはエラーを投げる", () => {
-    expect(() => FlexId.create(5, 3, 2, 3, 10, 1).withTime(2, 99)).toThrow(
-      SpatialIdError,
-    );
+    expect(() =>
+      FlexId.create(5, 3, 2, 3, 10, 1).withTimeSegment(2, 99),
+    ).toThrow(SpatialIdError);
   });
 });
 
@@ -57,10 +57,10 @@ describe("FlexId（FlexIdイテレータとしての展開）", () => {
   });
 });
 
-describe("FlexId.toSingleIds（SingleIdへの展開）", () => {
+describe("FlexId.singleIds（SingleIdへの展開）", () => {
   it("空間3軸のズームが全て一致していればSingleIdは1個になる", () => {
     const flex = FlexId.create(3, 1, 3, 1, 3, 1);
-    const singles = [...flex.toSingleIds()];
+    const singles = [...flex.singleIds()];
     expect(singles).toHaveLength(1);
     const [single] = singles;
     expect(single?.z).toBe(3);
@@ -77,7 +77,7 @@ describe("FlexId.toString（文字列化）", () => {
   });
 
   it("時間付きのFlexIdを{fz}/{fi}|{xz}/{xi}|{yz}/{yi}|{tz}/{ti}形式で出力する（_は使わない）", () => {
-    const flex = FlexId.create(5, 3, 2, 3, 10, 1).withTime(25, 7);
+    const flex = FlexId.create(5, 3, 2, 3, 10, 1).withTimeSegment(25, 7);
     expect(flex.toString()).toBe("5/3|2/3|10/1|25/7");
   });
 
@@ -96,7 +96,7 @@ describe("FlexId.parse（文字列からの復元）", () => {
     expect(flex.xIndex).toBe(3);
     expect(flex.yZoomLevel).toBe(10);
     expect(flex.yIndex).toBe(1);
-    expect(flex.isWholeTime()).toBe(true);
+    expect(flex.timeIsWhole()).toBe(true);
   });
 
   it("時間付きの文字列表現から正しく復元できる", () => {
@@ -112,7 +112,7 @@ describe("FlexId.parse（文字列からの復元）", () => {
   });
 
   it("toString()の出力をparse()で元通り復元できる（ラウンドトリップ）", () => {
-    const original = FlexId.create(5, 3, 2, 3, 10, 1).withTime(25, 7);
+    const original = FlexId.create(5, 3, 2, 3, 10, 1).withTimeSegment(25, 7);
     const restored = FlexId.parse(original.toString());
     expect(restored.fZoomLevel).toBe(original.fZoomLevel);
     expect(restored.fIndex).toBe(original.fIndex);

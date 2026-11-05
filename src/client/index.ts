@@ -18,7 +18,7 @@
 export { KasaneClient } from "./client.js";
 export type { RpcCallOptions } from "./options.js";
 export {
-  isKasaneError,
+  isConnectError,
   isNotFoundError,
   isAlreadyExistsError,
   isPermissionDeniedError,

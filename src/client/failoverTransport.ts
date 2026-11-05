@@ -23,7 +23,10 @@ export class FailoverTransport implements Transport {
 
   constructor(transports: readonly Transport[]) {
     if (transports.length === 0) {
-      throw new Error("FailoverTransport requires at least one transport");
+      throw new ConnectError(
+        "FailoverTransport requires at least one transport",
+        Code.InvalidArgument,
+      );
     }
     this.transports = transports;
   }

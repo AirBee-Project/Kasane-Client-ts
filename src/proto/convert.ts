@@ -1,4 +1,5 @@
 import { create } from "@bufbuild/protobuf";
+import { Code, ConnectError } from "@connectrpc/connect";
 import type {
   PrimitiveValue,
   TableDataType,
@@ -13,10 +14,10 @@ import type {
 } from "../client/query/types.js";
 import type { OutputFormat } from "../client/result/types.js";
 import { FlexId } from "../spatial-id/flexId.js";
+import type { SpatialId } from "../spatial-id/spatialId.js";
 import { RangeId } from "../spatial-id/rangeId.js";
 import { SingleId } from "../spatial-id/singleId.js";
-import type { SpatialId } from "../spatial-id/types.js";
-import { fMax, fMin, xyMax } from "../spatial-id/utils.js";
+import { ZoomLevel } from "../spatial-id/zoomLevel.js";
 import {
   FlexIdSchema,
   NullValue,
@@ -68,7 +69,10 @@ export function fromProtoSpatialId(pb: ProtoSpatialId): SpatialId {
     case "flexId":
       return fromProtoFlexId(pb.kind.value);
     default:
-      throw new Error("SpatialId is missing its oneof value");
+      throw new ConnectError(
+        "SpatialId is missing its oneof value",
+        Code.Internal,
+      );
   }
 }
 
@@ -78,7 +82,7 @@ export function toProtoSingleId(id: SingleId): ProtoSingleId {
     f: id.f,
     x: id.x,
     y: id.y,
-    i: BigInt(id.interval.seconds()),
+    i: BigInt(id.i.seconds()),
     t: BigInt(id.t),
   });
 }
@@ -89,9 +93,12 @@ export function fromProtoSingleId(pb: ProtoSingleId): SingleId {
     return single;
   }
   if (pb.i === undefined || pb.t === undefined) {
-    throw new Error("SingleId.i and SingleId.t must be specified together");
+    throw new ConnectError(
+      "SingleId.i and SingleId.t must be specified together",
+      Code.Internal,
+    );
   }
-  return single.withTime(Number(pb.i), Number(pb.t));
+  return single.timeWith(Number(pb.i), Number(pb.t));
 }
 
 export function toProtoRangeId(id: RangeId): ProtoRangeId {
@@ -100,27 +107,31 @@ export function toProtoRangeId(id: RangeId): ProtoRangeId {
     f: { min: id.f[0], max: id.f[1] },
     x: { min: id.x[0], max: id.x[1] },
     y: { min: id.y[0], max: id.y[1] },
-    i: BigInt(id.interval.seconds()),
+    i: BigInt(id.i.seconds()),
     t: { min: BigInt(id.t[0]), max: BigInt(id.t[1]) },
   });
 }
 
 export function fromProtoRangeId(pb: ProtoRangeId): RangeId {
   // f/x/yの省略は「その軸全体」を意味するので、そのズームレベルの全範囲を補う。
+  const zoom = ZoomLevel.create(pb.z);
   const f: [number, number] = pb.f
     ? [pb.f.min, pb.f.max]
-    : [fMin(pb.z), fMax(pb.z)];
-  const x: [number, number] = pb.x ? [pb.x.min, pb.x.max] : [0, xyMax(pb.z)];
-  const y: [number, number] = pb.y ? [pb.y.min, pb.y.max] : [0, xyMax(pb.z)];
+    : [zoom.fMin(), zoom.fMax()];
+  const x: [number, number] = pb.x ? [pb.x.min, pb.x.max] : [0, zoom.xyMax()];
+  const y: [number, number] = pb.y ? [pb.y.min, pb.y.max] : [0, zoom.xyMax()];
   const range = RangeId.create(pb.z, f, x, y);
 
   if (pb.i === undefined && pb.t === undefined) {
     return range;
   }
   if (pb.i === undefined || pb.t === undefined) {
-    throw new Error("RangeId.i and RangeId.t must be specified together");
+    throw new ConnectError(
+      "RangeId.i and RangeId.t must be specified together",
+      Code.Internal,
+    );
   }
-  return range.withTime(Number(pb.i), [Number(pb.t.min), Number(pb.t.max)]);
+  return range.timeWith(Number(pb.i), [Number(pb.t.min), Number(pb.t.max)]);
 }
 
 export function toProtoFlexId(id: FlexId): ProtoFlexId {
@@ -149,11 +160,12 @@ export function fromProtoFlexId(pb: ProtoFlexId): FlexId {
     return flex;
   }
   if (pb.tZoomlevel === undefined || pb.tIndex === undefined) {
-    throw new Error(
+    throw new ConnectError(
       "FlexId.t_zoomlevel and FlexId.t_index must be specified together",
+      Code.Internal,
     );
   }
-  return flex.withTime(pb.tZoomlevel, Number(pb.tIndex));
+  return flex.withTimeSegment(pb.tZoomlevel, Number(pb.tIndex));
 }
 
 /**
@@ -196,7 +208,10 @@ export function toTypedValue(
   if (typeof value === "object" && "kind" in value) {
     return value as ProtoTypedValue;
   }
-  throw new Error(`Unsupported value type for TypedValue: ${typeof value}`);
+  throw new ConnectError(
+    `Unsupported value type for TypedValue: ${typeof value}`,
+    Code.InvalidArgument,
+  );
 }
 
 /**
@@ -290,7 +305,7 @@ export function fromProtoTableDataType(
     case ProtoTableDataType.PRESENCE:
       return "presence";
     default:
-      throw new Error(`Unknown TableDataType: ${type}`);
+      throw new ConnectError(`Unknown TableDataType: ${type}`, Code.Internal);
   }
 }
 
