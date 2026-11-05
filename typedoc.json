@@ -20,5 +20,8 @@
     "invalidLink": true,
     "notDocumented": true
   },
-  "sortEntryPoints": false
+  "sortEntryPoints": false,
+  "navigation": { "includeCategories": true },
+  "categoryOrder": ["Point", "Shape", "*"],
+  "defaultCategory": "Other"
 }

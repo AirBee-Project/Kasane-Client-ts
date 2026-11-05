@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { Coordinate } from "../../geometry/coordinate.js";
 import { FlexId } from "../flexId.js";
 import { Interval } from "../interval.js";
 import { RangeId } from "../rangeId.js";
@@ -48,16 +49,14 @@ describe("SpatialId 共通の振る舞い", () => {
     }
   });
 
-  it("spatialCenter と spatialRange が動作する", () => {
+  it("spatialCenter と spatialVertices が動作する", () => {
     for (const id of allIds) {
       const center = id.spatialCenter();
       expect(center.latitude).toBeDefined();
       expect(center.longitude).toBeDefined();
       expect(center.altitude).toBeDefined();
 
-      const cr = id.spatialRange();
-      expect(cr.latitude[0]).toBeLessThanOrEqual(cr.latitude[1]);
-      expect(cr.altitude[0]).toBeLessThanOrEqual(cr.altitude[1]);
+      expect(id.spatialVertices()).toHaveLength(8);
     }
   });
 
@@ -265,19 +264,17 @@ describe("共有される定数の凍結", () => {
 });
 
 describe("spatialVertices", () => {
-  it("8頂点が高度・緯度・経度の順に並び、spatialRange の角と一致する", () => {
+  it("8頂点が高度・緯度・経度の順に並ぶ", () => {
     const id = SingleId.create(4, 6, 9, 14);
     const vertices = id.spatialVertices();
-    const range = id.spatialRange();
     expect(vertices).toHaveLength(8);
 
+    // 緯度は y が小さい方が高いので、先頭の頂点は y 側の北端になる
     const [first, second, third, , fifth] = vertices;
-    expect(first.latitude).toBe(range.latitude[1]);
-    expect(first.longitude).toBe(range.longitude[0]);
-    expect(first.altitude).toBe(range.altitude[0]);
-    expect(second.longitude).toBe(range.longitude[1]);
-    expect(third.latitude).toBe(range.latitude[0]);
-    expect(fifth.altitude).toBe(range.altitude[1]);
+    expect(first).toEqual(Coordinate.fromIndex(4, 6, 9, 14));
+    expect(second).toEqual(Coordinate.fromIndex(4, 6, 10, 14));
+    expect(third).toEqual(Coordinate.fromIndex(4, 6, 9, 15));
+    expect(fifth).toEqual(Coordinate.fromIndex(4, 7, 9, 14));
 
     const unique = new Set(
       vertices.map((v) => `${v.latitude}/${v.longitude}/${v.altitude}`),
@@ -289,17 +286,19 @@ describe("spatialVertices", () => {
     const range = RangeId.create(5, [-2, 3], [4, 7], [8, 9]);
     const flex = FlexId.create(5, 3, 2, 3, 10, 1);
     for (const id of [range, flex]) {
+      const r = id.toRangeId();
       const vertices = id.spatialVertices();
-      const box = id.spatialRange();
       const lats = vertices.map((v) => v.latitude);
       const lons = vertices.map((v) => v.longitude);
       const alts = vertices.map((v) => v.altitude);
-      expect(Math.min(...lats)).toBe(box.latitude[0]);
-      expect(Math.max(...lats)).toBe(box.latitude[1]);
-      expect(Math.min(...lons)).toBe(box.longitude[0]);
-      expect(Math.max(...lons)).toBe(box.longitude[1]);
-      expect(Math.min(...alts)).toBe(box.altitude[0]);
-      expect(Math.max(...alts)).toBe(box.altitude[1]);
+      const corner = (f: number, x: number, y: number) =>
+        Coordinate.fromIndex(r.z, f, x, y);
+      expect(Math.max(...lats)).toBe(corner(0, 0, r.y[0]).latitude);
+      expect(Math.min(...lats)).toBe(corner(0, 0, r.y[1] + 1).latitude);
+      expect(Math.min(...lons)).toBe(corner(0, r.x[0], 0).longitude);
+      expect(Math.max(...lons)).toBe(corner(0, r.x[1] + 1, 0).longitude);
+      expect(Math.min(...alts)).toBe(corner(r.f[0], 0, 0).altitude);
+      expect(Math.max(...alts)).toBe(corner(r.f[1] + 1, 0, 0).altitude);
     }
   });
 });

@@ -1,4 +1,4 @@
-import type { Coordinate, CoordinateRange } from "../geometry/coordinate.js";
+import type { Coordinate } from "../geometry/coordinate.js";
 import type { FlexId } from "./flexId.js";
 import { Interval } from "./interval.js";
 import type { RangeId } from "./rangeId.js";
@@ -52,9 +52,6 @@ export abstract class SpatialIdBase implements Iterable<FlexId> {
     Coordinate,
     Coordinate,
   ];
-
-  /** ボクセルの空間範囲（緯度・経度・高度）を返す。 */
-  public abstract spatialRange(): CoordinateRange;
 
   /** この ID が占める絶対秒区間 `[start, end)`（Unix 時刻）を返す。 */
   public abstract timeRange(): readonly [number, number];
