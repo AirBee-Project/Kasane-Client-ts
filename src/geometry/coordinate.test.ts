@@ -116,11 +116,23 @@ describe("Coordinate.singleId", () => {
   });
 });
 
-describe("SingleId.spatialCenter / toCoordinateRange（空間IDから座標へ）", () => {
+/** 8 頂点を囲む、緯度・経度・高度ごとの `[最小, 最大]`。 */
+function bounds(id: { spatialVertices(): readonly Coordinate[] }) {
+  const v = id.spatialVertices();
+  const range = (values: number[]) =>
+    [Math.min(...values), Math.max(...values)] as const;
+  return {
+    latitude: range(v.map((c) => c.latitude)),
+    longitude: range(v.map((c) => c.longitude)),
+    altitude: range(v.map((c) => c.altitude)),
+  };
+}
+
+describe("SingleId.spatialCenter / spatialVertices（空間IDから座標へ）", () => {
   it("中心はボクセルの範囲の中にあり、元の空間IDに戻る", () => {
     const id = SingleId.parse("20/3/931389/412906");
     const c = id.spatialCenter();
-    const b = id.spatialRange();
+    const b = bounds(id);
     expect(c).toBeInstanceOf(Coordinate);
     expect(c.latitude).toBeGreaterThan(b.latitude[0]);
     expect(c.latitude).toBeLessThan(b.latitude[1]);
@@ -133,7 +145,7 @@ describe("SingleId.spatialCenter / toCoordinateRange（空間IDから座標へ�
   });
 
   it("ズームレベル 0 の範囲は地球全体と高さ 2^25 m", () => {
-    const b = SingleId.create(0, 0, 0, 0).spatialRange();
+    const b = bounds(SingleId.create(0, 0, 0, 0));
     expect(b.latitude[0]).toBeCloseTo(-85.0511287798066, 10);
     expect(b.latitude[1]).toBeCloseTo(85.0511287798066, 10);
     expect(b.longitude).toEqual([-180, 180]);
@@ -141,32 +153,32 @@ describe("SingleId.spatialCenter / toCoordinateRange（空間IDから座標へ�
   });
 });
 
-describe("RangeId.spatialCenter / toCoordinateRange（RangeId から座標へ）", () => {
+describe("RangeId.spatialCenter / spatialVertices（RangeId から座標へ）", () => {
   it("中心はインデックスの平均から求める", () => {
     const range = RangeId.create(20, [0, 2], [931388, 931390], 412906);
     const single = SingleId.create(20, 1, 931389, 412906);
     expect(range.spatialCenter()).toEqual(single.spatialCenter());
   });
 
-  it("1 ボクセルの RangeId は SingleId と同じ範囲になる", () => {
+  it("1 ボクセルの RangeId は SingleId と同じ頂点になる", () => {
     const single = SingleId.parse("20/3/931389/412906");
-    expect(single.toRangeId().spatialRange()).toEqual(single.spatialRange());
+    expect(single.toRangeId().spatialVertices()).toEqual(
+      single.spatialVertices(),
+    );
   });
 
   it("両端のボクセルの外側を囲む", () => {
-    const r = RangeId.parse(
-      "20/0:7/931389:931394/412900:412901",
-    ).spatialRange();
-    const nw = SingleId.parse("20/0/931389/412900").spatialRange();
-    const se = SingleId.parse("20/7/931394/412901").spatialRange();
+    const r = bounds(RangeId.parse("20/0:7/931389:931394/412900:412901"));
+    const nw = bounds(SingleId.parse("20/0/931389/412900"));
+    const se = bounds(SingleId.parse("20/7/931394/412901"));
     expect(r.longitude).toEqual([nw.longitude[0], se.longitude[1]]);
     expect(r.latitude).toEqual([se.latitude[0], nw.latitude[1]]);
     expect(r.altitude).toEqual([0, 8 * 32]);
   });
 
   it("経度 180 度をまたぐ範囲は、西端の経度が東端より大きくなる", () => {
-    const r = RangeId.create(3, 0, [6, 1], 2).spatialRange();
-    expect(r.longitude).toEqual([90, -90]);
+    const [west, east] = RangeId.create(3, 0, [6, 1], 2).spatialVertices();
+    expect([west?.longitude, east?.longitude]).toEqual([90, -90]);
   });
 });
 

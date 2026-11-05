@@ -1,4 +1,4 @@
-import type { Coordinate, CoordinateRange } from "../geometry/coordinate.js";
+import type { Coordinate } from "../geometry/coordinate.js";
 import { SpatialIdError } from "./error.js";
 import { Interval } from "./interval.js";
 import { RangeId } from "./rangeId.js";
@@ -337,11 +337,6 @@ export class FlexId extends SpatialIdBase {
     Coordinate,
   ] {
     return this.toRangeId().spatialVertices();
-  }
-
-  /** ボクセルの範囲を、緯度・経度・高度ごとの `[最小, 最大]` で返す。 */
-  public spatialRange(): CoordinateRange {
-    return this.toRangeId().spatialRange();
   }
 
   /**
