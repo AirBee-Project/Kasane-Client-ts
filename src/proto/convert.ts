@@ -14,9 +14,9 @@ import type {
 } from "../client/query/types.js";
 import type { OutputFormat } from "../client/result/types.js";
 import { FlexId } from "../spatial-id/flexId.js";
-import type { SpatialId } from "../spatial-id/spatialId.js";
 import { RangeId } from "../spatial-id/rangeId.js";
 import { SingleId } from "../spatial-id/singleId.js";
+import type { SpatialId } from "../spatial-id/spatialId.js";
 import { ZoomLevel } from "../spatial-id/zoomLevel.js";
 import {
   FlexIdSchema,
