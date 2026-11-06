@@ -3,6 +3,7 @@
   "entryPoints": [
     "src/spatial-id/index.ts",
     "src/geometry/index.ts",
+    "src/collection/index.ts",
     "src/client/index.ts",
     "src/client/database/index.ts",
     "src/client/query/index.ts",

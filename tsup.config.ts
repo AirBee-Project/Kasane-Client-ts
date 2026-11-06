@@ -6,6 +6,7 @@ export default defineConfig({
   entry: {
     "spatial-id/index": "src/spatial-id/index.ts",
     "geometry/index": "src/geometry/index.ts",
+    "collection/index": "src/collection/index.ts",
     "client/index": "src/client/index.ts",
     "client/database/index": "src/client/database/index.ts",
     "client/query/index": "src/client/query/index.ts",

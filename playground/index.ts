@@ -1,14 +1,13 @@
-/// <reference types="node" />
-import { writeFileSync } from "node:fs";
-import { Coordinate, Triangle } from "@airbee-project/kasane-client/geometry";
+import { SpatialIdSet } from "@airbee-project/kasane-client/collection";
+import { SingleId } from "@airbee-project/kasane-client/spatial-id";
 
-const triangle = Triangle.create([
-  Coordinate.create(35.681, 139.766, 10),
-  Coordinate.create(35.682, 139.766, 100),
-  Coordinate.create(35.681, 139.767, 15),
-]);
+let set=SpatialIdSet.create();
 
-const ids = triangle.coverSingleIds(25);
 
-writeFileSync("playground/ids.txt", ids.join(","));
-console.log(`${ids.length} 件を playground/ids.txt に書き込みました`);
+let sample_id=SingleId.create(3, 4, 5, 6);
+
+set.insert(sample_id);
+
+for (const element of set) {
+  console.log(element.toString())
+}

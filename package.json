@@ -34,6 +34,17 @@
         "default": "./dist/geometry/index.cjs"
       }
     },
+    "./collection": {
+      "kasane-source": "./src/collection/index.ts",
+      "import": {
+        "types": "./dist/collection/index.d.ts",
+        "default": "./dist/collection/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/collection/index.d.ts",
+        "default": "./dist/collection/index.cjs"
+      }
+    },
     "./client": {
       "kasane-source": "./src/client/index.ts",
       "import": {
@@ -87,6 +98,9 @@
       "geometry": [
         "./dist/geometry/index.d.ts"
       ],
+      "collection": [
+        "./dist/collection/index.d.ts"
+      ],
       "client": [
         "./dist/client/index.d.ts"
       ],
@@ -115,6 +129,7 @@
     "!dist/wasm/*.map",
     "src",
     "!src/client/wasm/gen",
+    "!src/collection/wasm/gen",
     "README.md"
   ],
   "scripts": {
