@@ -14,7 +14,6 @@ import {
   RawMap,
   RawOwner,
 } from "./raw.js";
-import type { SpatialIdSet } from "./spatialIdSet.js";
 
 /**
  * 時空間 ID の場所ごとに値を持つマップ。
@@ -48,15 +47,6 @@ export class SpatialIdMap<V> implements Iterable<[RangeId, V]>, Disposable {
     const wrapped: SpatialIdMap<V> = Object.create(SpatialIdMap.prototype);
     wrapped.owner = new RawOwner(raw);
     return wrapped;
-  }
-
-  /**
-   * Wasm の値。{@link SpatialIdSet.from} が使う。
-   *
-   * @internal
-   */
-  public get raw(): RawMap {
-    return this.owner.raw;
   }
 
   /** `id` が占める場所に `value` を入れる。すでに値がある場所は上書きする。 */
