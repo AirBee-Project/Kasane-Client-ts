@@ -1,14 +1,19 @@
 import type { FlexId } from "../spatial-id/flexId.js";
 import type { RangeId } from "../spatial-id/rangeId.js";
+import type { SingleId } from "../spatial-id/singleId.js";
 import type { SpatialId } from "../spatial-id/spatialId.js";
+import type { AllowedIntervals } from "../time/allowedIntervals.js";
 import {
   decodeFlexIds,
   decodeIds,
+  decodeSingleIds,
   encodeId,
+  encodeIntervals,
   loadWasm,
   RawOwner,
   RawSet,
 } from "./raw.js";
+import type { SpatialIdMap } from "./spatialIdMap.js";
 
 /**
  * 時空間 ID の集合。
@@ -32,6 +37,11 @@ export class SpatialIdSet implements Iterable<RangeId>, Disposable {
   /** {@link SpatialIdSet} を作る。`new SpatialIdSet(ids)` と同じ。 */
   public static create(ids?: Iterable<SpatialId>): SpatialIdSet {
     return new SpatialIdSet(ids);
+  }
+
+  /** `map` の値を捨て、値がある場所だけを持つ集合を作る。`map` は変わらない。 */
+  public static from(map: SpatialIdMap<unknown>): SpatialIdSet {
+    return SpatialIdSet.wrap(RawSet.fromMap(map.raw));
   }
 
   private static wrap(raw: RawSet): SpatialIdSet {
@@ -64,6 +74,66 @@ export class SpatialIdSet implements Iterable<RangeId>, Disposable {
   /** {@link SpatialIdSet.remove} と同じだが、内部で持つ {@link FlexId} の単位で返す。 */
   public removeFlexIds(id: SpatialId): FlexId[] {
     return decodeFlexIds(this.owner.raw.removeFlexIds(encodeId(id)));
+  }
+
+  /** {@link SpatialIdSet.get} と異なり切り取らず、`id` と重なる ID をそのまま返す。 */
+  public getOverlapping(id: SpatialId): RangeId[] {
+    return decodeIds(this.owner.raw.getOverlapping(encodeId(id)));
+  }
+
+  /** {@link SpatialIdSet.getOverlapping} と同じだが、内部で持つ {@link FlexId} の単位で返す。 */
+  public getOverlappingFlexIds(id: SpatialId): FlexId[] {
+    return decodeFlexIds(this.owner.raw.getOverlappingFlexIds(encodeId(id)));
+  }
+
+  /** {@link SpatialIdSet.remove} と異なり切り取らず、`id` と重なる ID をそのまま取り除いて返す。 */
+  public removeOverlapping(id: SpatialId): RangeId[] {
+    return decodeIds(this.owner.raw.removeOverlapping(encodeId(id)));
+  }
+
+  /** {@link SpatialIdSet.removeOverlapping} と同じだが、内部で持つ {@link FlexId} の単位で返す。 */
+  public removeOverlappingFlexIds(id: SpatialId): FlexId[] {
+    return decodeFlexIds(this.owner.raw.removeOverlappingFlexIds(encodeId(id)));
+  }
+
+  /** `id` と面で接している ID を重複なく返す。`id` 自身と重なる ID は除く。 */
+  public spatialFaceNeighbors(id: SpatialId): RangeId[] {
+    return decodeIds(this.owner.raw.spatialFaceNeighbors(encodeId(id)));
+  }
+
+  /** {@link SpatialIdSet.spatialFaceNeighbors} と同じだが、内部で持つ {@link FlexId} の単位で返す。 */
+  public spatialFaceNeighborsFlexIds(id: SpatialId): FlexId[] {
+    return decodeFlexIds(
+      this.owner.raw.spatialFaceNeighborsFlexIds(encodeId(id)),
+    );
+  }
+
+  /**
+   * 時間方向に隣り合う ID をつなげた {@link RangeId} で返す。空間の解像度は変えない。
+   *
+   * `allowedIntervals` を省くと、各区間はそれを表せる最も粗い単位（`gcd(開始秒, 幅)`）の1Segmentになる。
+   * {@link time!AllowedIntervals} を渡すと、その候補のうち区間を割り切る最も粗い単位で表す。
+   *
+   * ```ts
+   * const id = SingleId.create(12, 0, 3638, 1614);
+   * const set = new SpatialIdSet([id.timeWith(Interval.HOUR, 0), id.timeWith(Interval.HOUR, 1)]);
+   * set.reconstructedTimeRanges().map(String); // ["12/0/3638/1614_7200/0"]
+   * set.reconstructedTimeRanges(AllowedIntervals.calendar()).map(String); // ["12/0/3638/1614_3600/0:1"]
+   * ```
+   */
+  public reconstructedTimeRanges(
+    allowedIntervals?: AllowedIntervals,
+  ): RangeId[] {
+    return decodeIds(
+      this.owner.raw.reconstructedTimeRanges(encodeIntervals(allowedIntervals)),
+    );
+  }
+
+  /** {@link SpatialIdSet.reconstructedTimeRanges} を、集合全体の最大ズームレベルにそろえた {@link SingleId} に展開して返す。 */
+  public flatSingleIds(allowedIntervals?: AllowedIntervals): SingleId[] {
+    return decodeSingleIds(
+      this.owner.raw.flatSingleIds(encodeIntervals(allowedIntervals)),
+    );
   }
 
   /** 和集合を新しく作る。 */

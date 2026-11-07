@@ -47,6 +47,19 @@ export class SpatialIdMap {
         return ret;
     }
     /**
+     * @param {Float64Array | null} [allowed_intervals]
+     * @returns {[Float64Array, unknown[]]}
+     */
+    flatSingleIds(allowed_intervals) {
+        var ptr0 = isLikeNone(allowed_intervals) ? 0 : passArrayF64ToWasm0(allowed_intervals, wasm.__wbindgen_malloc);
+        var len0 = WASM_VECTOR_LEN;
+        const ret = wasm.spatialidmap_flatSingleIds(this.__wbg_ptr, ptr0, len0);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return takeFromExternrefTable0(ret[0]);
+    }
+    /**
      * @returns {[Float64Array, unknown[]]}
      */
     flexEntries() {
@@ -61,6 +74,32 @@ export class SpatialIdMap {
         const ptr0 = passArrayF64ToWasm0(id, wasm.__wbindgen_malloc);
         const len0 = WASM_VECTOR_LEN;
         const ret = wasm.spatialidmap_getFlexIds(this.__wbg_ptr, ptr0, len0);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return takeFromExternrefTable0(ret[0]);
+    }
+    /**
+     * @param {Float64Array} id
+     * @returns {[Float64Array, unknown[]]}
+     */
+    getOverlappingFlexIds(id) {
+        const ptr0 = passArrayF64ToWasm0(id, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.spatialidmap_getOverlappingFlexIds(this.__wbg_ptr, ptr0, len0);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return takeFromExternrefTable0(ret[0]);
+    }
+    /**
+     * @param {Float64Array} id
+     * @returns {[Float64Array, unknown[]]}
+     */
+    getOverlapping(id) {
+        const ptr0 = passArrayF64ToWasm0(id, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.spatialidmap_getOverlapping(this.__wbg_ptr, ptr0, len0);
         if (ret[2]) {
             throw takeFromExternrefTable0(ret[1]);
         }
@@ -114,6 +153,19 @@ export class SpatialIdMap {
         return this;
     }
     /**
+     * @param {Float64Array | null} [allowed_intervals]
+     * @returns {[Float64Array, unknown[]]}
+     */
+    reconstructedTimeRanges(allowed_intervals) {
+        var ptr0 = isLikeNone(allowed_intervals) ? 0 : passArrayF64ToWasm0(allowed_intervals, wasm.__wbindgen_malloc);
+        var len0 = WASM_VECTOR_LEN;
+        const ret = wasm.spatialidmap_reconstructedTimeRanges(this.__wbg_ptr, ptr0, len0);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return takeFromExternrefTable0(ret[0]);
+    }
+    /**
      * @param {Float64Array} id
      * @returns {[Float64Array, unknown[]]}
      */
@@ -130,10 +182,62 @@ export class SpatialIdMap {
      * @param {Float64Array} id
      * @returns {[Float64Array, unknown[]]}
      */
+    removeOverlappingFlexIds(id) {
+        const ptr0 = passArrayF64ToWasm0(id, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.spatialidmap_removeOverlappingFlexIds(this.__wbg_ptr, ptr0, len0);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return takeFromExternrefTable0(ret[0]);
+    }
+    /**
+     * @param {Float64Array} id
+     * @returns {[Float64Array, unknown[]]}
+     */
+    removeOverlapping(id) {
+        const ptr0 = passArrayF64ToWasm0(id, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.spatialidmap_removeOverlapping(this.__wbg_ptr, ptr0, len0);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return takeFromExternrefTable0(ret[0]);
+    }
+    /**
+     * @param {Float64Array} id
+     * @returns {[Float64Array, unknown[]]}
+     */
     remove(id) {
         const ptr0 = passArrayF64ToWasm0(id, wasm.__wbindgen_malloc);
         const len0 = WASM_VECTOR_LEN;
         const ret = wasm.spatialidmap_remove(this.__wbg_ptr, ptr0, len0);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return takeFromExternrefTable0(ret[0]);
+    }
+    /**
+     * @param {Float64Array} id
+     * @returns {[Float64Array, unknown[]]}
+     */
+    spatialFaceNeighborsFlexIds(id) {
+        const ptr0 = passArrayF64ToWasm0(id, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.spatialidmap_spatialFaceNeighborsFlexIds(this.__wbg_ptr, ptr0, len0);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return takeFromExternrefTable0(ret[0]);
+    }
+    /**
+     * @param {Float64Array} id
+     * @returns {[Float64Array, unknown[]]}
+     */
+    spatialFaceNeighbors(id) {
+        const ptr0 = passArrayF64ToWasm0(id, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.spatialidmap_spatialFaceNeighbors(this.__wbg_ptr, ptr0, len0);
         if (ret[2]) {
             throw takeFromExternrefTable0(ret[1]);
         }
@@ -188,6 +292,21 @@ export class SpatialIdSet {
         return SpatialIdSet.__wrap(ret);
     }
     /**
+     * @param {Float64Array | null} [allowed_intervals]
+     * @returns {Float64Array}
+     */
+    flatSingleIds(allowed_intervals) {
+        var ptr0 = isLikeNone(allowed_intervals) ? 0 : passArrayF64ToWasm0(allowed_intervals, wasm.__wbindgen_malloc);
+        var len0 = WASM_VECTOR_LEN;
+        const ret = wasm.spatialidset_flatSingleIds(this.__wbg_ptr, ptr0, len0);
+        if (ret[3]) {
+            throw takeFromExternrefTable0(ret[2]);
+        }
+        var v2 = getArrayF64FromWasm0(ret[0], ret[1]).slice();
+        wasm.__wbindgen_free(ret[0], ret[1] * 8, 8);
+        return v2;
+    }
+    /**
      * @returns {Float64Array}
      */
     flexIds() {
@@ -197,6 +316,15 @@ export class SpatialIdSet {
         return v1;
     }
     /**
+     * @param {SpatialIdMap} map
+     * @returns {SpatialIdSet}
+     */
+    static fromMap(map) {
+        _assertClass(map, SpatialIdMap);
+        const ret = wasm.spatialidset_fromMap(map.__wbg_ptr);
+        return SpatialIdSet.__wrap(ret);
+    }
+    /**
      * @param {Float64Array} id
      * @returns {Float64Array}
      */
@@ -204,6 +332,36 @@ export class SpatialIdSet {
         const ptr0 = passArrayF64ToWasm0(id, wasm.__wbindgen_malloc);
         const len0 = WASM_VECTOR_LEN;
         const ret = wasm.spatialidset_getFlexIds(this.__wbg_ptr, ptr0, len0);
+        if (ret[3]) {
+            throw takeFromExternrefTable0(ret[2]);
+        }
+        var v2 = getArrayF64FromWasm0(ret[0], ret[1]).slice();
+        wasm.__wbindgen_free(ret[0], ret[1] * 8, 8);
+        return v2;
+    }
+    /**
+     * @param {Float64Array} id
+     * @returns {Float64Array}
+     */
+    getOverlappingFlexIds(id) {
+        const ptr0 = passArrayF64ToWasm0(id, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.spatialidset_getOverlappingFlexIds(this.__wbg_ptr, ptr0, len0);
+        if (ret[3]) {
+            throw takeFromExternrefTable0(ret[2]);
+        }
+        var v2 = getArrayF64FromWasm0(ret[0], ret[1]).slice();
+        wasm.__wbindgen_free(ret[0], ret[1] * 8, 8);
+        return v2;
+    }
+    /**
+     * @param {Float64Array} id
+     * @returns {Float64Array}
+     */
+    getOverlapping(id) {
+        const ptr0 = passArrayF64ToWasm0(id, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.spatialidset_getOverlapping(this.__wbg_ptr, ptr0, len0);
         if (ret[3]) {
             throw takeFromExternrefTable0(ret[2]);
         }
@@ -269,6 +427,21 @@ export class SpatialIdSet {
         return this;
     }
     /**
+     * @param {Float64Array | null} [allowed_intervals]
+     * @returns {Float64Array}
+     */
+    reconstructedTimeRanges(allowed_intervals) {
+        var ptr0 = isLikeNone(allowed_intervals) ? 0 : passArrayF64ToWasm0(allowed_intervals, wasm.__wbindgen_malloc);
+        var len0 = WASM_VECTOR_LEN;
+        const ret = wasm.spatialidset_reconstructedTimeRanges(this.__wbg_ptr, ptr0, len0);
+        if (ret[3]) {
+            throw takeFromExternrefTable0(ret[2]);
+        }
+        var v2 = getArrayF64FromWasm0(ret[0], ret[1]).slice();
+        wasm.__wbindgen_free(ret[0], ret[1] * 8, 8);
+        return v2;
+    }
+    /**
      * @param {Float64Array} id
      * @returns {Float64Array}
      */
@@ -287,10 +460,70 @@ export class SpatialIdSet {
      * @param {Float64Array} id
      * @returns {Float64Array}
      */
+    removeOverlappingFlexIds(id) {
+        const ptr0 = passArrayF64ToWasm0(id, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.spatialidset_removeOverlappingFlexIds(this.__wbg_ptr, ptr0, len0);
+        if (ret[3]) {
+            throw takeFromExternrefTable0(ret[2]);
+        }
+        var v2 = getArrayF64FromWasm0(ret[0], ret[1]).slice();
+        wasm.__wbindgen_free(ret[0], ret[1] * 8, 8);
+        return v2;
+    }
+    /**
+     * @param {Float64Array} id
+     * @returns {Float64Array}
+     */
+    removeOverlapping(id) {
+        const ptr0 = passArrayF64ToWasm0(id, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.spatialidset_removeOverlapping(this.__wbg_ptr, ptr0, len0);
+        if (ret[3]) {
+            throw takeFromExternrefTable0(ret[2]);
+        }
+        var v2 = getArrayF64FromWasm0(ret[0], ret[1]).slice();
+        wasm.__wbindgen_free(ret[0], ret[1] * 8, 8);
+        return v2;
+    }
+    /**
+     * @param {Float64Array} id
+     * @returns {Float64Array}
+     */
     remove(id) {
         const ptr0 = passArrayF64ToWasm0(id, wasm.__wbindgen_malloc);
         const len0 = WASM_VECTOR_LEN;
         const ret = wasm.spatialidset_remove(this.__wbg_ptr, ptr0, len0);
+        if (ret[3]) {
+            throw takeFromExternrefTable0(ret[2]);
+        }
+        var v2 = getArrayF64FromWasm0(ret[0], ret[1]).slice();
+        wasm.__wbindgen_free(ret[0], ret[1] * 8, 8);
+        return v2;
+    }
+    /**
+     * @param {Float64Array} id
+     * @returns {Float64Array}
+     */
+    spatialFaceNeighborsFlexIds(id) {
+        const ptr0 = passArrayF64ToWasm0(id, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.spatialidset_spatialFaceNeighborsFlexIds(this.__wbg_ptr, ptr0, len0);
+        if (ret[3]) {
+            throw takeFromExternrefTable0(ret[2]);
+        }
+        var v2 = getArrayF64FromWasm0(ret[0], ret[1]).slice();
+        wasm.__wbindgen_free(ret[0], ret[1] * 8, 8);
+        return v2;
+    }
+    /**
+     * @param {Float64Array} id
+     * @returns {Float64Array}
+     */
+    spatialFaceNeighbors(id) {
+        const ptr0 = passArrayF64ToWasm0(id, wasm.__wbindgen_malloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.spatialidset_spatialFaceNeighbors(this.__wbg_ptr, ptr0, len0);
         if (ret[3]) {
             throw takeFromExternrefTable0(ret[2]);
         }
@@ -391,6 +624,10 @@ function getUint8ArrayMemory0() {
         cachedUint8ArrayMemory0 = new Uint8Array(wasm.memory.buffer);
     }
     return cachedUint8ArrayMemory0;
+}
+
+function isLikeNone(x) {
+    return x === undefined || x === null;
 }
 
 function passArrayF64ToWasm0(arg, malloc) {

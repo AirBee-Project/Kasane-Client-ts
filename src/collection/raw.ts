@@ -1,9 +1,11 @@
 import { decodeBase64 } from "../internal/base64.js";
 import { FlexId } from "../spatial-id/flexId.js";
-import { Interval } from "../spatial-id/interval.js";
 import { RangeId } from "../spatial-id/rangeId.js";
+import { SingleId } from "../spatial-id/singleId.js";
 import type { SpatialId } from "../spatial-id/spatialId.js";
 import { TZoomLevel, ZoomLevel } from "../spatial-id/zoomLevel.js";
+import type { AllowedIntervals } from "../time/allowedIntervals.js";
+import { Interval } from "../time/interval.js";
 import { initSync } from "./wasm/gen/spatial_id.js";
 import wasm from "./wasm/gen/spatial_id_bg.base64.js";
 
@@ -53,6 +55,7 @@ export class RawOwner<R extends { free(): void }> {
  *
  * - {@link RangeId}: `[z, f0, f1, x0, x1, y0, y1, i, t0, t1]`
  * - {@link FlexId}: `[fz, f, xz, x, yz, y, tz, t]`
+ * - {@link SingleId}: `[z, f, x, y, i, t]`
  */
 function decodeAll<T>(
   values: Float64Array,
@@ -108,6 +111,26 @@ export function decodeFlexIds(values: Float64Array): FlexId[] {
       at(7),
     ),
   );
+}
+
+export function decodeSingleIds(values: Float64Array): SingleId[] {
+  return decodeAll(values, 6, (at) =>
+    SingleId.createUncheckedWithTime(
+      ZoomLevel.createUnchecked(at(0)),
+      at(1),
+      at(2),
+      at(3),
+      Interval.create(at(4)),
+      at(5),
+    ),
+  );
+}
+
+/** {@link AllowedIntervals} は候補の秒数の列で渡し、省略は `undefined` のまま渡す。 */
+export function encodeIntervals(
+  intervals: AllowedIntervals | undefined,
+): Float64Array | undefined {
+  return intervals && Float64Array.from(intervals, (i) => i.seconds());
 }
 
 /** Wasm が返す `[ID の数値列, 値の配列]` を、`decode` で直した ID と値の組にする。 */

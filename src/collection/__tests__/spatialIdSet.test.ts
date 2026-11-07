@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { FlexId } from "../../spatial-id/flexId.js";
-import { Interval } from "../../spatial-id/interval.js";
 import { RangeId } from "../../spatial-id/rangeId.js";
 import { SingleId } from "../../spatial-id/singleId.js";
 import type { SpatialId } from "../../spatial-id/spatialId.js";
+import { AllowedIntervals } from "../../time/allowedIntervals.js";
+import { Interval } from "../../time/interval.js";
+import { SpatialIdMap } from "../spatialIdMap.js";
 import { SpatialIdSet } from "../spatialIdSet.js";
 
 /** 分け方によらず比べられるよう、SingleId の文字列に展開して並べる。 */
@@ -187,5 +189,110 @@ describe("SpatialIdSet.create", () => {
       singles(new SpatialIdSet(ids)),
     );
     expect(SpatialIdSet.create().isEmpty()).toBe(true);
+  });
+});
+
+describe("SpatialIdSet の切り取らない取得と削除", () => {
+  const range = RangeId.create(4, 3, [2, 3], 1);
+  const target = SingleId.create(4, 3, 3, 1);
+
+  it("getOverlapping は重なる ID を切り取らずに返す", () => {
+    const set = new SpatialIdSet([range]);
+    expect(singles(set.getOverlapping(target))).toEqual(["4/3/2/1", "4/3/3/1"]);
+    expect(set.getOverlappingFlexIds(target).map(String)).toEqual([
+      "4/3|3/1|4/1",
+    ]);
+    expect(set.getOverlapping(SingleId.create(4, 3, 4, 1))).toEqual([]);
+  });
+
+  it("removeOverlapping は重なる ID を切り取らずに取り除く", () => {
+    const set = new SpatialIdSet([range]);
+    expect(singles(set.removeOverlapping(target))).toEqual([
+      "4/3/2/1",
+      "4/3/3/1",
+    ]);
+    expect(set.isEmpty()).toBe(true);
+  });
+
+  it("removeOverlappingFlexIds は取り除いた ID を FlexId で返す", () => {
+    const set = new SpatialIdSet([range]);
+    expect(set.removeOverlappingFlexIds(target).map(String)).toEqual([
+      "4/3|3/1|4/1",
+    ]);
+    expect(set.isEmpty()).toBe(true);
+  });
+});
+
+describe("SpatialIdSet の面で接する ID", () => {
+  it("面で接する ID だけを返し、自身と重なる ID は除く", () => {
+    const set = new SpatialIdSet([
+      SingleId.create(4, 3, 2, 1),
+      SingleId.create(4, 3, 3, 1).toRangeId(),
+      SingleId.create(4, 4, 1, 1),
+      SingleId.create(4, 3, 5, 1),
+    ]);
+    // 4/3/2/1 と 4/3/3/1 はまとめて持つので、4/3/2/1 と重なり除かれる
+    expect(
+      singles(set.spatialFaceNeighbors(SingleId.create(4, 3, 2, 1))),
+    ).toEqual([]);
+    expect(
+      singles(set.spatialFaceNeighbors(SingleId.create(4, 3, 1, 1))),
+    ).toEqual(["4/3/2/1", "4/3/3/1", "4/4/1/1"]);
+    expect(
+      set.spatialFaceNeighborsFlexIds(SingleId.create(4, 3, 1, 1)).length,
+    ).toBe(2);
+  });
+});
+
+describe("SpatialIdSet の時間方向の読み出し", () => {
+  const id = SingleId.create(12, 0, 3638, 1614);
+  const set = new SpatialIdSet([
+    id.timeWith(Interval.HOUR, 0),
+    id.timeWith(Interval.HOUR, 1),
+  ]);
+
+  it("reconstructedTimeRanges は時間方向につなげる", () => {
+    expect(set.reconstructedTimeRanges().map(String)).toEqual([
+      "12/0/3638/1614_7200/0",
+    ]);
+    expect(
+      set.reconstructedTimeRanges(AllowedIntervals.calendar()).map(String),
+    ).toEqual(["12/0/3638/1614_3600/0:1"]);
+  });
+
+  it("flatSingleIds は SingleId に展開する", () => {
+    expect(set.flatSingleIds().map(String)).toEqual(["12/0/3638/1614_7200/0"]);
+    expect(set.flatSingleIds(AllowedIntervals.calendar()).map(String)).toEqual([
+      "12/0/3638/1614_3600/0",
+      "12/0/3638/1614_3600/1",
+    ]);
+    expect(set.flatSingleIds()[0]).toBeInstanceOf(SingleId);
+  });
+
+  it("flatSingleIds は最大ズームレベルにそろえる", () => {
+    const mixed = new SpatialIdSet([
+      SingleId.create(3, 0, 1, 1),
+      SingleId.create(4, 0, 0, 0),
+    ]);
+    const ids = mixed.flatSingleIds();
+    expect(ids).toHaveLength(9);
+    expect(ids.every((s) => s.toString().startsWith("4/"))).toBe(true);
+  });
+});
+
+describe("SpatialIdSet.from", () => {
+  it("マップの値を捨てて、値がある場所の集合を作る", () => {
+    const map = new SpatialIdMap([
+      [SingleId.create(4, 3, 2, 1), "a"],
+      [SingleId.create(4, 4, 4, 4), "b"],
+    ]);
+    expect(singles(SpatialIdSet.from(map))).toEqual(["4/3/2/1", "4/4/4/4"]);
+    expect(map.count()).toBe(2);
+  });
+
+  it("解放したマップを渡すと例外を投げる", () => {
+    const map = new SpatialIdMap();
+    map[Symbol.dispose]();
+    expect(() => SpatialIdSet.from(map)).toThrow();
   });
 });

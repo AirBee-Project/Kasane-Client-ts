@@ -10,7 +10,8 @@
 
 | サブパス | 中身 |
 | :--- | :--- |
-| `@airbee-project/kasane-client/spatial-id` | `SingleId`、`RangeId`、`FlexId`、`Interval`、`SpatialIdError` |
+| `@airbee-project/kasane-client/spatial-id` | `SingleId`、`RangeId`、`FlexId`、`ZoomLevel`、`SpatialIdError` |
+| `@airbee-project/kasane-client/time` | `Interval`、`AllowedIntervals`、`TZoomLevel` |
 | `@airbee-project/kasane-client/geometry` | `Coordinate`、`GeometryError` |
 | `@airbee-project/kasane-client/collection` | `SpatialIdSet`、`SpatialIdMap` |
 | `@airbee-project/kasane-client/client` | `KasaneClient`、通信エラーの判定関数 |
@@ -18,7 +19,7 @@
 | `@airbee-project/kasane-client/client/query` | `query`、`QueryBuilder` |
 | `@airbee-project/kasane-client/client/result` | `ResultStream` |
 
-`spatial-id` と `geometry` は、Connect や Wasm を読み込みません。
+`spatial-id`、`time`、`geometry` は、Connect や Wasm を読み込みません。
 
 ## 接続
 

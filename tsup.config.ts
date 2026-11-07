@@ -5,6 +5,7 @@ import { defineConfig } from "tsup";
 export default defineConfig({
   entry: {
     "spatial-id/index": "src/spatial-id/index.ts",
+    "time/index": "src/time/index.ts",
     "geometry/index": "src/geometry/index.ts",
     "collection/index": "src/collection/index.ts",
     "client/index": "src/client/index.ts",

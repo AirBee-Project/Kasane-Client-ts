@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { FlexId } from "../../spatial-id/flexId.js";
 import { RangeId } from "../../spatial-id/rangeId.js";
 import { SingleId } from "../../spatial-id/singleId.js";
+import { AllowedIntervals } from "../../time/allowedIntervals.js";
+import { Interval } from "../../time/interval.js";
 import { SpatialIdMap } from "../spatialIdMap.js";
 
 const first = SingleId.create(4, 3, 2, 1);
@@ -186,5 +188,91 @@ describe("SpatialIdMap の値の比べ方", () => {
     const shared = {};
     expect(countWith(() => shared)).toBe(1);
     expect(countWith(() => ({}))).toBe(8);
+  });
+});
+
+describe("SpatialIdMap の切り取らない取得と削除", () => {
+  const range = RangeId.create(4, 3, [2, 3], 1);
+  const target = SingleId.create(4, 3, 3, 1);
+
+  it("getOverlapping は重なる ID を切り取らずに値と返す", () => {
+    const map = new SpatialIdMap([[range, "a"]]);
+    expect(singles(map.getOverlapping(target))).toEqual([
+      ["4/3/2/1", "a"],
+      ["4/3/3/1", "a"],
+    ]);
+    expect(
+      map.getOverlappingFlexIds(target).map(([id, v]) => [id.toString(), v]),
+    ).toEqual([["4/3|3/1|4/1", "a"]]);
+  });
+
+  it("removeOverlapping は重なる ID を切り取らずに取り除いて値と返す", () => {
+    const map = new SpatialIdMap([
+      [range, "a"],
+      [SingleId.create(4, 4, 4, 4), "b"],
+    ]);
+    expect(singles(map.removeOverlapping(target))).toEqual([
+      ["4/3/2/1", "a"],
+      ["4/3/3/1", "a"],
+    ]);
+    expect(singles(map)).toEqual([["4/4/4/4", "b"]]);
+  });
+
+  it("removeOverlappingFlexIds は取り除いた ID を FlexId と値で返す", () => {
+    const map = new SpatialIdMap([[range, 1]]);
+    expect(
+      map.removeOverlappingFlexIds(target).map(([id, v]) => [id.toString(), v]),
+    ).toEqual([["4/3|3/1|4/1", 1]]);
+    expect(map.isEmpty()).toBe(true);
+  });
+});
+
+describe("SpatialIdMap の面で接する ID", () => {
+  it("面で接する ID を値と返す", () => {
+    const map = new SpatialIdMap([
+      [SingleId.create(4, 3, 2, 1), "x"],
+      [SingleId.create(4, 4, 1, 1), "f"],
+      [SingleId.create(4, 3, 5, 1), "far"],
+    ]);
+    const target = SingleId.create(4, 3, 1, 1);
+    expect(singles(map.spatialFaceNeighbors(target))).toEqual([
+      ["4/3/2/1", "x"],
+      ["4/4/1/1", "f"],
+    ]);
+    expect(map.spatialFaceNeighborsFlexIds(target)).toHaveLength(2);
+  });
+});
+
+describe("SpatialIdMap の時間方向の読み出し", () => {
+  const id = SingleId.create(12, 0, 3638, 1614);
+
+  it("同じ値の時間をつなげ、違う値は分ける", () => {
+    const map = new SpatialIdMap([
+      [id.timeWith(Interval.HOUR, 0), 1],
+      [id.timeWith(Interval.HOUR, 1), 1],
+      [id.timeWith(Interval.HOUR, 2), 2],
+    ]);
+    const ranges = map
+      .reconstructedTimeRanges(AllowedIntervals.calendar())
+      .map(([r, v]) => [r.toString(), v]);
+    expect(ranges).toContainEqual(["12/0/3638/1614_3600/0:1", 1]);
+    expect(ranges).toContainEqual(["12/0/3638/1614_3600/2", 2]);
+    expect(ranges).toHaveLength(2);
+  });
+
+  it("flatSingleIds は SingleId と値に展開する", () => {
+    const map = new SpatialIdMap([
+      [id.timeWith(Interval.HOUR, 0), "a"],
+      [id.timeWith(Interval.HOUR, 1), "a"],
+    ]);
+    const entries = map.flatSingleIds(AllowedIntervals.calendar());
+    expect(entries.map(([s, v]) => [s.toString(), v])).toEqual([
+      ["12/0/3638/1614_3600/0", "a"],
+      ["12/0/3638/1614_3600/1", "a"],
+    ]);
+    expect(entries[0]?.[0]).toBeInstanceOf(SingleId);
+    expect(map.flatSingleIds().map(([s]) => s.toString())).toEqual([
+      "12/0/3638/1614_7200/0",
+    ]);
   });
 });

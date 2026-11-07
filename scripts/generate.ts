@@ -96,7 +96,9 @@ function buildWasm(
   ]);
   const wasmPath = join(outDir, `${outName}_bg.wasm`);
   if (has("wasm-opt")) {
-    run(["wasm-opt", "-Oz", "--all-features", wasmPath, "-o", wasmPath]);
+    // --all-features を付けると、binaryen 133 は Bun（JavaScriptCore）が読めない import の形式で書き出す。
+    // 付けなければ、Rust が書いた target_features の範囲で最適化する。
+    run(["wasm-opt", "-Oz", wasmPath, "-o", wasmPath]);
   } else {
     console.warn("wasm-opt is not found; skipped size optimization");
   }

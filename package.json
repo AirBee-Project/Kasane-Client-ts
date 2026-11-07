@@ -23,6 +23,17 @@
         "default": "./dist/spatial-id/index.cjs"
       }
     },
+    "./time": {
+      "kasane-source": "./src/time/index.ts",
+      "import": {
+        "types": "./dist/time/index.d.ts",
+        "default": "./dist/time/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/time/index.d.ts",
+        "default": "./dist/time/index.cjs"
+      }
+    },
     "./geometry": {
       "kasane-source": "./src/geometry/index.ts",
       "import": {
@@ -94,6 +105,9 @@
     "*": {
       "spatial-id": [
         "./dist/spatial-id/index.d.ts"
+      ],
+      "time": [
+        "./dist/time/index.d.ts"
       ],
       "geometry": [
         "./dist/geometry/index.d.ts"
