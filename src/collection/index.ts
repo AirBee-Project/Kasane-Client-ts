@@ -3,6 +3,7 @@
  *
  * - {@link SpatialIdSet}: 時空間 ID の集合
  * - {@link SpatialIdMap}: 時空間 ID の場所ごとに値を持つマップ
+ * - {@link SpatialIdJson}: 時空間データの JSON（スキーマ v1.0）の型
  *
  * 重なる ID を挿入しても、同じ場所を二重には持たない。取り出すときは {@link spatial-id!RangeId} で返す。
  *
@@ -29,3 +30,11 @@
 // biome-ignore assist/source/organizeImports: @sortStrategy documents-first はドキュメント以外を並べ替えないので、docs はこの export の順に並ぶ
 export { SpatialIdSet } from "./spatialIdSet.js";
 export { SpatialIdMap } from "./spatialIdMap.js";
+export type {
+  SpatialIdJson,
+  SpatialIdJsonMeta,
+  SpatialIdJsonData,
+  SpatialIdJsonValue,
+  SpatialIdJsonId,
+  SpatialIdJsonRange,
+} from "./json.js";
